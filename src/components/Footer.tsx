@@ -1,4 +1,5 @@
 import { Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const CONTACT_EMAIL = 'contato@consudes.org.br';
@@ -6,48 +7,85 @@ const CONTACT_EMAIL = 'contato@consudes.org.br';
 export default function Footer() {
   const { t } = useLanguage();
 
+  const cols = [
+    {
+      heading: 'Institucional',
+      links: [
+        { to: '/sobre', label: t.nav.about },
+        { to: '/programas', label: t.nav.programs },
+        { to: '/federacoes', label: t.nav.federations },
+        { to: '/transparencia', label: t.nav.transparency },
+      ],
+    },
+    {
+      heading: 'Conteúdo',
+      links: [
+        { to: '/noticias', label: t.nav.news },
+        { to: '/eventos', label: t.nav.events },
+        { to: '/galeria', label: t.nav.gallery },
+      ],
+    },
+    {
+      heading: 'Contato',
+      links: [
+        { to: '/contato', label: t.nav.contact },
+      ],
+    },
+  ];
+
   return (
     <footer className="bg-[#003B73] transition-colors duration-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
 
-        {/* Main row */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
+        {/* Grid principal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
 
           {/* Brand */}
-          <div className="inline-flex items-center">
-            <span className="inline-flex items-center bg-white rounded px-2 py-1.5 transition-colors">
+          <div className="flex flex-col gap-4">
+            <span className="inline-flex items-center bg-white rounded px-2 py-1.5 w-fit">
               <img
                 src="/logo-novo-consudes-removebg-preview-1.png"
                 alt="CONSUDES"
-                className="h-16 sm:h-20 w-auto object-contain block"
+                className="h-14 w-auto object-contain block"
               />
             </span>
-          </div>
-
-          {/* Links */}
-          <nav className="flex items-center gap-6 text-sm text-white/70 flex-wrap">
-            <a href="#sobre" className="hover:text-white transition-colors">
-              {t.nav.about}
-            </a>
-            <a href="#programas" className="hover:text-white transition-colors">
-              {t.nav.programs}
-            </a>
-            <a href="#noticias" className="hover:text-white transition-colors">
-              {t.nav.news}
-            </a>
+            <p className="text-white/50 text-xs leading-relaxed max-w-[180px]">
+              {t.topbar}
+            </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-1.5 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
             >
-              <Mail size={13} />
-              {t.nav.contact}
+              <Mail size={12} />
+              {CONTACT_EMAIL}
             </a>
-          </nav>
+          </div>
+
+          {/* Colunas de links */}
+          {cols.map(({ heading, links }) => (
+            <div key={heading}>
+              <p className="text-[#D9A441] text-[10px] font-bold tracking-widest uppercase mb-4">
+                {heading}
+              </p>
+              <ul className="flex flex-col gap-2.5">
+                {links.map(({ to, label }) => (
+                  <li key={to}>
+                    <Link
+                      to={to}
+                      className="text-sm text-white/60 hover:text-white transition-colors"
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom */}
-        <div className="mt-8 pt-6 border-t border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-          <p className="text-xs text-white/40">
+        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <p className="text-xs text-white/30">
             © {new Date().getFullYear()} CONSUDES · {t.footer.rights}
           </p>
           <span className="w-6 h-0.5 bg-[#D9A441] rounded" />

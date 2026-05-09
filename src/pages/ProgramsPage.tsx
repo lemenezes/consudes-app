@@ -1,0 +1,29 @@
+import { useLanguage } from '../context/LanguageContext';
+import PageHero from '../components/PageHero';
+
+export default function ProgramsPage() {
+  const { t } = useLanguage();
+  return (
+    <>
+      <PageHero
+        label="CONSUDES"
+        title={t.programs.title}
+        subtitle={t.programs.subtitle}
+      />
+      <section className="bg-white dark:bg-[#0d1624] py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
+          {t.programs.items.map((item, i) => (
+            <div key={i} className="border border-gray-200 dark:border-white/10 rounded-xl p-8">
+              <h2 className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#003B73] dark:text-white mb-3">
+                {item.title}
+              </h2>
+              <p className="text-[#1F2937]/70 dark:text-white/60 leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}
