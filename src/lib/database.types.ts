@@ -9,6 +9,11 @@ export type Lang = 'es' | 'pt' | 'en';
 export type PublishStatus = 'draft' | 'published' | 'archived';
 export type ReportCategory = 'financeiro' | 'ata' | 'estatuto' | 'outro';
 export type ChampionshipStatus = 'upcoming' | 'ongoing' | 'finished';
+export type AuditAction =
+  | 'create_news' | 'edit_news' | 'publish_news' | 'unpublish_news' | 'delete_news'
+  | 'upload_image' | 'delete_image'
+  | 'create_report' | 'delete_report'
+  | 'create_federation' | 'edit_federation' | 'delete_federation';
 
 // ── Enums — legado marketplace ───────────────────────────────────────────────
 
@@ -409,6 +414,34 @@ export type Database = {
         Relationships: [];
       };
 
+      /** Log de auditoria das ações administrativas */
+      admin_audit_logs: {
+        Row: {
+          id: string;
+          actor_email: string;
+          action: AuditAction;
+          entity_type: string;
+          entity_id: string | null;
+          entity_title: string | null;
+          reason: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_email: string;
+          action: AuditAction;
+          entity_type: string;
+          entity_id?: string | null;
+          entity_title?: string | null;
+          reason?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Record<string, never>; // imutável após inserido
+        Relationships: [];
+      };
+
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -426,6 +459,8 @@ export type GalleryRow         = Database['public']['Tables']['gallery']['Row'];
 export type ChampionshipRow    = Database['public']['Tables']['championships']['Row'];
 export type TeamMemberRow      = Database['public']['Tables']['team_members']['Row'];
 export type FormerPresidentRow = Database['public']['Tables']['former_presidents']['Row'];
+export type AuditLogRow        = Database['public']['Tables']['admin_audit_logs']['Row'];
+export type AuditLogInsert     = Database['public']['Tables']['admin_audit_logs']['Insert'];
 
 // ── Helpers de tipo — legado marketplace ─────────────────────────────────────
 

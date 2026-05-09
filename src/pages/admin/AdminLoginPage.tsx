@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { isAdminEmail } from '../../utils/adminAllowlist';
 
 export default function AdminLoginPage() {
   const { user, signIn } = useAuth();
@@ -20,6 +21,13 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Allowlist check antes de chamar o Supabase
+    if (!isAdminEmail(email)) {
+      setError('Acesso não autorizado para este e-mail.');
+      return;
+    }
+
     setLoading(true);
 
     const { error: authError } = await signIn(email, password);

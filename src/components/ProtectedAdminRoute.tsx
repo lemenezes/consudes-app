@@ -1,9 +1,10 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AdminLayout from './AdminLayout';
+import { isAdminEmail } from '../utils/adminAllowlist';
 
 export default function ProtectedAdminRoute() {
-  const { user, loading } = useAuth();
+  const { user, loading, signOut } = useAuth();
 
   if (loading) {
     return (
@@ -14,6 +15,12 @@ export default function ProtectedAdminRoute() {
   }
 
   if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  // Email não está na allowlist → desloga e bloqueia
+  if (!isAdminEmail(user.email)) {
+    signOut();
     return <Navigate to="/admin/login" replace />;
   }
 
