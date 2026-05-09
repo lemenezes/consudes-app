@@ -36,9 +36,8 @@ export function useAuditLog() {
           },
           body: JSON.stringify(payload),
         });
-      } catch (err) {
+      } catch {
         // Falha silenciosa — não bloqueia a ação principal
-        console.error('[audit] Falha ao registrar ação:', err);
       }
     },
     [user, session],

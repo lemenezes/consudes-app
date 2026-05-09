@@ -26,6 +26,8 @@ export default function CoverImageUpload({
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  /** URL local (object URL) para preview instantâneo antes do upload terminar */
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const handleFile = async (file: File) => {
     const validationError = validateImageFile(file);
@@ -34,6 +36,10 @@ export default function CoverImageUpload({
     setError(null);
     setUploading(true);
     setProgress(20);
+
+    // Preview local instantâneo — não precisa esperar o upload
+    const preview = URL.createObjectURL(file);
+    setLocalPreview(preview);
 
     // Simula progresso visual enquanto faz upload
     const ticker = setInterval(() => setProgress((p) => Math.min(p + 15, 85)), 300);
@@ -46,18 +52,22 @@ export default function CoverImageUpload({
       setError(uploadError);
       setUploading(false);
       setProgress(0);
+      URL.revokeObjectURL(preview);
+      setLocalPreview(null);
       return;
     }
 
     // Upload bem-sucedido → agora é seguro apagar a imagem antiga
     if (value) {
-      const { error: delError } = await deleteImageByUrl(bucket, value);
-      if (delError) console.warn('[storage] Falha ao apagar imagem antiga:', delError);
+      await deleteImageByUrl(bucket, value);
     }
 
     await log({ action: 'upload_image', entity_type: 'news', entity_title: file.name });
 
     onChange(url!);
+    // Libera o object URL — o Storage URL já está em cache no navegador
+    URL.revokeObjectURL(preview);
+    setLocalPreview(null);
     setUploading(false);
     setTimeout(() => setProgress(0), 600);
   };
@@ -92,46 +102,57 @@ export default function CoverImageUpload({
     onChange('');
   };
 
-  // ── Com imagem ────────────────────────────────────────────────────────────
-  if (value) {
+  // ── Com imagem (ou preview local durante upload) ──────────────────────────
+  if (localPreview || value) {
+    const src = localPreview || value;
     return (
       <div>
         <div className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
           <img
-            src={value}
+            src={src}
             alt="Capa"
-            className="w-full h-48 object-cover"
+            className="w-full max-h-72 object-contain bg-gray-100"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
-          {/* Overlay de ações */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-            <button
-              type="button"
-              disabled={uploading || removing}
-              onClick={() => inputRef.current?.click()}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white text-sm font-medium text-[#1F2937] shadow hover:bg-gray-50 disabled:opacity-50 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
-              </svg>
-              Substituir
-            </button>
-            <button
-              type="button"
-              disabled={removing || uploading}
-              onClick={handleRemove}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-sm font-medium text-white shadow hover:bg-red-700 disabled:opacity-50 transition-colors"
-            >
-              {removing ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
+          {/* Barra de progresso durante upload */}
+          {uploading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
+              <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin mb-2" />
+              <p className="text-xs text-white font-medium">Enviando…</p>
+              <div className="absolute bottom-0 left-0 h-1 bg-[#0057A8] transition-all duration-300" style={{ width: `${progress}%` }} />
+            </div>
+          )}
+          {/* Overlay de ações (só quando não está enviando) */}
+          {!uploading && (
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+              <button
+                type="button"
+                disabled={removing}
+                onClick={() => inputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white text-sm font-medium text-[#1F2937] shadow hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
                 </svg>
-              )}
-              {removing ? 'Removendo…' : 'Remover'}
-            </button>
-          </div>
+                Substituir
+              </button>
+              <button
+                type="button"
+                disabled={removing}
+                onClick={handleRemove}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-600 text-sm font-medium text-white shadow hover:bg-red-700 disabled:opacity-50 transition-colors"
+              >
+                {removing ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                )}
+                {removing ? 'Removendo…' : 'Remover'}
+              </button>
+            </div>
+          )}
           <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleInputChange} />
         </div>
         {error && (

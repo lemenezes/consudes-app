@@ -121,8 +121,7 @@ export async function deleteNews(
 ): Promise<{ error: string | null }> {
   // Remove imagem do bucket antes de apagar o registro
   if (coverUrl) {
-    const { error: delErr } = await deleteImageByUrl('cms-news', coverUrl);
-    if (delErr) console.error('[storage] Erro ao apagar capa:', delErr);
+    await deleteImageByUrl('cms-news', coverUrl);
   }
 
   const { error } = await supabase.from('news').delete().eq('id', id);
