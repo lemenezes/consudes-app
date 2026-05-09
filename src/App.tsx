@@ -1,7 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { LanguageProvider } from './context/LanguageContext'
+import { AuthProvider } from './context/AuthContext'
 import Layout from './components/Layout'
+import ProtectedAdminRoute from './components/ProtectedAdminRoute'
+import AdminLoginPage from './pages/admin/AdminLoginPage'
+import AdminDashboard from './pages/admin/AdminDashboard'
 import HomePage from './pages/HomePage'
 import HistoryPage from './pages/HistoryPage'
 import MissionPage from './pages/MissionPage'
@@ -52,14 +56,28 @@ const router = createBrowserRouter([
       { path: 'contato', element: <ContactPage /> },
     ],
   },
+  // ── Área administrativa ──────────────────────────────────────────────────
+  {
+    path: '/admin/login',
+    element: <AdminLoginPage />,
+  },
+  {
+    path: '/admin',
+    element: <ProtectedAdminRoute />,
+    children: [
+      { index: true, element: <AdminDashboard /> },
+    ],
+  },
 ])
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <LanguageProvider>
-        <RouterProvider router={router} />
-      </LanguageProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <RouterProvider router={router} />
+        </LanguageProvider>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }
