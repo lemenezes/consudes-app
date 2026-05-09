@@ -2,105 +2,123 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+import type { Lang } from '../i18n/translations';
+
+const LANGS: { code: Lang; label: string }[] = [
+  { code: 'es', label: 'ES' },
+  { code: 'pt', label: 'PT' },
+  { code: 'en', label: 'EN' },
+];
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, toggle } = useTheme();
+  const { lang, setLang, t } = useLanguage();
 
   const close = () => setIsOpen(false);
 
   const navLinks = [
-    { href: '#sobre', label: 'Sobre' },
-    { href: '#programas', label: 'Programas' },
-    { href: '#noticias', label: 'Notícias' },
-    { href: '#contato', label: 'Contato' },
+    { href: '#sobre', label: t.nav.about },
+    { href: '#programas', label: t.nav.programs },
+    { href: '#noticias', label: t.nav.news },
+    { href: '#contato', label: t.nav.contact },
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FCFCFB]/92 dark:bg-[#0a1f2e]/90 backdrop-blur-xl border-b border-[#EEF2F7] dark:border-white/5 shadow-[0_1px_12px_rgba(12,90,134,0.04)] transition-colors duration-200">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[68px]">
+    <header className="sticky top-0 z-50 transition-colors duration-200">
 
-          {/* Logo */}
-          <Link to="/" onClick={close} className="flex items-center gap-3 min-w-0">
-            <svg viewBox="0 0 40 40" fill="none" className="w-9 h-9 flex-shrink-0" aria-hidden="true">
-              <defs>
-                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#0C5A86"/>
-                  <stop offset="100%" stopColor="#1DAFD9"/>
-                </linearGradient>
-              </defs>
-              <circle cx="20" cy="18" r="14" stroke="url(#logoGrad)" strokeWidth="1.5" fill="none" opacity="0.5"/>
-              <ellipse cx="20" cy="29" rx="8" ry="2.2" stroke="url(#logoGrad)" strokeWidth="1.2" fill="none"/>
-              <ellipse cx="20" cy="29" rx="4.5" ry="1.3" stroke="url(#logoGrad)" strokeWidth="0.8" fill="none"/>
-              <line x1="20" y1="29" x2="20" y2="19" stroke="url(#logoGrad)" strokeWidth="2" strokeLinecap="round"/>
-              <path d="M20 19 C17 15.5 14 13.5 13.5 10" stroke="url(#logoGrad)" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              <path d="M20 19 C23 15.5 26 13.5 26.5 10" stroke="url(#logoGrad)" strokeWidth="1.4" strokeLinecap="round" fill="none"/>
-              <path d="M20 19 C18.8 15 18 12.5 20 10" stroke="url(#logoGrad)" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
-              <path d="M20 8 C19 10 18.2 11.2 18.2 12C18.2 12.88 19 13.6 20 13.6C21 13.6 21.8 12.88 21.8 12C21.8 11.2 21 10 20 8Z" fill="url(#logoGrad)"/>
-            </svg>
-            <div className="leading-tight min-w-0">
-              <span className="block text-base font-bold tracking-wide text-[#0C5A86] dark:text-white">
-                CONSUDES
-              </span>
-              <span className="hidden sm:block text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-widest uppercase truncate">
-                Conselho de Entidades
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ href, label }) => (
-              <a
-                key={href}
-                href={href}
-                className="px-4 py-2 rounded-xl text-sm font-medium transition-colors text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800"
+      {/* ── Topbar institucional ─────────────────────────────────────────── */}
+      <div className="bg-[#003B73] dark:bg-[#001f42]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-9">
+          <p className="text-white/70 text-[11px] font-medium tracking-widest uppercase hidden sm:block">
+            {t.topbar}
+          </p>
+          {/* Idioma + toggle dark/light */}
+          <div className="flex items-center gap-px">
+            {LANGS.map(({ code, label }) => (
+              <button
+                key={code}
+                onClick={() => setLang(code)}
+                className={`px-2.5 py-1 text-[11px] font-bold tracking-wider transition-colors ${
+                  lang === code
+                    ? 'text-white'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
               >
                 {label}
-              </a>
+              </button>
             ))}
-          </nav>
-
-          {/* Right actions */}
-          <div className="flex items-center gap-2">
+            <span className="w-px h-3.5 bg-white/20 mx-1.5" />
             <button
               data-testid="theme-toggle"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="w-7 h-7 flex items-center justify-center rounded text-white/40 hover:text-white/80 transition-colors"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
             </button>
+          </div>
+        </div>
+      </div>
 
-            <a
-              href="#contato"
-              className="hidden md:flex items-center gap-2 bg-[#0C5A86] hover:bg-[#09476B] text-white px-5 py-2 rounded-xl text-sm font-semibold transition-colors shadow-sm"
-            >
-              Fale conosco
-            </a>
+      {/* ── Navbar principal ─────────────────────────────────────────────── */}
+      <div className="bg-white border-b border-gray-200 shadow-sm dark:bg-[#0d1624] dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-[80px]">
 
-            {/* Mobile menu toggle */}
-            <button
-              className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              onClick={() => setIsOpen((v) => !v)}
-              aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
-            >
-              {isOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
+            {/* Logo */}
+            <Link to="/" onClick={close} className="flex-shrink-0">
+              <img
+                src="/logo-novo-consudes-removebg-preview-1.png"
+                alt="CONSUDES"
+                className="h-16 sm:h-25 w-auto object-contain block"
+              />
+            </Link>
+
+            {/* Desktop nav — centro */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map(({ href, label }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="px-4 py-2 text-sm font-semibold transition-colors text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 rounded dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10"
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+
+            {/* Ações direita */}
+            <div className="flex items-center gap-2">
+              <a
+                href="#contato"
+                className="hidden md:flex items-center gap-2 bg-[#D9A441] hover:bg-[#c49038] text-[#003B73] font-bold px-5 py-2 rounded text-sm transition-colors"
+              >
+                {t.nav.cta}
+              </a>
+
+              <button
+                className="md:hidden w-10 h-10 flex items-center justify-center rounded text-[#003B73] hover:bg-[#003B73]/8 transition-colors dark:text-white dark:hover:bg-white/10"
+                onClick={() => setIsOpen((v) => !v)}
+                aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+              >
+                {isOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-4 flex flex-col gap-1 animate-fade-in">
+        <div className="md:hidden border-t border-gray-200 bg-white px-4 py-4 flex flex-col gap-1 animate-fade-in dark:bg-[#0d1624] dark:border-gray-800">
           {navLinks.map(({ href, label }) => (
             <a
               key={href}
               href={href}
               onClick={close}
-              className="px-4 py-3.5 rounded-xl text-sm font-medium transition-colors text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="px-4 py-3.5 rounded text-sm font-medium transition-colors text-[#003B73] hover:bg-[#0057A8]/8 hover:text-[#0057A8] dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white"
             >
               {label}
             </a>
@@ -108,9 +126,9 @@ export default function Header() {
           <a
             href="#contato"
             onClick={close}
-            className="flex items-center justify-center mt-1 bg-[#0C5A86] hover:bg-[#09476B] text-white px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors"
+            className="flex items-center justify-center mt-2 bg-[#D9A441] hover:bg-[#c49038] text-[#003B73] font-bold px-4 py-3.5 rounded text-sm transition-colors"
           >
-            Fale conosco
+            {t.nav.cta}
           </a>
         </div>
       )}
