@@ -6,6 +6,8 @@ import Layout from './components/Layout'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminNewsListPage from './pages/admin/AdminNewsListPage'
+import AdminNewsFormPage from './pages/admin/AdminNewsFormPage'
 import HomePage from './pages/HomePage'
 import HistoryPage from './pages/HistoryPage'
 import MissionPage from './pages/MissionPage'
@@ -66,6 +68,9 @@ const router = createBrowserRouter([
     element: <ProtectedAdminRoute />,
     children: [
       { index: true, element: <AdminDashboard /> },
+      { path: 'noticias', element: <AdminNewsListPage /> },
+      { path: 'noticias/nova', element: <AdminNewsFormPage /> },
+      { path: 'noticias/:id/editar', element: <AdminNewsFormPage /> },
     ],
   },
 ])

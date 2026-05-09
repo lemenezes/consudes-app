@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext';
 
 const NAV_ITEMS = [
   { to: '/admin', label: 'Dashboard', end: true },
-  // Próximas seções (em breve):
-  // { to: '/admin/noticias', label: 'Notícias' },
+  { to: '/admin/noticias', label: 'Notícias', end: false },
   // { to: '/admin/galeria', label: 'Galeria' },
   // { to: '/admin/relatorios', label: 'Relatórios' },
   // { to: '/admin/federacoes', label: 'Federações' },
