@@ -11,7 +11,15 @@ const LANGS: { code: Lang; label: string }[] = [
   { code: 'en', label: 'EN' },
 ];
 
-type DropdownKey = 'institucional' | 'conteudo' | null;
+type DropdownKey = 'institucional' | 'transparencia' | 'deportes' | null;
+
+type DropdownLink =
+  | { to: string; href?: never; label: string }
+  | { href: string; to?: never; label: string };
+
+type NavItem =
+  | { type: 'dropdown'; key: NonNullable<DropdownKey>; label: string; links: DropdownLink[] }
+  | { type: 'standalone'; to: string; label: string };
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,29 +43,42 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const groups = [
+  const navItems: NavItem[] = [
+    { type: 'standalone', to: '/', label: 'Home' },
     {
-      key: 'institucional' as DropdownKey,
-      label: 'Institucional',
+      type: 'dropdown',
+      key: 'institucional',
+      label: t.nav.institutional,
       links: [
-        { to: '/sobre', label: t.nav.about },
-        { to: '/programas', label: t.nav.programs },
-        { to: '/federacoes', label: t.nav.federations },
+        { to: '/historia', label: t.nav.history },
+        { to: '/missao', label: t.nav.mission },
+        { to: '/valores', label: t.nav.values },
+        { to: '/sede', label: t.nav.headquarters },
+        { to: '/equipe', label: t.nav.team },
+        { to: '/ex-presidentes', label: t.nav.formerPresidents },
       ],
     },
+    { type: 'standalone', to: '/federacoes', label: t.nav.federations },
     {
-      key: 'conteudo' as DropdownKey,
-      label: 'Conteúdo',
+      type: 'dropdown',
+      key: 'transparencia',
+      label: t.nav.transparency,
       links: [
-        { to: '/noticias', label: t.nav.news },
-        { to: '/campeonatos', label: t.nav.championships },
-        { to: '/galeria', label: t.nav.gallery },
+        { to: '/relatorios', label: t.nav.reports },
+        { href: 'https://webmail.hostinger.com', label: 'Webmail' },
       ],
     },
-  ];
-
-  const standaloneLinks = [
-    { to: '/transparencia', label: t.nav.transparency },
+    { type: 'standalone', to: '/noticias', label: t.nav.news },
+    {
+      type: 'dropdown',
+      key: 'deportes',
+      label: t.nav.sports,
+      links: [
+        { to: '/calendario', label: t.nav.calendar },
+        { to: '/interclubes', label: t.nav.interclubs },
+      ],
+    },
+    { to: '/galeria', label: t.nav.gallery, type: 'standalone' },
   ];
 
   const dropdownItemClass = ({ isActive }: { isActive: boolean }) =>
@@ -115,59 +136,70 @@ export default function Header() {
               />
             </Link>
 
-            {/* Desktop nav com dropdowns */}
+            {/* Desktop nav */}
             <nav ref={navRef} className="hidden lg:flex items-center gap-0.5">
-
-              {/* Grupos com dropdown */}
-              {groups.map(({ key, label, links }) => (
-                <div key={key} className="relative">
-                  <button
-                    onClick={() => toggleDropdown(key)}
-                    className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                      openDropdown === key
-                        ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/15'
-                        : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10'
-                    }`}
+              {navItems.map((item) =>
+                item.type === 'dropdown' ? (
+                  <div key={item.key} className="relative">
+                    <button
+                      onClick={() => toggleDropdown(item.key)}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold rounded transition-colors ${
+                        openDropdown === item.key
+                          ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/15'
+                          : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10'
+                      }`}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={13}
+                        className={`transition-transform duration-200 ${openDropdown === item.key ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {openDropdown === item.key && (
+                      <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-white dark:bg-[#0d1624] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg py-1 z-50">
+                        {item.links.map((link) =>
+                          link.href ? (
+                            <a
+                              key={link.href}
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={() => setOpenDropdown(null)}
+                              className="block px-4 py-2.5 text-sm transition-colors whitespace-nowrap text-[#003B73] hover:text-[#0057A8] hover:bg-gray-50 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/5"
+                            >
+                              {link.label}
+                            </a>
+                          ) : (
+                            <NavLink
+                              key={link.to}
+                              to={link.to!}
+                              onClick={() => setOpenDropdown(null)}
+                              className={dropdownItemClass}
+                            >
+                              {link.label}
+                            </NavLink>
+                          )
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === '/'}
+                    className={({ isActive }) =>
+                      `px-3 py-2 text-sm font-semibold transition-colors rounded ${
+                        isActive
+                          ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/15'
+                          : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10'
+                      }`
+                    }
                   >
-                    {label}
-                    <ChevronDown
-                      size={13}
-                      className={`transition-transform duration-200 ${openDropdown === key ? 'rotate-180' : ''}`}
-                    />
-                  </button>
-                  {openDropdown === key && (
-                    <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-white dark:bg-[#0d1624] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg py-1 z-50">
-                      {links.map(({ to, label: linkLabel }) => (
-                        <NavLink
-                          key={to}
-                          to={to}
-                          onClick={() => setOpenDropdown(null)}
-                          className={dropdownItemClass}
-                        >
-                          {linkLabel}
-                        </NavLink>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* Links standalone */}
-              {standaloneLinks.map(({ to, label }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={({ isActive }) =>
-                    `px-3 py-2 text-sm font-semibold transition-colors rounded ${
-                      isActive
-                        ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/15'
-                        : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10'
-                    }`
-                  }
-                >
-                  {label}
-                </NavLink>
-              ))}
+                    {item.label}
+                  </NavLink>
+                )
+              )}
             </nav>
 
             {/* Ações direita */}
@@ -194,61 +226,75 @@ export default function Header() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="lg:hidden border-t border-gray-200 bg-white dark:bg-[#0d1624] dark:border-gray-800">
-          {groups.map(({ key, label, links }) => (
-            <div key={key}>
-              <button
-                onClick={() => toggleDropdown(key)}
-                className="w-full flex items-center justify-between px-5 py-3 text-xs font-bold tracking-widest uppercase text-[#D9A441]"
-              >
-                {label}
-                <ChevronDown
-                  size={13}
-                  className={`transition-transform ${openDropdown === key ? 'rotate-180' : ''}`}
-                />
-              </button>
-              {openDropdown === key && (
-                <div className="pb-2">
-                  {links.map(({ to, label: linkLabel }) => (
-                    <NavLink
-                      key={to}
-                      to={to}
-                      onClick={close}
-                      className={({ isActive }) =>
-                        `block px-8 py-3 text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/10'
-                            : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/5 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/5'
-                        }`
-                      }
-                    >
-                      {linkLabel}
-                    </NavLink>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-          <div className="border-t border-gray-100 dark:border-white/5 px-4 py-3 flex flex-col gap-1">
-            {standaloneLinks.map(({ to, label }) => (
+          {navItems.map((item) =>
+            item.type === 'dropdown' ? (
+              <div key={item.key}>
+                <button
+                  onClick={() => toggleDropdown(item.key)}
+                  className="w-full flex items-center justify-between px-5 py-3 text-xs font-bold tracking-widest uppercase text-[#D9A441]"
+                >
+                  {item.label}
+                  <ChevronDown
+                    size={13}
+                    className={`transition-transform ${openDropdown === item.key ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {openDropdown === item.key && (
+                  <div className="pb-2">
+                    {item.links.map((link) =>
+                      link.href ? (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={close}
+                          className="block px-8 py-3 text-sm font-medium transition-colors text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/5 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/5"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <NavLink
+                          key={link.to}
+                          to={link.to!}
+                          onClick={close}
+                          className={({ isActive }) =>
+                            `block px-8 py-3 text-sm font-medium transition-colors ${
+                              isActive
+                                ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/10'
+                                : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/5 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/5'
+                            }`
+                          }
+                        >
+                          {link.label}
+                        </NavLink>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
               <NavLink
-                key={to}
-                to={to}
+                key={item.to}
+                to={item.to}
                 onClick={close}
                 className={({ isActive }) =>
-                  `px-4 py-3 rounded text-sm font-medium transition-colors ${
+                  `block px-5 py-3 text-sm font-medium border-b border-gray-50 dark:border-white/5 transition-colors ${
                     isActive
                       ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/10'
                       : 'text-[#003B73] hover:bg-[#0057A8]/8 hover:text-[#0057A8] dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-white'
                   }`
                 }
               >
-                {label}
+                {item.label}
               </NavLink>
-            ))}
+            )
+          )}
+          <div className="border-t border-gray-100 dark:border-white/5 px-4 py-3">
             <NavLink
               to="/contato"
               onClick={close}
-              className="flex items-center justify-center mt-1 bg-[#D9A441] hover:bg-[#c49038] text-[#003B73] font-bold px-4 py-3.5 rounded text-sm transition-colors"
+              className="flex items-center justify-center bg-[#D9A441] hover:bg-[#c49038] text-[#003B73] font-bold px-4 py-3.5 rounded text-sm transition-colors"
             >
               {t.nav.cta}
             </NavLink>

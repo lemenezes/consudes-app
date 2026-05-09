@@ -7,7 +7,7 @@ export default function AboutPage() {
     <>
       <PageHero
         label="CONSUDES"
-        title={t.nav.about}
+        title={t.nav.institutional}
         subtitle={t.about.title}
       />
       <section className="bg-white dark:bg-[#0d1624] py-20">

@@ -7,7 +7,7 @@ export default function EventsPage() {
     <>
       <PageHero
         label="CONSUDES"
-        title={t.nav.events}
+        title={t.nav.championships}
         subtitle="Calendário oficial de competições e eventos da confederação."
       />
       <section className="bg-white dark:bg-[#0d1624] py-20">

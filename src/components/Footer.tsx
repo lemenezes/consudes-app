@@ -11,18 +11,30 @@ export default function Footer() {
     {
       heading: t.footer.colInstitutional,
       links: [
-        { to: '/sobre', label: t.nav.about },
-        { to: '/programas', label: t.nav.programs },
+        { to: '/historia', label: t.nav.history },
+        { to: '/missao', label: t.nav.mission },
+        { to: '/valores', label: t.nav.values },
+        { to: '/equipe', label: t.nav.team },
         { to: '/federacoes', label: t.nav.federations },
-        { to: '/transparencia', label: t.nav.transparency },
+      ],
+    },
+    {
+      heading: t.nav.championships,
+      links: [
+        { to: '/campeonatos', label: t.nav.championships },
+        { to: '/interclubes', label: t.nav.interclubs },
+        { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames },
+        { to: '/rankings', label: t.nav.rankings },
+        { to: '/calendario', label: t.nav.calendar },
       ],
     },
     {
       heading: t.footer.colContent,
       links: [
         { to: '/noticias', label: t.nav.news },
-        { to: '/campeonatos', label: t.nav.championships },
         { to: '/galeria', label: t.nav.gallery },
+        { to: '/esportes', label: t.nav.sports },
+        { to: '/transparencia', label: t.nav.transparency },
       ],
     },
     {
