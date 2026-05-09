@@ -6,7 +6,7 @@
  *
  * Fallback: lista vazia (nenhum acesso sem configurar a variável).
  */
-const rawEnv = (import.meta.env.VITE_ADMIN_EMAILS as string | undefined) ?? '';
+const rawEnv = (import.meta.env.VITE_ADMIN_ALLOWED_EMAIL as string | undefined) ?? '';
 
 const ADMIN_EMAILS: Set<string> = new Set(
   rawEnv
