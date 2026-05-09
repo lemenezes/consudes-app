@@ -8,7 +8,7 @@ export const translations = {
       programs: 'Programas',
       federations: 'Federaciones',
       news: 'Noticias',
-      events: 'Eventos',
+      championships: 'Campeonatos',
       transparency: 'Transparencia',
       gallery: 'Galería',
       contact: 'Contacto',
@@ -77,6 +77,9 @@ export const translations = {
     },
     footer: {
       rights: 'Todos los derechos reservados',
+      colInstitutional: 'Institucional',
+      colContent: 'Contenido',
+      colContact: 'Contacto',
     },
   },
 
@@ -87,7 +90,7 @@ export const translations = {
       programs: 'Programas',
       federations: 'Federações',
       news: 'Notícias',
-      events: 'Eventos',
+      championships: 'Campeonatos',
       transparency: 'Transparência',
       gallery: 'Galeria',
       contact: 'Contato',
@@ -156,6 +159,9 @@ export const translations = {
     },
     footer: {
       rights: 'Todos os direitos reservados',
+      colInstitutional: 'Institucional',
+      colContent: 'Conteúdo',
+      colContact: 'Contato',
     },
   },
 
@@ -166,7 +172,7 @@ export const translations = {
       programs: 'Programs',
       federations: 'Federations',
       news: 'News',
-      events: 'Events',
+      championships: 'Championships',
       transparency: 'Transparency',
       gallery: 'Gallery',
       contact: 'Contact',
@@ -235,6 +241,9 @@ export const translations = {
     },
     footer: {
       rights: 'All rights reserved',
+      colInstitutional: 'Institutional',
+      colContent: 'Content',
+      colContact: 'Contact',
     },
   },
 } satisfies Record<Lang, unknown>;

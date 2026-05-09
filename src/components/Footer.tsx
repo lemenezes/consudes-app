@@ -9,7 +9,7 @@ export default function Footer() {
 
   const cols = [
     {
-      heading: 'Institucional',
+      heading: t.footer.colInstitutional,
       links: [
         { to: '/sobre', label: t.nav.about },
         { to: '/programas', label: t.nav.programs },
@@ -18,15 +18,15 @@ export default function Footer() {
       ],
     },
     {
-      heading: 'Conteúdo',
+      heading: t.footer.colContent,
       links: [
         { to: '/noticias', label: t.nav.news },
-        { to: '/eventos', label: t.nav.events },
+        { to: '/campeonatos', label: t.nav.championships },
         { to: '/galeria', label: t.nav.gallery },
       ],
     },
     {
-      heading: 'Contato',
+      heading: t.footer.colContact,
       links: [
         { to: '/contato', label: t.nav.contact },
       ],

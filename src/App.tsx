@@ -7,7 +7,7 @@ import AboutPage from './pages/AboutPage'
 import ProgramsPage from './pages/ProgramsPage'
 import FederationsPage from './pages/FederationsPage'
 import NewsPage from './pages/NewsPage'
-import EventsPage from './pages/EventsPage'
+import ChampionshipsPage from './pages/ChampionshipsPage'
 import TransparencyPage from './pages/TransparencyPage'
 import GalleryPage from './pages/GalleryPage'
 import ContactPage from './pages/ContactPage'
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       { path: 'programas', element: <ProgramsPage /> },
       { path: 'federacoes', element: <FederationsPage /> },
       { path: 'noticias', element: <NewsPage /> },
-      { path: 'eventos', element: <EventsPage /> },
+      { path: 'campeonatos', element: <ChampionshipsPage /> },
       { path: 'transparencia', element: <TransparencyPage /> },
       { path: 'galeria', element: <GalleryPage /> },
       { path: 'contato', element: <ContactPage /> },
