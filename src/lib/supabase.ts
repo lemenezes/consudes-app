@@ -1,13 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
-import type { Database } from './database.types.ts';
+import type { Database } from './database.types';
 
 const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL as string) ?? '';
 const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) ?? '';
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
+if (import.meta.env.DEV && (!supabaseUrl || !supabaseAnonKey)) {
+  console.warn(
+    '[CONSUDES] Variáveis VITE_SUPABASE_URL e/ou VITE_SUPABASE_ANON_KEY não definidas.\n' +
+    'Crie um arquivo .env.local com as credenciais do projeto Supabase.'
+  );
+}
 
+/**
+ * Cliente tipado do Supabase.
+ * Pronto para Auth, Postgres e Storage.
+ */
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
+
+/** Verdadeiro quando as variáveis de ambiente estão preenchidas. */
 export const isSupabaseConfigured =
   supabaseUrl.length > 0 &&
-  supabaseUrl !== 'https://your-project.supabase.co' &&
-  supabaseAnonKey.length > 0 &&
-  supabaseAnonKey !== 'your-anon-key-here';
+  supabaseAnonKey.length > 0;

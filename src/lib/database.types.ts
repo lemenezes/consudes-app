@@ -1,16 +1,289 @@
-// Auto-generated types for the Supabase schema.
-// Re-run `supabase gen types typescript` after schema changes.
+// Tipos gerados manualmente para o CMS institucional da CONSUDES.
+// Rode `supabase gen types typescript` após criar as tabelas no Supabase.
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+// ── Enums ────────────────────────────────────────────────────────────────────
+
+export type Lang = 'es' | 'pt' | 'en';
+export type PublishStatus = 'draft' | 'published' | 'archived';
+export type ReportCategory = 'financeiro' | 'ata' | 'estatuto' | 'outro';
+export type ChampionshipStatus = 'upcoming' | 'ongoing' | 'finished';
+
+// ── Enums — legado marketplace ───────────────────────────────────────────────
 
 export type ListingStatus = 'pending' | 'active' | 'inactive' | 'rejected';
 export type ProfileRole = 'user' | 'resident' | 'admin';
 export type ProfileStatus = 'approved' | 'suspended';
 export type AccessRequestStatus = 'pending' | 'approved' | 'rejected';
 
+// ── Database schema ──────────────────────────────────────────────────────────
+
 export type Database = {
   public: {
     Tables: {
+
+      /** Notícias e avisos oficiais */
+      news: {
+        Row: {
+          id: string;
+          title: string;
+          slug: string;
+          excerpt: string | null;
+          content: string | null;
+          cover_url: string | null;
+          lang: Lang;
+          status: PublishStatus;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          excerpt?: string | null;
+          content?: string | null;
+          cover_url?: string | null;
+          lang?: Lang;
+          status?: PublishStatus;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          excerpt?: string | null;
+          content?: string | null;
+          cover_url?: string | null;
+          lang?: Lang;
+          status?: PublishStatus;
+          published_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
+      /** Federações afiliadas */
+      federations: {
+        Row: {
+          id: string;
+          name: string;
+          country: string;
+          country_code: string;
+          logo_url: string | null;
+          website_url: string | null;
+          contact_email: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          country: string;
+          country_code: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          contact_email?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          country?: string;
+          country_code?: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          contact_email?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+
+      /** Documentos de transparência (informes, atas, estatutos) */
+      reports: {
+        Row: {
+          id: string;
+          title: string;
+          category: ReportCategory;
+          file_url: string;
+          year: number | null;
+          description: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          category: ReportCategory;
+          file_url: string;
+          year?: number | null;
+          description?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          category?: ReportCategory;
+          file_url?: string;
+          year?: number | null;
+          description?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+
+      /** Galeria de fotos e vídeos */
+      gallery: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          media_url: string;
+          media_type: 'photo' | 'video';
+          cover_url: string | null;
+          sort_order: number;
+          published_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          media_url: string;
+          media_type?: 'photo' | 'video';
+          cover_url?: string | null;
+          sort_order?: number;
+          published_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          media_url?: string;
+          media_type?: 'photo' | 'video';
+          cover_url?: string | null;
+          sort_order?: number;
+          published_at?: string | null;
+        };
+        Relationships: [];
+      };
+
+      /** Campeonatos e competições */
+      championships: {
+        Row: {
+          id: string;
+          title: string;
+          edition: string | null;
+          location: string | null;
+          country: string | null;
+          start_date: string | null;
+          end_date: string | null;
+          status: ChampionshipStatus;
+          cover_url: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          edition?: string | null;
+          location?: string | null;
+          country?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          status?: ChampionshipStatus;
+          cover_url?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          edition?: string | null;
+          location?: string | null;
+          country?: string | null;
+          start_date?: string | null;
+          end_date?: string | null;
+          status?: ChampionshipStatus;
+          cover_url?: string | null;
+          description?: string | null;
+        };
+        Relationships: [];
+      };
+
+      /** Membros da equipe atual */
+      team_members: {
+        Row: {
+          id: string;
+          name: string;
+          role: string;
+          country: string | null;
+          photo_url: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          role: string;
+          country?: string | null;
+          photo_url?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          role?: string;
+          country?: string | null;
+          photo_url?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+
+      /** Ex-presidentes */
+      former_presidents: {
+        Row: {
+          id: string;
+          name: string;
+          country: string | null;
+          period_start: number;
+          period_end: number | null;
+          photo_url: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          country?: string | null;
+          period_start: number;
+          period_end?: number | null;
+          photo_url?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          country?: string | null;
+          period_start?: number;
+          period_end?: number | null;
+          photo_url?: string | null;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+
+      // ── Legado marketplace ────────────────────────────────────────────────
+
       listings: {
         Row: {
           id: string;
@@ -59,6 +332,7 @@ export type Database = {
         };
         Relationships: [];
       };
+
       profiles: {
         Row: {
           id: string;
@@ -92,6 +366,7 @@ export type Database = {
         };
         Relationships: [];
       };
+
       access_requests: {
         Row: {
           id: string;
@@ -133,6 +408,7 @@ export type Database = {
         };
         Relationships: [];
       };
+
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -141,7 +417,20 @@ export type Database = {
   };
 };
 
-export type ListingRow = Database['public']['Tables']['listings']['Row'];
-export type ListingInsert = Database['public']['Tables']['listings']['Insert'];
-export type ProfileRow = Database['public']['Tables']['profiles']['Row'];
+// ── Helpers de tipo — CMS CONSUDES ───────────────────────────────────────────
+
+export type NewsRow            = Database['public']['Tables']['news']['Row'];
+export type FederationRow      = Database['public']['Tables']['federations']['Row'];
+export type ReportRow          = Database['public']['Tables']['reports']['Row'];
+export type GalleryRow         = Database['public']['Tables']['gallery']['Row'];
+export type ChampionshipRow    = Database['public']['Tables']['championships']['Row'];
+export type TeamMemberRow      = Database['public']['Tables']['team_members']['Row'];
+export type FormerPresidentRow = Database['public']['Tables']['former_presidents']['Row'];
+
+// ── Helpers de tipo — legado marketplace ─────────────────────────────────────
+
+export type ListingRow       = Database['public']['Tables']['listings']['Row'];
+export type ListingInsert    = Database['public']['Tables']['listings']['Insert'];
+export type ProfileRow       = Database['public']['Tables']['profiles']['Row'];
 export type AccessRequestRow = Database['public']['Tables']['access_requests']['Row'];
+
