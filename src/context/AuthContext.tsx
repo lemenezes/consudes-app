@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import type { Profile } from '../types';
 
 interface AuthContextValue {
@@ -49,16 +49,6 @@ const MOCK_PROFILE: Profile = {
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function fetchProfile(userId: string): Promise<Profile | null> {
-  if (!isSupabaseConfigured) return null;
-  const { data } = await supabase
-    .from('profiles')
-    .select('id, full_name, email, block, apartment, role, status, created_at')
-    .eq('id', userId)
-    .single();
-  return (data as Profile | null) ?? null;
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(USE_MOCK ? MOCK_USER : null);
   const [session, setSession] = useState<Session | null>(null);
@@ -87,16 +77,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Load profile whenever user changes
   useEffect(() => {
-    if (USE_MOCK) return; // perfil já está no estado inicial em modo mock
-    if (!user) {
-      setProfile(null);
-      setProfileLoading(false);
-      return;
-    }
-    setProfileLoading(true);
-    fetchProfile(user.id)
-      .then(setProfile)
-      .finally(() => setProfileLoading(false));
+    // Tabela profiles não existe neste projeto — skip silencioso
+    setProfile(null);
+    setProfileLoading(false);
   }, [user]);
 
   const signUp = async (email: string, password: string): Promise<{ error: string | null }> => {
