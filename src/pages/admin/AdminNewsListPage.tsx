@@ -58,7 +58,7 @@ export default function AdminNewsListPage() {
   // ── Apagar ─────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
-    const { error } = await deleteNews(toDelete.id);
+    const { error } = await deleteNews(toDelete.id, toDelete.cover_url);
     if (error) { setError(error); setToDelete(null); return; }
 
     await log({

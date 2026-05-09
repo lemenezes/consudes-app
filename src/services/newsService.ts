@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { deleteImageByUrl } from './storageService';
 import type { NewsRow, PublishStatus, Lang } from '../lib/database.types';
 
 export interface NewsFormData {
@@ -113,8 +114,17 @@ export async function setNewsStatus(
   return { error: null };
 }
 
-/** Apaga notícia permanentemente */
-export async function deleteNews(id: string): Promise<{ error: string | null }> {
+/** Apaga notícia permanentemente e remove a imagem do Storage, se houver */
+export async function deleteNews(
+  id: string,
+  coverUrl?: string | null,
+): Promise<{ error: string | null }> {
+  // Remove imagem do bucket antes de apagar o registro
+  if (coverUrl) {
+    const { error: delErr } = await deleteImageByUrl('cms-news', coverUrl);
+    if (delErr) console.error('[storage] Erro ao apagar capa:', delErr);
+  }
+
   const { error } = await supabase.from('news').delete().eq('id', id);
   if (error) return { error: error.message };
   return { error: null };

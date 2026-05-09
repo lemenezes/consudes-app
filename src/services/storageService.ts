@@ -52,21 +52,42 @@ export async function uploadImage(
 }
 
 /**
- * Remove um arquivo do bucket dado sua URL pública.
- * Silencia erros (não bloqueia o fluxo principal).
+ * Verifica se uma URL pertence ao Supabase Storage (não é URL manual).
+ * Checa apenas pelo padrão da URL — independente de variáveis de ambiente.
  */
-export async function deleteImageByUrl(bucket: string, publicUrl: string): Promise<void> {
+export function isStorageUrl(url: string, bucket: string): boolean {
+  return url.includes(`/storage/v1/object/public/${bucket}/`);
+}
+
+/**
+ * Extrai o path relativo de uma URL pública do Supabase Storage.
+ * Ex: "covers/1234-abc.jpg"
+ * Retorna null se a URL não for do Storage.
+ */
+export function extractStoragePath(bucket: string, publicUrl: string): string | null {
   try {
     const url = new URL(publicUrl);
-    // Path after /storage/v1/object/public/<bucket>/
     const prefix = `/storage/v1/object/public/${bucket}/`;
-    const path = url.pathname.startsWith(prefix)
-      ? url.pathname.slice(prefix.length)
-      : null;
-
-    if (!path) return;
-    await supabase.storage.from(bucket).remove([path]);
+    if (!url.pathname.startsWith(prefix)) return null;
+    const path = url.pathname.slice(prefix.length);
+    return path || null;
   } catch {
-    // silencioso
+    return null;
   }
+}
+
+/**
+ * Remove um arquivo do bucket dado sua URL pública.
+ * Retorna erro se a remoção falhar.
+ */
+export async function deleteImageByUrl(
+  bucket: string,
+  publicUrl: string,
+): Promise<{ error: string | null }> {
+  const path = extractStoragePath(bucket, publicUrl);
+  if (!path) return { error: null };
+
+  const { error } = await supabase.storage.from(bucket).remove([path]);
+  if (error) return { error: error.message };
+  return { error: null };
 }

@@ -16,10 +16,16 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
-const RESEND_API_KEY        = Deno.env.get('RESEND_API_KEY') ?? '';
-const NOTIFY_EMAIL          = Deno.env.get('NOTIFY_EMAIL') ?? '';
-const FROM_EMAIL            = Deno.env.get('FROM_EMAIL') ?? 'noreply@consudes.org';
-const ADMIN_JWT_SECRET      = Deno.env.get('ADMIN_JWT_SECRET') ?? '';
+const RESEND_API_KEY   = Deno.env.get('RESEND_API_KEY') ?? '';
+const NOTIFY_EMAIL     = Deno.env.get('NOTIFY_EMAIL') ?? '';
+const FROM_EMAIL       = Deno.env.get('FROM_EMAIL') ?? 'noreply@consudes.org';
+const ADMIN_JWT_SECRET = Deno.env.get('ADMIN_JWT_SECRET') ?? '';
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-secret',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
 
 // Rótulos legíveis para cada ação
 const ACTION_LABELS: Record<string, string> = {
@@ -48,26 +54,31 @@ interface AuditPayload {
 }
 
 Deno.serve(async (req: Request) => {
+  // Responde ao preflight CORS
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return new Response('Method not allowed', { status: 405, headers: CORS_HEADERS });
   }
 
   // Validar secret opcional (ADMIN_JWT_SECRET no header x-admin-secret)
   if (ADMIN_JWT_SECRET && req.headers.get('x-admin-secret') !== ADMIN_JWT_SECRET) {
-    return new Response('Unauthorized', { status: 401 });
+    return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });
   }
 
   let payload: AuditPayload;
   try {
     payload = await req.json();
   } catch {
-    return new Response('Invalid JSON', { status: 400 });
+    return new Response('Invalid JSON', { status: 400, headers: CORS_HEADERS });
   }
 
   const { actor_email, action, entity_type, entity_id, entity_title, reason, metadata } = payload;
 
   if (!actor_email || !action || !entity_type) {
-    return new Response('Missing required fields: actor_email, action, entity_type', { status: 400 });
+    return new Response('Missing required fields: actor_email, action, entity_type', { status: 400, headers: CORS_HEADERS });
   }
 
   // ── 1. Inserir no audit log ────────────────────────────────────────────────
@@ -98,7 +109,7 @@ Deno.serve(async (req: Request) => {
   if (!RESEND_API_KEY || !NOTIFY_EMAIL) {
     console.warn('[audit] RESEND_API_KEY ou NOTIFY_EMAIL não configurados. Pulando e-mail.');
     return new Response(JSON.stringify({ ok: true, email: false }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
     });
   }
 
@@ -169,6 +180,6 @@ Deno.serve(async (req: Request) => {
 
   return new Response(
     JSON.stringify({ ok: true, email: resendRes.ok }),
-    { headers: { 'Content-Type': 'application/json' } },
+    { headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } },
   );
 });
