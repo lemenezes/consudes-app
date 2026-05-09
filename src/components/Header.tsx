@@ -23,20 +23,24 @@ type NavItem =
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null);
+  const [openDropdowns, setOpenDropdowns] = useState<Set<NonNullable<DropdownKey>>>(new Set());
   const navRef = useRef<HTMLDivElement>(null);
   const { theme, toggle } = useTheme();
   const { lang, setLang, t } = useLanguage();
 
-  const close = () => { setIsOpen(false); setOpenDropdown(null); };
-  const toggleDropdown = (key: DropdownKey) =>
-    setOpenDropdown((prev) => (prev === key ? null : key));
+  const close = () => { setIsOpen(false); setOpenDropdowns(new Set()); };
+  const toggleDropdown = (key: NonNullable<DropdownKey>) =>
+    setOpenDropdowns((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
 
-  // Fecha dropdown ao clicar fora
+  // Fecha dropdowns ao clicar fora
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
+        setOpenDropdowns(new Set());
       }
     };
     document.addEventListener('mousedown', handler);
@@ -89,7 +93,7 @@ export default function Header() {
     }`;
 
   return (
-    <header className="sticky top-0 z-50 transition-colors duration-200">
+    <header ref={navRef} className="sticky top-0 z-50 transition-colors duration-200">
 
       {/* ── Topbar institucional ─────────────────────────────────────────── */}
       <div className="bg-[#003B73] dark:bg-[#001f42]">
@@ -137,14 +141,14 @@ export default function Header() {
             </Link>
 
             {/* Desktop nav */}
-            <nav ref={navRef} className="hidden lg:flex items-center gap-0.5">
+            <nav className="hidden lg:flex items-center gap-0.5">
               {navItems.map((item) =>
                 item.type === 'dropdown' ? (
                   <div key={item.key} className="relative">
                     <button
                       onClick={() => toggleDropdown(item.key)}
                       className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold rounded transition-colors ${
-                        openDropdown === item.key
+                        openDropdowns.has(item.key)
                           ? 'text-[#0057A8] bg-[#0057A8]/8 dark:text-white dark:bg-white/15'
                           : 'text-[#003B73] hover:text-[#0057A8] hover:bg-[#0057A8]/8 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/10'
                       }`}
@@ -152,10 +156,10 @@ export default function Header() {
                       {item.label}
                       <ChevronDown
                         size={13}
-                        className={`transition-transform duration-200 ${openDropdown === item.key ? 'rotate-180' : ''}`}
+                        className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
                       />
                     </button>
-                    {openDropdown === item.key && (
+                    {openDropdowns.has(item.key) && (
                       <div className="absolute top-full left-0 mt-1 min-w-[180px] bg-white dark:bg-[#0d1624] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg py-1 z-50">
                         {item.links.map((link) =>
                           link.href ? (
@@ -164,7 +168,7 @@ export default function Header() {
                               href={link.href}
                               target="_blank"
                               rel="noopener noreferrer"
-                              onClick={() => setOpenDropdown(null)}
+                              onClick={() => setOpenDropdowns(new Set())}
                               className="block px-4 py-2.5 text-sm transition-colors whitespace-nowrap text-[#003B73] hover:text-[#0057A8] hover:bg-gray-50 dark:text-white/80 dark:hover:text-white dark:hover:bg-white/5"
                             >
                               {link.label}
@@ -173,7 +177,7 @@ export default function Header() {
                             <NavLink
                               key={link.to}
                               to={link.to!}
-                              onClick={() => setOpenDropdown(null)}
+                              onClick={() => setOpenDropdowns(new Set())}
                               className={dropdownItemClass}
                             >
                               {link.label}
@@ -225,7 +229,7 @@ export default function Header() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="lg:hidden border-t border-gray-200 bg-white dark:bg-[#0d1624] dark:border-gray-800">
+        <div className="lg:hidden border-t border-gray-200 bg-white dark:bg-[#0d1624] dark:border-gray-800 overflow-y-auto max-h-[calc(100svh-116px)]">
           {navItems.map((item) =>
             item.type === 'dropdown' ? (
               <div key={item.key}>
@@ -236,10 +240,10 @@ export default function Header() {
                   {item.label}
                   <ChevronDown
                     size={13}
-                    className={`transition-transform ${openDropdown === item.key ? 'rotate-180' : ''}`}
+                    className={`transition-transform ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
                   />
                 </button>
-                {openDropdown === item.key && (
+                {openDropdowns.has(item.key) && (
                   <div className="pb-2">
                     {item.links.map((link) =>
                       link.href ? (
