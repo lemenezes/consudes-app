@@ -8,6 +8,7 @@ import {
   slugify,
 } from '../../services/newsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import CoverImageUpload from '../../components/CoverImageUpload';
 import type { NewsFormData } from '../../services/newsService';
 import type { PublishStatus, Lang } from '../../lib/database.types';
 
@@ -223,21 +224,15 @@ export default function AdminNewsFormPage() {
           />
         </div>
 
-        {/* URL da capa */}
+        {/* Imagem de capa */}
         <div>
-          <label htmlFor="cover_url" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            URL da imagem de capa
+          <label className="block text-sm font-medium text-[#1F2937] mb-1.5">
+            Imagem de capa
           </label>
-          <input
-            id="cover_url"
-            name="cover_url"
-            type="url"
+          <CoverImageUpload
             value={form.cover_url}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
-            placeholder="https://..."
+            onChange={(url) => setForm((prev) => ({ ...prev, cover_url: url }))}
           />
-          <p className="text-xs text-gray-400 mt-1">Upload de imagem será implementado em breve.</p>
         </div>
 
         {/* Idioma + Status */}
