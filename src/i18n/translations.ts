@@ -158,7 +158,7 @@ export const translations = {
     },
     calendarPage: {
       subtitle: 'Calendario oficial de eventos deportivos e institucionales de la CONSUDES',
-      introHeadline: 'Competencias y eventos del fútbol sala sordo sudamericano',
+      introHeadline: 'Competencias del deporte sordo sudamericano',
       all: 'Todos',
       eventsLabel: 'eventos',
       filterCategory: 'Categoría',
@@ -332,7 +332,7 @@ export const translations = {
     },
     calendarPage: {
       subtitle: 'Calendário oficial de eventos esportivos e institucionais da CONSUDES',
-      introHeadline: 'Competições e eventos do futsal surdo sul-americano',
+      introHeadline: 'Competições do esporte surdo sul-americano',
       all: 'Todos',
       eventsLabel: 'eventos',
       filterCategory: 'Categoria',
@@ -506,7 +506,7 @@ export const translations = {
     },
     calendarPage: {
       subtitle: 'Official calendar of sports and institutional events from CONSUDES',
-      introHeadline: 'Competitions and events of South American deaf futsal',
+      introHeadline: 'Competitions of South American deaf sport',
       all: 'All',
       eventsLabel: 'events',
       filterCategory: 'Category',
