@@ -8,6 +8,7 @@ import {
   slugify,
 } from '../../services/newsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import { useLanguage } from '../../context/LanguageContext';
 import CoverImageUpload from '../../components/CoverImageUpload';
 import RichTextEditor from '../../components/RichTextEditor';
 import { getOrphanedInlineUrls, getNewlyAddedInlineUrls, deleteInlineImageUrls } from '../../utils/inlineImageCleanup';
@@ -24,17 +25,18 @@ const EMPTY: NewsFormData = {
   status: 'draft',
 };
 
-const STATUS_OPTIONS: { value: PublishStatus; label: string }[] = [
-  { value: 'draft', label: 'Rascunho' },
-  { value: 'published', label: 'Publicada' },
-  { value: 'archived', label: 'Arquivada' },
-];
-
 export default function AdminNewsFormPage() {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { log } = useAuditLog();
+  const { t } = useLanguage();
+
+  const STATUS_OPTIONS: { value: PublishStatus; label: string }[] = [
+    { value: 'draft',     label: t.admin.status.draft },
+    { value: 'published', label: t.admin.status.published },
+    { value: 'archived',  label: t.admin.status.archived },
+  ];
 
   const [form, setForm] = useState<NewsFormData>(EMPTY);
   const [previousStatus, setPreviousStatus] = useState<PublishStatus>('draft');
@@ -168,10 +170,10 @@ export default function AdminNewsFormPage() {
         </Link>
         <div>
           <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">
-            {isEditing ? 'Editar notícia' : 'Nova notícia'}
+            {isEditing ? t.admin.editNews : t.admin.newNews}
           </p>
           <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] leading-none">
-            {form.title || <span className="text-gray-300">Sem título</span>}
+            {form.title || <span className="text-gray-300">{t.admin.noTitle}</span>}
           </h1>
         </div>
       </div>
@@ -195,7 +197,7 @@ export default function AdminNewsFormPage() {
             {/* TÍTULO — input editorial grande */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
               <label htmlFor="title" className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">
-                Título <span className="text-red-400">*</span>
+                {t.admin.titleLabel} <span className="text-red-400">*</span>
               </label>
               <input
                 id="title"
@@ -204,7 +206,7 @@ export default function AdminNewsFormPage() {
                 required
                 value={form.title}
                 onChange={handleChange}
-                placeholder="Escreva o título da notícia…"
+                placeholder={t.admin.titlePlaceholder}
                 className="w-full text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] bg-transparent border-0 focus:outline-none placeholder:text-gray-300 leading-snug"
               />
             </div>
@@ -212,7 +214,7 @@ export default function AdminNewsFormPage() {
             {/* IMAGEM DE CAPA */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-6 py-3 border-b border-gray-50 bg-gray-50/60">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Imagem de capa</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t.admin.coverLabel}</span>
               </div>
               <div className="p-6">
                 <CoverImageUpload
@@ -225,14 +227,14 @@ export default function AdminNewsFormPage() {
             {/* CONTEÚDO EDITORIAL — protagonista */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.07)] overflow-hidden">
               <div className="px-6 py-3.5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Conteúdo editorial</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t.admin.contentLabel}</span>
                 <span className="text-[10px] text-gray-300 font-medium">Rich Text</span>
               </div>
               <div className="p-4">
                 <RichTextEditor
                   value={form.content}
                   onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
-                  placeholder="Escreva o conteúdo da notícia…"
+                  placeholder={t.admin.contentPlaceholder}
                 />
               </div>
             </div>
@@ -241,7 +243,7 @@ export default function AdminNewsFormPage() {
             <div className="pt-2 pb-8 space-y-3">
               {/* Status — acima das ações */}
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-400">Status:</span>
+                <span className="text-xs font-medium text-gray-400">{t.admin.statusLabel}:</span>
                 <select
                   id="status"
                   name="status"
@@ -261,14 +263,14 @@ export default function AdminNewsFormPage() {
                   onClick={handleCancel}
                   className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-[#1F2937] hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all"
                 >
-                  Cancelar
+                  {t.admin.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
                   className="px-8 py-3 rounded-xl text-sm font-semibold bg-[#0057A8] text-white hover:bg-[#004a8f] shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all"
                 >
-                  {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Publicar notícia'}
+                  {saving ? t.admin.saving : isEditing ? t.admin.saveChanges : t.admin.publish}
                 </button>
               </div>
             </div>

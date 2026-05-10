@@ -1,19 +1,49 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import type { Lang } from '../i18n/translations';
 
-const NAV_ITEMS = [
-  { to: '/admin', label: 'Dashboard', end: true },
-  { to: '/admin/noticias', label: 'Notícias', end: false },
-  // { to: '/admin/galeria', label: 'Galeria' },
-  // { to: '/admin/relatorios', label: 'Relatórios' },
-  // { to: '/admin/federacoes', label: 'Federações' },
+const LANGS: { code: Lang; label: string }[] = [
+  { code: 'es', label: 'ES' },
+  { code: 'pt', label: 'PT' },
+  { code: 'en', label: 'EN' },
 ];
+
+function LangSwitcher({ lang, setLang, dark = false }: { lang: Lang; setLang: (l: Lang) => void; dark?: boolean }) {
+  return (
+    <div className="flex items-center gap-1">
+      {LANGS.map(({ code, label }) => (
+        <button
+          key={code}
+          onClick={() => setLang(code)}
+          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+            lang === code
+              ? dark
+                ? 'bg-[#D9A441] text-[#1F2937]'
+                : 'bg-[#003B73] text-white'
+              : dark
+              ? 'text-white/50 hover:text-white hover:bg-white/10'
+              : 'text-gray-400 hover:text-[#1F2937] hover:bg-gray-100'
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function AdminLayout() {
   const { user, signOut } = useAuth();
+  const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const NAV_ITEMS = [
+    { to: '/admin', label: t.admin.nav.dashboard, end: true },
+    { to: '/admin/noticias', label: t.admin.nav.news, end: false },
+  ];
 
   const handleSignOut = async () => {
     await signOut();
@@ -28,9 +58,9 @@ export default function AdminLayout() {
     }`;
 
   return (
-    <div className="min-h-screen flex bg-[#F5F7FA]">
-      {/* ── Sidebar desktop ── */}
-      <aside className="hidden lg:flex flex-col w-64 bg-[#003B73] text-white shrink-0">
+    <div className="min-h-screen bg-[#F5F7FA]">
+      {/* ── Sidebar desktop (fixed) ── */}
+      <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-64 bg-[#003B73] text-white z-30">
         {/* Logo */}
         <div className="p-6 border-b border-white/10 flex flex-col items-center text-center">
           <div className="bg-white rounded-xl px-4 py-3 inline-block">
@@ -41,7 +71,7 @@ export default function AdminLayout() {
             />
           </div>
           <p className="text-[10px] tracking-widest uppercase text-white/40 mt-3 font-['Inter']">
-            Painel Administrativo
+            {t.admin.panelTitle}
           </p>
         </div>
 
@@ -61,28 +91,23 @@ export default function AdminLayout() {
             onClick={handleSignOut}
             className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.8}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 15l3-3m0 0l-3-3m3 3H9"
-              />
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 15l3-3m0 0l-3-3m3 3H9" />
             </svg>
-            Sair
+            {t.admin.logout}
           </button>
         </div>
       </aside>
 
       {/* ── Coluna de conteúdo ── */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar mobile */}
-        <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#003B73] text-white shrink-0">
+      <div className="lg:pl-64 flex flex-col min-h-screen">
+        {/* Top bar desktop (fixed) */}
+        <header className="hidden lg:flex items-center justify-end gap-3 px-8 h-12 bg-[#003B73] fixed top-0 left-64 right-0 z-20 shrink-0">
+          <LangSwitcher lang={lang} setLang={setLang} dark />
+        </header>
+
+        {/* Top bar mobile (fixed) */}
+        <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#003B73] text-white fixed top-0 inset-x-0 z-30 shrink-0">
           <div className="bg-white rounded-lg px-2 py-1 inline-block">
             <img
               src="/logo-novo-consudes-removebg-preview-1.png"
@@ -107,9 +132,9 @@ export default function AdminLayout() {
           </button>
         </header>
 
-        {/* Menu mobile */}
+        {/* Menu mobile (fixed abaixo do topbar) */}
         {mobileOpen && (
-          <div className="lg:hidden bg-[#003B73] text-white px-4 pb-4 space-y-1">
+          <div className="lg:hidden bg-[#003B73] text-white px-4 pb-4 space-y-1 fixed top-14 inset-x-0 z-20">
             {NAV_ITEMS.map((item) => (
               <NavLink
                 key={item.to}
@@ -123,18 +148,21 @@ export default function AdminLayout() {
             ))}
             <div className="pt-2 border-t border-white/10 mt-2">
               <p className="text-xs text-white/40 px-1 mb-2">{user?.email}</p>
+              <div className="px-1 mb-3">
+                <LangSwitcher lang={lang} setLang={setLang} dark />
+              </div>
               <button
                 onClick={handleSignOut}
                 className="w-full text-left px-4 py-2.5 rounded-lg text-sm text-white/70 hover:bg-white/10 hover:text-white transition-colors"
               >
-                Sair
+                {t.admin.logout}
               </button>
             </div>
           </div>
         )}
 
-        {/* Conteúdo principal */}
-        <main className="flex-1 p-6 lg:p-8 overflow-auto">
+        {/* Conteúdo principal — compensar altura do header fixo */}
+        <main className="flex-1 p-6 lg:p-8 pt-[calc(1.5rem+3rem)] lg:pt-[calc(2rem+3rem)]">
           <Outlet />
         </main>
       </div>
