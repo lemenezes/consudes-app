@@ -7,6 +7,8 @@
 -- =============================================================================
 
 -- Permissões SQL base
+grant select on public.news to anon;
+
 grant select, insert, update, delete on public.news to authenticated;
 
 -- Leitura: authenticated vê todas (rascunhos, arquivadas, publicadas)
