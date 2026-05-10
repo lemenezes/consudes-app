@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -28,13 +28,13 @@ export default function Header() {
   const navRef = useRef<HTMLDivElement>(null);
   const { theme, toggle } = useTheme();
   const { lang, setLang, t } = useLanguage();
+  const { pathname } = useLocation();
 
   const close = () => { setIsOpen(false); setOpenDropdowns(new Set()); };
   const toggleDropdown = (key: NonNullable<DropdownKey>) =>
     setOpenDropdowns((prev) => {
-      const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
-      return next;
+      if (prev.has(key)) return new Set();
+      return new Set([key]);
     });
 
   // Fecha dropdowns ao clicar fora
@@ -136,9 +136,9 @@ export default function Header() {
 
       {/* ── Navbar principal ─────────────────────────────────────────────── */}
       <div
-        className={`bg-white dark:bg-[#0a1220] transition-shadow duration-300 ${
+        className={`bg-white dark:bg-[#0a1220] transition-all duration-300 ${
           scrolled
-            ? 'shadow-[0_2px_20px_rgba(0,45,94,0.10)] dark:shadow-[0_2px_20px_rgba(0,0,0,0.40)]'
+            ? 'shadow-[0_2px_20px_rgba(0,45,94,0.10)] dark:shadow-[0_2px_20px_rgba(0,0,0,0.40)] border-b border-transparent'
             : 'border-b border-[#003B73]/8 dark:border-white/5'
         }`}
       >
@@ -159,23 +159,32 @@ export default function Header() {
               {navItems.map((item) =>
                 item.type === 'dropdown' ? (
                   <div key={item.key} className="relative flex items-stretch">
-                    <button
-                      onClick={() => toggleDropdown(item.key)}
-                      className={`relative flex items-center gap-1 px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
-                        openDropdowns.has(item.key)
-                          ? 'text-[#0057A8] dark:text-white'
-                          : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
-                      }`}
-                    >
-                      {openDropdowns.has(item.key) && (
-                        <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
-                      )}
-                      {item.label}
-                      <ChevronDown
-                        size={12}
-                        className={`transition-transform duration-200 opacity-50 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
-                      />
-                    </button>
+                    {(() => {
+                      const hasActiveChild = item.links.some(
+                        (l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')),
+                      );
+                      const isOpen = openDropdowns.has(item.key);
+                      const showIndicator = isOpen || hasActiveChild;
+                      return (
+                        <button
+                          onClick={() => toggleDropdown(item.key)}
+                          className={`relative flex items-center gap-1 px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
+                            isOpen || hasActiveChild
+                              ? 'text-[#0057A8] dark:text-white'
+                              : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
+                          }`}
+                        >
+                          {showIndicator && (
+                            <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
+                          )}
+                          {item.label}
+                          <ChevronDown
+                            size={12}
+                            className={`transition-transform duration-200 opacity-50 ${isOpen ? 'rotate-180' : ''}`}
+                          />
+                        </button>
+                      );
+                    })()}
                     {openDropdowns.has(item.key) && (
                       <div className="absolute top-full left-0 mt-0 min-w-[200px] bg-white dark:bg-[#0d1624] border border-[#003B73]/10 dark:border-white/8 rounded-b-xl rounded-tr-xl shadow-[0_8px_32px_rgba(0,45,94,0.13)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.40)] py-2 z-50">
                         {item.links.map((link) =>
