@@ -43,6 +43,7 @@ export default function AdminLayout() {
   const NAV_ITEMS = [
     { to: '/admin', label: t.admin.nav.dashboard, end: true },
     { to: '/admin/noticias', label: t.admin.nav.news, end: false },
+    { to: '/admin/calendario', label: t.admin.nav.calendar, end: false },
   ];
 
   const handleSignOut = async () => {
