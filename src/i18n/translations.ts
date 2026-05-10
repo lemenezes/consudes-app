@@ -79,7 +79,9 @@ export const translations = {
     news: {
       label: 'Mantente informado',
       title: 'Noticias y eventos',
-      subtitle: 'Próximamente publicaremos nuestras últimas novedades aquí.',
+      subtitle: 'Comunicados, eventos y novedades oficiales de la CONSUDES.',
+      emptyState: 'Aún no hay noticias publicadas.',
+      viewAll: 'Ver todas las noticias',
     },
     newsDetail: {
       home: 'Inicio',
@@ -181,7 +183,9 @@ export const translations = {
     news: {
       label: 'Fique por dentro',
       title: 'Notícias e eventos',
-      subtitle: 'Em breve publicaremos nossas últimas novidades aqui.',
+      subtitle: 'Comunicados, eventos e novidades oficiais da CONSUDES.',
+      emptyState: 'Nenhuma notícia publicada ainda.',
+      viewAll: 'Ver todas as notícias',
     },
     newsDetail: {
       home: 'Início',
@@ -283,7 +287,9 @@ export const translations = {
     news: {
       label: 'Stay informed',
       title: 'News and events',
-      subtitle: 'We will soon publish our latest updates here.',
+      subtitle: 'Official announcements, events and news from CONSUDES.',
+      emptyState: 'No news published yet.',
+      viewAll: 'View all news',
     },
     newsDetail: {
       home: 'Home',

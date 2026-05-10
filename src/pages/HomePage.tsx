@@ -227,7 +227,7 @@ export default function HomePage() {
           {/* Estado vazio */}
           {!newsLoading && news.length === 0 && (
             <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm py-8">
-              {t.news.subtitle}
+              {t.news.emptyState}
             </p>
           )}
 
@@ -238,7 +238,7 @@ export default function HomePage() {
                 to="/noticias"
                 className="inline-flex items-center gap-2 border border-[#0057A8]/30 text-[#0057A8] dark:text-[#7ab8f0] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#0057A8]/5 transition-colors text-sm"
               >
-                Ver todas las noticias
+                {t.news.viewAll}
                 <ArrowRight size={15} />
               </Link>
             </div>
