@@ -59,17 +59,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (USE_MOCK) return; // não chama Supabase em modo mock
 
-    // Restore session on mount
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      setUser(newSession?.user ?? null);
+    // Listen for auth changes — includes INITIAL_SESSION on mount
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === 'INITIAL_SESSION') {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+        setLoading(false);
+      } else if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        setSession(newSession);
+        setUser(newSession?.user ?? null);
+      } else if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUser(null);
+      }
     });
 
     return () => subscription.unsubscribe();
