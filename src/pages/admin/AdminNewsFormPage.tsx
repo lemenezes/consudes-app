@@ -194,21 +194,6 @@ export default function AdminNewsFormPage() {
           <p className="text-xs text-gray-400 mt-1">Apenas letras minúsculas, números e hífens.</p>
         </div>
 
-        {/* Resumo */}
-        <div>
-          <label htmlFor="excerpt" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            Resumo
-          </label>
-          <textarea
-            id="excerpt"
-            name="excerpt"
-            rows={2}
-            value={form.excerpt}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] resize-none focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
-          />
-        </div>
-
         {/* Conteúdo */}
         <div>
           <label htmlFor="content" className="block text-sm font-medium text-[#1F2937] mb-1.5">

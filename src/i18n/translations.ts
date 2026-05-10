@@ -81,6 +81,15 @@ export const translations = {
       title: 'Noticias y eventos',
       subtitle: 'Próximamente publicaremos nuestras últimas novedades aquí.',
     },
+    newsDetail: {
+      home: 'Inicio',
+      heroSubtitle: 'Comunicados, eventos y novedades oficiales de la CONSUDES',
+      backLink: 'Volver a noticias',
+      separator: 'Noticia',
+      noContent: 'Sin contenido disponible.',
+      notFound: 'Noticia no encontrada o no disponible.',
+      readMore: 'Leer más',
+    },
     contact: {
       title: 'Habla con CONSUDES',
       subtitle:
@@ -174,6 +183,15 @@ export const translations = {
       title: 'Notícias e eventos',
       subtitle: 'Em breve publicaremos nossas últimas novidades aqui.',
     },
+    newsDetail: {
+      home: 'Início',
+      heroSubtitle: 'Comunicados, eventos e novidades oficiais da CONSUDES',
+      backLink: 'Voltar para notícias',
+      separator: 'Notícia',
+      noContent: 'Sem conteúdo disponível.',
+      notFound: 'Notícia não encontrada ou não disponível.',
+      readMore: 'Leia mais',
+    },
     contact: {
       title: 'Fale com a CONSUDES',
       subtitle:
@@ -266,6 +284,15 @@ export const translations = {
       label: 'Stay informed',
       title: 'News and events',
       subtitle: 'We will soon publish our latest updates here.',
+    },
+    newsDetail: {
+      home: 'Home',
+      heroSubtitle: 'Official announcements, events and news from CONSUDES',
+      backLink: 'Back to news',
+      separator: 'News',
+      noContent: 'No content available.',
+      notFound: 'News article not found or unavailable.',
+      readMore: 'Read more',
     },
     contact: {
       title: 'Contact CONSUDES',

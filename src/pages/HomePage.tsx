@@ -1,5 +1,8 @@
 import { ArrowRight, Users, BookOpen, HeartHandshake, Globe, Mail, Phone } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
+import { usePublicNews } from '../hooks/usePublicNews';
+import NewsCard from '../components/NewsCard';
 
 const STAT_VALUES = ['60+', '20', '15', '100k+'];
 
@@ -12,6 +15,7 @@ const PROGRAM_ICONS = [
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { news, loading: newsLoading } = usePublicNews({ limit: 3 });
 
   return (
     <>
@@ -178,7 +182,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Notícias placeholder ─────────────────────────────────────────── */}
+      {/* ─── Notícias ─────────────────────────────────────────────────── */}
       <section id="noticias" className="bg-[#F5F7FA] dark:bg-[#0d1624] py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -195,21 +199,50 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-[#0a1e35] rounded-lg overflow-hidden border border-[#0057A8]/10 dark:border-[#0057A8]/25 shadow-sm"
-              >
-                <div className="h-40 bg-[#EAF3FB] dark:bg-[#0d2a47]" />
-                <div className="p-5 space-y-2">
-                  <div className="h-3 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-1/3" />
-                  <div className="h-4 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-full" />
-                  <div className="h-4 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-3/4" />
+          {/* Skeletons durante carregamento */}
+          {newsLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white dark:bg-[#0a1e35] rounded-xl overflow-hidden border border-[#0057A8]/10 dark:border-[#0057A8]/20 shadow-sm animate-pulse">
+                  <div className="h-40 bg-[#EAF3FB] dark:bg-[#0d2a47]" />
+                  <div className="p-5 space-y-3">
+                    <div className="h-2.5 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-1/3" />
+                    <div className="h-4 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-full" />
+                    <div className="h-3 bg-[#EAF3FB] dark:bg-[#0d2a47] rounded w-3/4" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Lista de notícias reais */}
+          {!newsLoading && news.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {news.map((item) => (
+                <NewsCard key={item.id} news={item} compact />
+              ))}
+            </div>
+          )}
+
+          {/* Estado vazio */}
+          {!newsLoading && news.length === 0 && (
+            <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm py-8">
+              {t.news.subtitle}
+            </p>
+          )}
+
+          {/* Ver todas */}
+          {!newsLoading && news.length > 0 && (
+            <div className="text-center mt-10">
+              <Link
+                to="/noticias"
+                className="inline-flex items-center gap-2 border border-[#0057A8]/30 text-[#0057A8] dark:text-[#7ab8f0] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#0057A8]/5 transition-colors text-sm"
+              >
+                Ver todas las noticias
+                <ArrowRight size={15} />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

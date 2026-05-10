@@ -23,6 +23,7 @@ import SouthAmericanGamesPage from './pages/SouthAmericanGamesPage'
 import RankingsPage from './pages/RankingsPage'
 import CalendarPage from './pages/CalendarPage'
 import NewsPage from './pages/NewsPage'
+import NewsDetailPage from './pages/NewsDetailPage'
 import TransparencyPage from './pages/TransparencyPage'
 import ReportsPage from './pages/ReportsPage'
 import GalleryPage from './pages/GalleryPage'
@@ -52,6 +53,7 @@ const router = createBrowserRouter([
       { path: 'calendario', element: <CalendarPage /> },
       // Outros
       { path: 'noticias', element: <NewsPage /> },
+      { path: 'noticias/:slug', element: <NewsDetailPage /> },
       { path: 'transparencia', element: <TransparencyPage /> },
       { path: 'relatorios', element: <ReportsPage /> },
       { path: 'galeria', element: <GalleryPage /> },
