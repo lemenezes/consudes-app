@@ -156,6 +156,28 @@ export const translations = {
       affiliatedCount: 'federaciones afiliadas',
       introHeadline: 'Representando el deporte sordo sudamericano',
     },
+    calendarPage: {
+      subtitle: 'Eventos deportivos e institucionales de la CONSUDES y sus federaciones afiliadas',
+      introHeadline: 'Competencias y eventos del deporte sordo sudamericano',
+      all: 'Todos',
+      filterType: 'Tipo',
+      filterStatus: 'Estado',
+      noEvents: 'Sin eventos',
+      noEventsDesc: 'No hay eventos que coincidan con los filtros seleccionados.',
+      types: {
+        championship: 'Campeonato',
+        interclubs: 'Interclubes',
+        congress: 'Congreso',
+        assembly: 'Asamblea',
+        institutional: 'Evento institucional',
+      },
+      statuses: {
+        upcoming: 'Próximamente',
+        registrationsOpen: 'Inscripciones abiertas',
+        confirmed: 'Confirmado',
+        finished: 'Finalizado',
+      },
+    },
   },
 
   pt: {
@@ -313,6 +335,28 @@ export const translations = {
       affiliatedCount: 'federações afiliadas',
       introHeadline: 'Representando o esporte surdo sul-americano',
     },
+    calendarPage: {
+      subtitle: 'Eventos esportivos e institucionais da CONSUDES e suas federações filiadas',
+      introHeadline: 'Competições e eventos do esporte surdo sul-americano',
+      all: 'Todos',
+      filterType: 'Tipo',
+      filterStatus: 'Status',
+      noEvents: 'Sem eventos',
+      noEventsDesc: 'Nenhum evento corresponde aos filtros selecionados.',
+      types: {
+        championship: 'Campeonato',
+        interclubs: 'Interclubes',
+        congress: 'Congresso',
+        assembly: 'Assembleia',
+        institutional: 'Evento institucional',
+      },
+      statuses: {
+        upcoming: 'Em breve',
+        registrationsOpen: 'Inscrições abertas',
+        confirmed: 'Confirmado',
+        finished: 'Finalizado',
+      },
+    },
   },
 
   en: {
@@ -469,6 +513,28 @@ export const translations = {
       subtitle: 'Member federations of the South American Sports Confederation of the Deaf',
       affiliatedCount: 'affiliated federations',
       introHeadline: 'Representing deaf sport across South America',
+    },
+    calendarPage: {
+      subtitle: 'Sports and institutional events from CONSUDES and its affiliated federations',
+      introHeadline: 'Competitions and events of South American deaf sport',
+      all: 'All',
+      filterType: 'Type',
+      filterStatus: 'Status',
+      noEvents: 'No events',
+      noEventsDesc: 'No events match the selected filters.',
+      types: {
+        championship: 'Championship',
+        interclubs: 'Interclubs',
+        congress: 'Congress',
+        assembly: 'Assembly',
+        institutional: 'Institutional event',
+      },
+      statuses: {
+        upcoming: 'Coming soon',
+        registrationsOpen: 'Registrations open',
+        confirmed: 'Confirmed',
+        finished: 'Finished',
+      },
     },
   },
 } satisfies Record<Lang, unknown>;
