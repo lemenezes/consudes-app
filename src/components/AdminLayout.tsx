@@ -32,13 +32,15 @@ export default function AdminLayout() {
       {/* ── Sidebar desktop ── */}
       <aside className="hidden lg:flex flex-col w-64 bg-[#003B73] text-white shrink-0">
         {/* Logo */}
-        <div className="p-6 border-b border-white/10">
-          <img
-            src="/logo-novo-consudes-removebg-preview-1.png"
-            alt="CONSUDES"
-            className="h-10 w-auto"
-          />
-          <p className="text-[10px] tracking-widest uppercase text-white/40 mt-2 font-['Inter']">
+        <div className="p-6 border-b border-white/10 flex flex-col items-center text-center">
+          <div className="bg-white rounded-xl px-4 py-3 inline-block">
+            <img
+              src="/logo-novo-consudes-removebg-preview-1.png"
+              alt="CONSUDES"
+              className="h-16 w-auto"
+            />
+          </div>
+          <p className="text-[10px] tracking-widest uppercase text-white/40 mt-3 font-['Inter']">
             Painel Administrativo
           </p>
         </div>
@@ -81,11 +83,13 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar mobile */}
         <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#003B73] text-white shrink-0">
-          <img
-            src="/logo-novo-consudes-removebg-preview-1.png"
-            alt="CONSUDES"
-            className="h-8 w-auto"
-          />
+          <div className="bg-white rounded-lg px-2 py-1 inline-block">
+            <img
+              src="/logo-novo-consudes-removebg-preview-1.png"
+              alt="CONSUDES"
+              className="h-8 w-auto"
+            />
+          </div>
           <button
             onClick={() => setMobileOpen((v) => !v)}
             aria-label="Menu"
