@@ -219,17 +219,8 @@ export default function AdminCalendarFormPage() {
               />
             </Field>
 
-            <Field label="Slug" required>
-              <input
-                name="slug"
-                type="text"
-                required
-                value={form.slug}
-                onChange={handleChange}
-                className={inputCls}
-                placeholder="torneo-interclubes-2026"
-              />
-            </Field>
+            {/* Slug — oculto */}
+            <input type="hidden" name="slug" value={form.slug} />
 
             <Field label={ac.descriptionLabel}>
               <textarea
