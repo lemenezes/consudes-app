@@ -1,22 +1,52 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Node, mergeAttributes } from '@tiptap/core';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
+import { ResizableImage } from './ResizableImage';
 import {
   Bold,
   Italic,
+  Underline as UnderlineIcon,
   Link2,
   Link2Off,
   List,
   ListOrdered,
-  Heading2,
-  Heading3,
   RemoveFormatting,
   ImagePlus,
+  Quote,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import InsertImageModal, { MAX_INLINE_IMAGES } from './InsertImageModal';
 import { useAuditLog } from '../hooks/useAuditLog';
+
+// ─── Parágrafo com suporte a variantes semânticas ──────────────────────────────
+const VariantParagraph = Node.create({
+  name: 'paragraph',
+  priority: 1000,
+  group: 'block',
+  content: 'inline*',
+  addAttributes() {
+    return {
+      textSize: {
+        default: null,
+        parseHTML: (el) => (el as HTMLElement).getAttribute('data-size') || null,
+        renderHTML: (attrs) => attrs.textSize ? { 'data-size': attrs.textSize } : {},
+      },
+    };
+  },
+  parseHTML() { return [{ tag: 'p' }]; },
+  renderHTML({ HTMLAttributes }) {
+    const size = HTMLAttributes['data-size'];
+    return ['p', mergeAttributes(HTMLAttributes, size ? { class: `para-${size}` } : {}), 0];
+  },
+});
 
 // ─── Estilos do editor ───────────────────────────────────────────────────────
 // Injetados uma vez via <style> para evitar dependência de CSS externo
@@ -29,20 +59,10 @@ const EDITOR_STYLES = `
     line-height: 1.85;
     color: #1F2937;
   }
-  .tiptap-editor .ProseMirror img {
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-    border-radius: 0.75rem;
-    margin: 1.5rem 0;
-    display: block;
-    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.10);
-  }
-  .tiptap-editor .ProseMirror img.ProseMirror-selectednode {
-    outline: 3px solid #0057A8;
-    outline-offset: 3px;
-  }
+  /* imagens: controladas via ResizableImage NodeView */
   .tiptap-editor .ProseMirror p { margin: 0 0 0.9em; }
+  .tiptap-editor .ProseMirror p.para-small { font-size: 0.825rem; color: #6B7280; }
+  .tiptap-editor .ProseMirror p.para-lead  { font-size: 1.175rem; color: #1F2937; font-weight: 500; }
   .tiptap-editor .ProseMirror h2 {
     font-size: 1.6rem;
     font-weight: 700;
@@ -78,6 +98,17 @@ const EDITOR_STYLES = `
   }
   .tiptap-editor .ProseMirror strong { font-weight: 700; }
   .tiptap-editor .ProseMirror em { font-style: italic; }
+  .tiptap-editor .ProseMirror u { text-decoration: underline; text-underline-offset: 2px; }
+  .tiptap-editor .ProseMirror blockquote {
+    border-left: 3px solid #0057A8;
+    padding: 0.6em 1.2em;
+    margin: 1.2em 0;
+    background: #F0F6FF;
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: #374151;
+    font-style: italic;
+  }
+  .tiptap-editor .ProseMirror blockquote p { margin: 0; }
   .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
     content: attr(data-placeholder);
     float: left;
@@ -136,25 +167,27 @@ function Divider() {
 export default function RichTextEditor({ value, onChange, placeholder, newsId }: Props) {
   const [showImageModal, setShowImageModal] = useState(false);
   const { log } = useAuditLog();
+  // Controla se o conteúdo inicial já foi injetado (evita loop com onUpdate)
+  const initializedRef = useRef(false);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        paragraph: false, // substituído por VariantParagraph
         heading: { levels: [2, 3] },
-        // desativar extensões desnecessárias para reduzir bundle
-        blockquote: false,
         code: false,
         codeBlock: false,
         horizontalRule: false,
         strike: false,
       }),
+      VariantParagraph,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
       }),
-      Image.configure({
-        HTMLAttributes: { class: 'tiptap-inline-img' },
-      }),
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      ResizableImage,
     ],
     content: value || '',
     onUpdate({ editor }) {
@@ -168,6 +201,23 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
       },
     },
   });
+
+  // ── Sincroniza conteúdo quando carregado de forma assíncrona ─────────────
+  // O Tiptap só usa `content` na montagem — se os dados chegam depois (ex: fetch
+  // de edição), o editor precisa ser atualizado manualmente uma única vez.
+  useEffect(() => {
+    if (!editor || initializedRef.current) return;
+    if (!value) return;
+    // Só injeta se o editor ainda estiver vazio
+    const current = editor.getHTML();
+    if (current === '' || current === '<p></p>') {
+      // emitUpdate: false evita disparar onUpdate e causar loop
+      editor.commands.setContent(value, { emitUpdate: false });
+      initializedRef.current = true;
+    } else {
+      initializedRef.current = true;
+    }
+  }, [editor, value]);
 
   // ── Link ─────────────────────────────────────────────────────────────────
   const handleLink = useCallback(() => {
@@ -202,7 +252,7 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
   // Inserir imagem no cursor após upload/url
   const handleImageInsert = async (url: string) => {
-    editor.chain().focus().setImage({ src: url }).run();
+    editor.chain().focus().insertContent({ type: 'image', attrs: { src: url } }).run();
 
     if (newsId) {
       await log({
@@ -223,21 +273,37 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
         {/* ── Toolbar ────────────────────────────────────────────────── */}
         <div className="flex items-center flex-wrap gap-0.5 px-3 py-2 border-b border-gray-100 bg-gray-50/80">
-          {/* Títulos */}
-          <ToolbarBtn
-            title="Título H2"
-            active={editor.isActive('heading', { level: 2 })}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+
+          {/* Tipo de texto — dropdown semântico */}
+          <select
+            value={
+              editor.isActive('heading', { level: 2 }) ? 'h2'
+              : editor.isActive('heading', { level: 3 }) ? 'h3'
+              : editor.getAttributes('paragraph').textSize === 'lead' ? 'lead'
+              : editor.getAttributes('paragraph').textSize === 'small' ? 'small'
+              : 'normal'
+            }
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === 'h2') {
+                editor.chain().focus().setHeading({ level: 2 }).run();
+              } else if (v === 'h3') {
+                editor.chain().focus().setHeading({ level: 3 }).run();
+              } else {
+                editor.chain().focus().setParagraph().run();
+                editor.commands.updateAttributes('paragraph', {
+                  textSize: v === 'normal' ? null : v,
+                });
+              }
+            }}
+            className="h-7 text-[12px] text-gray-600 bg-white border border-gray-200 rounded-md px-2 pr-6 focus:outline-none focus:ring-1 focus:ring-[#0057A8]/50 cursor-pointer appearance-auto"
           >
-            <Heading2 className="w-4 h-4" />
-          </ToolbarBtn>
-          <ToolbarBtn
-            title="Título H3"
-            active={editor.isActive('heading', { level: 3 })}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-          >
-            <Heading3 className="w-4 h-4" />
-          </ToolbarBtn>
+            <option value="normal">Texto normal</option>
+            <option value="small">Pequeno</option>
+            <option value="lead">Destaque</option>
+            <option value="h2">Título H2</option>
+            <option value="h3">Título H3</option>
+          </select>
 
           <Divider />
 
@@ -255,6 +321,38 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
             onClick={() => editor.chain().focus().toggleItalic().run()}
           >
             <Italic className="w-4 h-4" />
+          </ToolbarBtn>
+          <ToolbarBtn
+            title="Sublinhado (Ctrl+U)"
+            active={editor.isActive('underline')}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}
+          >
+            <UnderlineIcon className="w-4 h-4" />
+          </ToolbarBtn>
+
+          <Divider />
+
+          {/* Alinhamento */}
+          <ToolbarBtn
+            title="Alinhar à esquerda"
+            active={editor.isActive({ textAlign: 'left' })}
+            onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          >
+            <AlignLeft className="w-4 h-4" />
+          </ToolbarBtn>
+          <ToolbarBtn
+            title="Centralizar"
+            active={editor.isActive({ textAlign: 'center' })}
+            onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          >
+            <AlignCenter className="w-4 h-4" />
+          </ToolbarBtn>
+          <ToolbarBtn
+            title="Alinhar à direita"
+            active={editor.isActive({ textAlign: 'right' })}
+            onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          >
+            <AlignRight className="w-4 h-4" />
           </ToolbarBtn>
 
           <Divider />
@@ -275,6 +373,15 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
             <ListOrdered className="w-4 h-4" />
           </ToolbarBtn>
 
+          {/* Citação */}
+          <ToolbarBtn
+            title="Citação / destaque"
+            active={editor.isActive('blockquote')}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
+            <Quote className="w-4 h-4" />
+          </ToolbarBtn>
+
           <Divider />
 
           {/* Link */}
@@ -290,8 +397,6 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
             )}
           </ToolbarBtn>
 
-          <Divider />
-
           {/* Imagem inline */}
           <ToolbarBtn
             title={atLimit ? `Limite de ${MAX_INLINE_IMAGES} imagens atingido` : 'Inserir imagem no conteúdo'}
@@ -302,6 +407,24 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
           </ToolbarBtn>
 
           <Divider />
+
+          {/* Desfazer / Refazer */}
+          <ToolbarBtn
+            title="Desfazer (Ctrl+Z)"
+            onClick={() => editor.chain().focus().undo().run()}
+          >
+            <Undo2 className="w-4 h-4" />
+          </ToolbarBtn>
+          <ToolbarBtn
+            title="Refazer (Ctrl+Shift+Z)"
+            onClick={() => editor.chain().focus().redo().run()}
+          >
+            <Redo2 className="w-4 h-4" />
+          </ToolbarBtn>
+
+          <Divider />
+
+          {/* Limpar formatação */}
           <ToolbarBtn
             title="Limpar formatação"
             onClick={() =>
@@ -313,7 +436,7 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
         </div>
 
         {/* ── Área de texto ───────────────────────────────────────────── */}
-        <div className="tiptap-editor max-h-[560px] overflow-y-auto">
+        <div className="tiptap-editor max-h-[560px] overflow-y-auto overflow-x-visible">
           <EditorContent editor={editor} />
         </div>
       </div>

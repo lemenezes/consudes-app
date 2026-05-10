@@ -235,6 +235,8 @@ export default function NewsDetailPage() {
           <div className="
             [&_p]:text-[#374151] dark:[&_p]:text-slate-300
               [&_p]:text-[1.0625rem] [&_p]:leading-[1.9] [&_p]:mb-5 [&_p]:last:mb-0
+            [&_p.para-small]:text-[0.875rem] [&_p.para-small]:text-[#6B7280] dark:[&_p.para-small]:text-slate-400 [&_p.para-small]:leading-[1.7]
+            [&_p.para-lead]:text-[1.2rem] [&_p.para-lead]:font-medium [&_p.para-lead]:leading-[1.8] [&_p.para-lead]:text-[#1F2937] dark:[&_p.para-lead]:text-slate-100
             [&_h2]:font-['Cormorant_Garamond'] [&_h2]:font-semibold
               [&_h2]:text-[1.65rem] sm:[&_h2]:text-[1.85rem] [&_h2]:leading-tight
               [&_h2]:text-[#1F2937] dark:[&_h2]:text-white
