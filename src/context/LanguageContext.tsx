@@ -9,8 +9,23 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
+const STORAGE_KEY = 'consudes_lang';
+
+function getSavedLang(): Lang {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved === 'es' || saved === 'pt' || saved === 'en') return saved;
+  } catch {}
+  return 'es';
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>('es');
+  const [lang, setLangState] = useState<Lang>(getSavedLang);
+
+  const setLang = (l: Lang) => {
+    try { localStorage.setItem(STORAGE_KEY, l); } catch {}
+    setLangState(l);
+  };
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t: translations[lang] }}>

@@ -1,4 +1,5 @@
 import type { Federation } from '../data/federationsData';
+import { useLanguage } from '../context/LanguageContext';
 
 /* ── Ícones SVG inline (redes sociais não estão no lucide-react) ── */
 const IconGlobe = () => (
@@ -66,15 +67,23 @@ interface Props {
 }
 
 export default function FederationCard({ federation: f }: Props) {
+  const { lang } = useLanguage();
+  const countryName = lang === 'es' ? (f.countryEs ?? f.country)
+    : lang === 'en' ? (f.countryEn ?? f.country)
+    : f.country;
+  const fullName =
+    lang === 'es' ? (f.fullNameEs ?? f.fullName) :
+    lang === 'pt' ? (f.fullNamePt ?? f.fullName) :
+    (f.fullNameEn ?? f.fullNameEs ?? f.fullName);
   const socials = buildSocials(f.socials);
 
   return (
-    <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col">
+    <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-[#D9A441]/50 transition-all duration-300 overflow-hidden flex flex-col min-h-[210px]">
 
       {/* ── Stripe de cor no topo ── */}
       <div className="h-1 w-full bg-gradient-to-r from-[#003B73] via-[#0057A8] to-[#D9A441]" />
 
-      <div className="p-7 flex flex-col gap-6 flex-1">
+      <div className="p-5 flex flex-col gap-4 flex-1">
 
         {/* ── Linha principal: bandeira | info | logo ── */}
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -88,27 +97,27 @@ export default function FederationCard({ federation: f }: Props) {
           <div className="flex-1 text-center sm:text-left min-w-0">
             {/* País + sigla */}
             <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-              <h2 className="text-xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] leading-none">
-                {f.country}
+              <h2 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] leading-none">
+                {countryName}
               </h2>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#003B73]/8 text-[10px] font-bold tracking-widest text-[#003B73] uppercase">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold tracking-widest text-blue-700/70 uppercase">
                 {f.acronym}
               </span>
             </div>
 
             {/* Nome completo */}
-            <p className="text-sm text-gray-400 leading-snug">
-              {f.fullName}
+            <p className="text-sm text-gray-600 leading-snug text-pretty">
+              {fullName}
             </p>
           </div>
 
           {/* Logo da federação */}
           {f.logo ? (
-            <div className="shrink-0 w-20 h-14 sm:w-16 sm:h-12 flex items-center justify-center">
+            <div className="shrink-0 w-28 h-20 sm:w-24 sm:h-20 flex items-center justify-center p-1">
               <img
                 src={f.logo}
                 alt={`Logo ${f.acronym}`}
-                className="max-w-full max-h-full object-contain"
+                className="w-full h-full object-contain object-center"
               />
             </div>
           ) : (
@@ -122,7 +131,7 @@ export default function FederationCard({ federation: f }: Props) {
 
         {/* ── Ícones sociais ── */}
         {socials.length > 0 && (
-          <div className="flex items-center justify-center sm:justify-start gap-1 pt-2 border-t border-gray-50">
+          <div className="flex items-center justify-center sm:justify-start gap-0.5 pt-2 border-t border-gray-100">
             {socials.map((link) => (
               <a
                 key={link.href}
@@ -130,7 +139,8 @@ export default function FederationCard({ federation: f }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={link.label}
-                className="p-2 rounded-lg text-gray-300 hover:text-[#0057A8] hover:bg-[#0057A8]/5 transition-colors duration-150"
+                title={link.label}
+                className="p-2 rounded-lg text-gray-400 hover:text-[#0057A8] hover:bg-[#0057A8]/8 hover:scale-110 transition-all duration-150"
               >
                 {link.icon}
               </a>
@@ -138,13 +148,9 @@ export default function FederationCard({ federation: f }: Props) {
           </div>
         )}
 
-        {/* Sem redes — espaçador sutil */}
+        {/* Sem redes — linha de fechamento visual */}
         {socials.length === 0 && (
-          <div className="border-t border-gray-50 pt-2">
-            <p className="text-[11px] text-gray-200 text-center sm:text-left">
-              —
-            </p>
-          </div>
+          <div className="border-t border-gray-100" />
         )}
       </div>
     </article>

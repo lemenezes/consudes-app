@@ -151,6 +151,11 @@ export const translations = {
         errorInvalid: 'Credenciales inválidas. Verifique correo y contraseña.',
       },
     },
+    federationsPage: {
+      subtitle: 'Federaciones afiliadas a la Confederación Sudamericana Deportiva de Sordos',
+      affiliatedCount: 'federaciones afiliadas',
+      introHeadline: 'Representando el deporte sordo sudamericano',
+    },
   },
 
   pt: {
@@ -303,6 +308,11 @@ export const translations = {
         errorInvalid: 'Credenciais inválidas. Verifique e-mail e senha.',
       },
     },
+    federationsPage: {
+      subtitle: 'Federações filiadas à Confederação Sul-Americana Desportiva de Surdos',
+      affiliatedCount: 'federações afiliadas',
+      introHeadline: 'Representando o esporte surdo sul-americano',
+    },
   },
 
   en: {
@@ -454,6 +464,11 @@ export const translations = {
         errorUnauthorized: 'Access not authorized for this email.',
         errorInvalid: 'Invalid credentials. Check email and password.',
       },
+    },
+    federationsPage: {
+      subtitle: 'Member federations of the South American Sports Confederation of the Deaf',
+      affiliatedCount: 'affiliated federations',
+      introHeadline: 'Representing deaf sport across South America',
     },
   },
 } satisfies Record<Lang, unknown>;

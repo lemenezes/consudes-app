@@ -21,7 +21,7 @@ export default function PageHero({ label, title, subtitle }: PageHeroProps) {
           {title}
         </h1>
         {subtitle && (
-          <p className="text-white/60 text-base sm:text-lg max-w-xl mx-auto font-light">
+          <p className="text-white/60 text-base sm:text-lg max-w-2xl mx-auto font-light text-balance">
             {subtitle}
           </p>
         )}
