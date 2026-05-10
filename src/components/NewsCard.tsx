@@ -3,12 +3,6 @@ import { Calendar, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import type { NewsListItem } from '../services/newsPublicService';
 
-const LANG_LABEL: Record<string, string> = {
-  es: 'ES',
-  pt: 'PT',
-  en: 'EN',
-};
-
 function formatDate(iso: string | null): string {
   if (!iso) return '';
   return new Date(iso).toLocaleDateString('es', {
@@ -26,7 +20,7 @@ interface NewsCardProps {
 
 export default function NewsCard({ news, compact = false }: NewsCardProps) {
   const { t } = useLanguage();
-  const { title, slug, cover_url, lang, published_at, content } = news;
+  const { title, slug, cover_url, published_at, content } = news;
 
   return (
     <Link
@@ -54,12 +48,6 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
             </svg>
           </div>
-        )}
-        {/* Badge de idioma */}
-        {lang && lang !== 'es' && (
-          <span className="absolute top-2 right-2 bg-[#003B73]/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded tracking-wider">
-            {LANG_LABEL[lang] ?? lang.toUpperCase()}
-          </span>
         )}
         {/* Faixa dourada bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-[#D9A441]/0 via-[#D9A441]/60 to-[#D9A441]/0 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -1,15 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, ArrowLeft, Globe } from 'lucide-react';
+import { Calendar, ArrowLeft, Languages } from 'lucide-react';
 import { getPublishedNewsBySlug } from '../services/newsPublicService';
 import { useLanguage } from '../context/LanguageContext';
+import { translatePlain, translateHTML } from '../utils/translateContent';
 import type { NewsRow } from '../lib/database.types';
-
-const LANG_LABEL: Record<string, string> = {
-  es: 'Español',
-  pt: 'Português',
-  en: 'English',
-};
 
 function formatDate(iso: string | null, locale: string): string {
   if (!iso) return '';
@@ -30,6 +25,13 @@ export default function NewsDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // ── Tradução automática ────────────────────────────────────────────────────
+  const [displayTitle, setDisplayTitle] = useState('');
+  const [displayContent, setDisplayContent] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
+  // Cache: chave "newsId:lang" → { title, content }
+  const translationCache = useRef<Map<string, { title: string; content: string }>>(new Map());
+
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
@@ -47,6 +49,46 @@ export default function NewsDetailPage() {
 
     return () => { document.title = 'CONSUDES'; };
   }, [slug]);
+
+  useEffect(() => {
+    if (!news) return;
+
+    // Espanhol: exibe original diretamente
+    if (lang === 'es') {
+      setDisplayTitle(news.title);
+      setDisplayContent(news.content ?? '');
+      setIsTranslating(false);
+      return;
+    }
+
+    const cacheKey = `${news.id}:${lang}`;
+    const cached = translationCache.current.get(cacheKey);
+    if (cached) {
+      setDisplayTitle(cached.title);
+      setDisplayContent(cached.content);
+      return;
+    }
+
+    // Exibe o original enquanto traduz
+    setDisplayTitle(news.title);
+    setDisplayContent(news.content ?? '');
+    setIsTranslating(true);
+
+    let cancelled = false;
+    (async () => {
+      const [title, content] = await Promise.all([
+        translatePlain(news.title, lang),
+        translateHTML(news.content ?? '', lang),
+      ]);
+      if (cancelled) return;
+      translationCache.current.set(cacheKey, { title, content });
+      setDisplayTitle(title);
+      setDisplayContent(content);
+      setIsTranslating(false);
+    })();
+
+    return () => { cancelled = true; };
+  }, [news, lang]);
 
   // ── Carregando ─────────────────────────────────────────────────────────────
   if (loading) {
@@ -114,10 +156,10 @@ export default function NewsDetailPage() {
 
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-16 sm:py-20 text-center">
           <h1 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.1] tracking-tight mb-4">
-            Noticias
+            {t.nav.news}
           </h1>
           <p className="text-white/60 text-base sm:text-lg max-w-xl mx-auto font-light">
-            Comunicados, eventos y novedades oficiales de la CONSUDES
+            {t.newsDetail.heroSubtitle}
           </p>
         </div>
 
@@ -130,73 +172,101 @@ export default function NewsDetailPage() {
       </section>
 
       {/* ── Corpo da matéria ──────────────────────────────────────────────── */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-12 pb-16 sm:pt-14 sm:pb-20">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-20">
 
-        {/* 1. Breadcrumb */}
-        <nav className="flex items-center gap-1 text-[#1F2937]/35 dark:text-white/25 text-[11px] mb-5 flex-wrap" aria-label="Navegación">
-          <Link to="/" className="hover:text-[#0057A8] dark:hover:text-white/70 transition-colors">{t.newsDetail.home}</Link>
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1 text-[#1F2937]/30 dark:text-white/20 text-[11px] mb-8 flex-wrap" aria-label="Navegación">
+          <Link to="/" className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">{t.newsDetail.home}</Link>
           <span>/</span>
-          <Link to="/noticias" className="hover:text-[#0057A8] dark:hover:text-white/70 transition-colors">{t.nav.news}</Link>
+          <Link to="/noticias" className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">{t.nav.news}</Link>
           <span>/</span>
-          <span className="text-[#1F2937]/60 dark:text-white/50 truncate max-w-[200px]">{news.title}</span>
+          <span className="text-[#1F2937]/50 dark:text-white/40 truncate max-w-[200px]">{news.title}</span>
         </nav>
 
-        {/* 2. Data + idioma */}
-        <div className="flex flex-wrap items-center gap-4 mb-4">
-          {news.published_at && (
-            <div className="flex items-center gap-1.5 text-[#0057A8] dark:text-[#7ab8f0] text-xs font-medium">
-              <Calendar className="w-3.5 h-3.5 shrink-0" />
-              <time dateTime={news.published_at}>
-                {formatDate(news.published_at, lang)}
-              </time>
-            </div>
-          )}
-          {news.lang && news.lang !== 'es' && (
-            <div className="flex items-center gap-1 text-[#1F2937]/40 dark:text-white/30 text-xs">
-              <Globe className="w-3.5 h-3.5 shrink-0" />
-              {LANG_LABEL[news.lang] ?? news.lang}
-            </div>
-          )}
-        </div>
+        {/* ── Bloco editorial: título + meta + imagem ── */}
+        <header className="mb-10">
+          {/* Título */}
+          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1F2937] dark:text-white leading-[1.12] tracking-tight mb-5">
+            {displayTitle || news.title}
+          </h2>
 
-        {/* 3. Título da notícia */}
-        <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-[2.6rem] font-semibold text-[#1F2937] dark:text-white leading-[1.15] tracking-tight mb-4">
-          {news.title}
-        </h2>
+          {/* Meta: data + banner de tradução */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {news.published_at && (
+              <div className="flex items-center gap-1.5 text-[#0057A8] dark:text-[#7ab8f0] text-xs font-medium">
+                <Calendar className="w-3.5 h-3.5 shrink-0" />
+                <time dateTime={news.published_at}>
+                  {formatDate(news.published_at, lang)}
+                </time>
+              </div>
+            )}
+            {lang !== 'es' && (
+              <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                isTranslating
+                  ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                  : 'bg-[#0057A8]/5 dark:bg-[#0057A8]/10 text-[#0057A8]/60 dark:text-[#7ab8f0]/50 border-[#0057A8]/10 dark:border-[#7ab8f0]/10'
+              }`}>
+                <Languages className={`w-3 h-3 shrink-0 ${isTranslating ? 'animate-pulse' : ''}`} />
+                {isTranslating
+                  ? (lang === 'pt' ? 'Traduzindo…' : 'Translating…')
+                  : (lang === 'pt' ? 'Tradução automática' : 'Auto-translated')
+                }
+              </div>
+            )}
+          </div>
 
-        {/* 5. Imagem de capa — uma única vez */}
-        {news.cover_url && (
-          <figure className="rounded-xl overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/5 mt-6 mb-8">
-            <img
-              src={news.cover_url}
-              alt={news.title}
-              className="w-full object-cover max-h-[480px]"
-            />
-          </figure>
-        )}
-        {/* 6. Conteúdo */}
-        {news.content ? (
-          <div
-            className="
-              prose prose-slate dark:prose-invert max-w-none
-              prose-headings:font-['Cormorant_Garamond'] prose-headings:font-semibold
-              prose-h2:text-2xl prose-h3:text-xl
-              prose-a:text-[#0057A8] dark:prose-a:text-[#7ab8f0] prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-lg prose-img:shadow-sm
-              prose-p:text-[#1F2937]/80 dark:prose-p:text-slate-300 prose-p:leading-relaxed
-              prose-li:text-[#1F2937]/80 dark:prose-li:text-slate-300
-              text-base
-            "
-            dangerouslySetInnerHTML={{ __html: news.content }}
-          />
+          {/* Imagem de capa — parte do cabeçalho editorial */}
+          {news.cover_url && (
+            <figure className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/5">
+              <img
+                src={news.cover_url}
+                alt={displayTitle || news.title}
+                className="w-full object-cover max-h-[500px]"
+              />
+            </figure>
+          )}
+        </header>
+
+        {/* Linha divisória sutil antes do conteúdo */}
+        <div className="w-12 h-0.5 bg-[#D9A441]/50 mb-10" />
+
+        {/* ── Conteúdo da matéria ── */}
+        {displayContent ? (
+          <div className="
+            [&_p]:text-[#374151] dark:[&_p]:text-slate-300
+              [&_p]:text-[1.0625rem] [&_p]:leading-[1.9] [&_p]:mb-5 [&_p]:last:mb-0
+            [&_h2]:font-['Cormorant_Garamond'] [&_h2]:font-semibold
+              [&_h2]:text-[1.65rem] sm:[&_h2]:text-[1.85rem] [&_h2]:leading-tight
+              [&_h2]:text-[#1F2937] dark:[&_h2]:text-white
+              [&_h2]:mt-9 [&_h2]:mb-4
+              [&_h2]:pb-2 [&_h2]:border-b [&_h2]:border-[#0057A8]/15 dark:[&_h2]:border-white/10
+            [&_h3]:font-['Cormorant_Garamond'] [&_h3]:font-semibold
+              [&_h3]:text-[1.3rem] sm:[&_h3]:text-[1.45rem] [&_h3]:leading-snug
+              [&_h3]:text-[#1F2937] dark:[&_h3]:text-white
+              [&_h3]:mt-7 [&_h3]:mb-3
+            [&_strong]:font-bold [&_strong]:text-[#1F2937] dark:[&_strong]:text-white
+            [&_em]:italic [&_em]:text-[#374151]/80 dark:[&_em]:text-slate-400
+            [&_a]:text-[#0057A8] dark:[&_a]:text-[#7ab8f0]
+              [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2
+              [&_a]:decoration-[#0057A8]/30 dark:[&_a]:decoration-[#7ab8f0]/30
+              hover:[&_a]:decoration-[#0057A8] dark:hover:[&_a]:decoration-[#7ab8f0]
+              [&_a]:transition-colors
+            [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-5 [&_ul]:space-y-2
+            [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-5 [&_ol]:space-y-2
+            [&_li]:text-[#374151] dark:[&_li]:text-slate-300
+              [&_li]:text-[1.0625rem] [&_li]:leading-[1.75]
+            [&_img]:rounded-xl [&_img]:shadow-sm [&_img]:my-6 [&_img]:w-full
+          ">
+            <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+          </div>
         ) : (
           <p className="text-[#1F2937]/40 dark:text-white/30 text-sm italic">
             {t.newsDetail.noContent}
           </p>
         )}
 
-        {/* Rodapé */}
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-white/10 flex items-center justify-between flex-wrap gap-4">
+        {/* ── Rodapé da matéria ── */}
+        <div className="mt-16 pt-8 border-t border-gray-200 dark:border-white/10 flex items-center justify-between flex-wrap gap-4">
           <Link
             to="/noticias"
             className="inline-flex items-center gap-2 text-[#0057A8] dark:text-[#7ab8f0] text-sm font-semibold hover:underline"
@@ -204,10 +274,10 @@ export default function NewsDetailPage() {
             <ArrowLeft className="w-4 h-4" />
             {t.newsDetail.backLink}
           </Link>
-          <div className="flex items-center gap-2 text-[#1F2937]/25 dark:text-white/15 text-xs">
-            <span className="w-5 h-px bg-[#D9A441]/40" />
+          <div className="flex items-center gap-2 text-[#1F2937]/20 dark:text-white/10 text-xs">
+            <span className="w-6 h-px bg-[#D9A441]/50" />
             CONSUDES
-            <span className="w-5 h-px bg-[#D9A441]/40" />
+            <span className="w-6 h-px bg-[#D9A441]/50" />
           </div>
         </div>
 

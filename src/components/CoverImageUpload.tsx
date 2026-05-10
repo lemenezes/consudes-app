@@ -107,11 +107,11 @@ export default function CoverImageUpload({
     const src = localPreview || value;
     return (
       <div>
-        <div className="relative group rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
+        <div className="relative group rounded-xl overflow-hidden border border-gray-100 bg-gray-50 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_32px_rgba(0,0,0,0.13)] transition-shadow duration-300">
           <img
             src={src}
             alt="Capa"
-            className="w-full max-h-72 object-contain bg-gray-100"
+            className="w-full max-h-72 object-contain bg-gray-100 transition-transform duration-500 group-hover:scale-[1.01]"
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
           />
           {/* Barra de progresso durante upload */}
@@ -124,7 +124,7 @@ export default function CoverImageUpload({
           )}
           {/* Overlay de ações (só quando não está enviando) */}
           {!uploading && (
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-300 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
               <button
                 type="button"
                 disabled={removing}
@@ -173,8 +173,8 @@ export default function CoverImageUpload({
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={handleDrop}
-        className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed h-44 cursor-pointer transition-colors
-          ${dragging ? 'border-[#0057A8] bg-[#0057A8]/5' : 'border-gray-200 bg-[#F5F7FA] hover:border-[#0057A8]/50 hover:bg-[#0057A8]/3'}
+        className={`relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed h-52 cursor-pointer transition-all duration-200
+          ${dragging ? 'border-[#0057A8] bg-[#0057A8]/5 shadow-[0_0_0_4px_rgba(0,87,168,0.08)]' : 'border-gray-200 bg-gray-50/60 hover:border-[#0057A8]/50 hover:bg-[#0057A8]/3 hover:shadow-sm'}
           ${uploading ? 'pointer-events-none opacity-70' : ''}
         `}
       >

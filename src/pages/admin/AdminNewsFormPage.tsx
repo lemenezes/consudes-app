@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import {
@@ -9,8 +9,10 @@ import {
 } from '../../services/newsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import CoverImageUpload from '../../components/CoverImageUpload';
+import RichTextEditor from '../../components/RichTextEditor';
+import { getOrphanedInlineUrls, getNewlyAddedInlineUrls, deleteInlineImageUrls } from '../../utils/inlineImageCleanup';
 import type { NewsFormData } from '../../services/newsService';
-import type { PublishStatus, Lang } from '../../lib/database.types';
+import type { PublishStatus } from '../../lib/database.types';
 
 const EMPTY: NewsFormData = {
   title: '',
@@ -21,12 +23,6 @@ const EMPTY: NewsFormData = {
   lang: 'es',
   status: 'draft',
 };
-
-const LANG_OPTIONS: { value: Lang; label: string }[] = [
-  { value: 'es', label: 'Español' },
-  { value: 'pt', label: 'Português' },
-  { value: 'en', label: 'English' },
-];
 
 const STATUS_OPTIONS: { value: PublishStatus; label: string }[] = [
   { value: 'draft', label: 'Rascunho' },
@@ -47,6 +43,9 @@ export default function AdminNewsFormPage() {
   const [error, setError] = useState<string | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
 
+  // Conteúdo original carregado do banco — usado para detectar imagens órfãs
+  const originalContentRef = useRef<string>('');
+
   // ── Carregar dados para edição ─────────────────────────────────────────
   useEffect(() => {
     if (!id) return;
@@ -61,6 +60,7 @@ export default function AdminNewsFormPage() {
         lang: data.lang,
         status: data.status,
       });
+      originalContentRef.current = data.content ?? '';
       setPreviousStatus(data.status);
       setSlugEdited(true); // slug já existe, não sobrescrever
       setLoading(false);
@@ -81,6 +81,16 @@ export default function AdminNewsFormPage() {
       if (name === 'slug') setSlugEdited(true);
       return next;
     });
+  };
+
+  // ── Cancelar \u2014 limpa uploads n\u00e3o salvos ───────────────────────────────────
+  const handleCancel = async () => {
+    // Imagens adicionadas nesta sess\u00e3o mas ainda n\u00e3o salvas
+    const toDelete = getNewlyAddedInlineUrls(originalContentRef.current, form.content);
+    if (toDelete.length) {
+      await deleteInlineImageUrls(toDelete);
+    }
+    navigate('/admin/noticias');
   };
 
   // ── Validação ──────────────────────────────────────────────────────────
@@ -112,6 +122,15 @@ export default function AdminNewsFormPage() {
           : 'edit_news';
 
       await log({ action, entity_type: 'news', entity_id: data?.id, entity_title: form.title });
+
+      // Limpar imagens inline removidas durante a edição
+      const orphaned = getOrphanedInlineUrls(originalContentRef.current, form.content);
+      if (orphaned.length) {
+        await deleteInlineImageUrls(orphaned, (url) => {
+          log({ action: 'delete_image', entity_type: 'news', entity_id: data?.id, entity_title: url });
+        });
+      }
+      originalContentRef.current = form.content;
     } else {
       const { data, error } = await createNews(form);
       if (error) { setError(error); setSaving(false); return; }
@@ -136,9 +155,9 @@ export default function AdminNewsFormPage() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-6xl">
       {/* Cabeçalho */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-8">
         <Link
           to="/admin/noticias"
           className="p-1.5 rounded-lg text-gray-400 hover:text-[#0057A8] hover:bg-[#0057A8]/5 transition-colors"
@@ -147,130 +166,117 @@ export default function AdminNewsFormPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
         </Link>
-        <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-          {isEditing ? 'Editar notícia' : 'Nova notícia'}
-        </h1>
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-0.5">
+            {isEditing ? 'Editar notícia' : 'Nova notícia'}
+          </p>
+          <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] leading-none">
+            {form.title || <span className="text-gray-300">Sem título</span>}
+          </h1>
+        </div>
       </div>
 
       {/* Erro */}
       {error && (
-        <div role="alert" className="mb-5 px-4 py-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-700">
+        <div role="alert" className="mb-6 px-4 py-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        {/* Título */}
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            Título <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            required
-            value={form.title}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
-          />
-        </div>
+      <form onSubmit={handleSubmit} noValidate>
+        {/* Slug — oculto */}
+        <input type="hidden" name="slug" value={form.slug} />
 
-        {/* Slug */}
-        <div>
-          <label htmlFor="slug" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            Slug <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="slug"
-            name="slug"
-            type="text"
-            required
-            value={form.slug}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] font-mono transition-colors"
-            placeholder="url-da-noticia"
-          />
-          <p className="text-xs text-gray-400 mt-1">Apenas letras minúsculas, números e hífens.</p>
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
 
-        {/* Conteúdo */}
-        <div>
-          <label htmlFor="content" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            Conteúdo
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            rows={10}
-            value={form.content}
-            onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] resize-y focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] font-mono transition-colors"
-          />
-        </div>
+          {/* ── COLUNA PRINCIPAL ─────────────────────────────────────── */}
+          <div className="space-y-5">
 
-        {/* Imagem de capa */}
-        <div>
-          <label className="block text-sm font-medium text-[#1F2937] mb-1.5">
-            Imagem de capa
-          </label>
-          <CoverImageUpload
-            value={form.cover_url}
-            onChange={(url) => setForm((prev) => ({ ...prev, cover_url: url }))}
-          />
-        </div>
+            {/* TÍTULO — input editorial grande */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+              <label htmlFor="title" className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">
+                Título <span className="text-red-400">*</span>
+              </label>
+              <input
+                id="title"
+                name="title"
+                type="text"
+                required
+                value={form.title}
+                onChange={handleChange}
+                placeholder="Escreva o título da notícia…"
+                className="w-full text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] bg-transparent border-0 focus:outline-none placeholder:text-gray-300 leading-snug"
+              />
+            </div>
 
-        {/* Idioma + Status */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="lang" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-              Idioma
-            </label>
-            <select
-              id="lang"
-              name="lang"
-              value={form.lang}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
-            >
-              {LANG_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
+            {/* IMAGEM DE CAPA */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-6 py-3 border-b border-gray-50 bg-gray-50/60">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Imagem de capa</span>
+              </div>
+              <div className="p-6">
+                <CoverImageUpload
+                  value={form.cover_url}
+                  onChange={(url) => setForm((prev) => ({ ...prev, cover_url: url }))}
+                />
+              </div>
+            </div>
+
+            {/* CONTEÚDO EDITORIAL — protagonista */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.07)] overflow-hidden">
+              <div className="px-6 py-3.5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">Conteúdo editorial</span>
+                <span className="text-[10px] text-gray-300 font-medium">Rich Text</span>
+              </div>
+              <div className="p-4">
+                <RichTextEditor
+                  value={form.content}
+                  onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
+                  placeholder="Escreva o conteúdo da notícia…"
+                />
+              </div>
+            </div>
+
+            {/* AÇÕES + STATUS — ao final do fluxo editorial */}
+            <div className="pt-2 pb-8 space-y-3">
+              {/* Status — acima das ações */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-gray-400">Status:</span>
+                <select
+                  id="status"
+                  name="status"
+                  value={form.status}
+                  onChange={handleChange}
+                  className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-white focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
+                >
+                  {STATUS_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              {/* Botões */}
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-[#1F2937] hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-8 py-3 rounded-xl text-sm font-semibold bg-[#0057A8] text-white hover:bg-[#004a8f] shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+                >
+                  {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Publicar notícia'}
+                </button>
+              </div>
+            </div>
+
           </div>
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-[#1F2937] mb-1.5">
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
-            >
-              {STATUS_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
 
-        {/* Ações */}
-        <div className="flex items-center justify-end gap-3 pt-2">
-          <Link
-            to="/admin/noticias"
-            className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
-          >
-            Cancelar
-          </Link>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-5 py-2.5 rounded-lg text-sm font-semibold bg-[#D9A441] text-[#1F2937] hover:bg-[#c8942e] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-          >
-            {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Criar notícia'}
-          </button>
+          {/* ── SIDEBAR vazia — reservada para metadados futuros ─────── */}
+          <div className="hidden lg:block" />
         </div>
       </form>
     </div>
