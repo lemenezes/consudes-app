@@ -8,6 +8,8 @@ import AdminLoginPage from './pages/admin/AdminLoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminNewsListPage from './pages/admin/AdminNewsListPage'
 import AdminNewsFormPage from './pages/admin/AdminNewsFormPage'
+import AdminCalendarListPage from './pages/admin/AdminCalendarListPage'
+import AdminCalendarFormPage from './pages/admin/AdminCalendarFormPage'
 import HomePage from './pages/HomePage'
 import HistoryPage from './pages/HistoryPage'
 import MissionPage from './pages/MissionPage'
@@ -73,6 +75,9 @@ const router = createBrowserRouter([
       { path: 'noticias', element: <AdminNewsListPage /> },
       { path: 'noticias/nova', element: <AdminNewsFormPage /> },
       { path: 'noticias/:id/editar', element: <AdminNewsFormPage /> },
+      { path: 'calendario', element: <AdminCalendarListPage /> },
+      { path: 'calendario/novo', element: <AdminCalendarFormPage /> },
+      { path: 'calendario/:id/editar', element: <AdminCalendarFormPage /> },
     ],
   },
 ])

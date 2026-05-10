@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
   MapPin,
   HelpCircle,
@@ -11,12 +11,51 @@ import {
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
 import EmptyState from '../components/EmptyState';
-import {
-  calendarEvents,
-  type EventType,
-  type EventStatus,
-  type DatePrecision,
-} from '../data/calendarData';
+import { listPublishedCalendarEvents } from '../services/calendarService';
+import { calendarEvents as mockEvents } from '../data/calendarData';
+import type { CalendarEventRow, CalendarEventType, CalendarEventStatus, CalendarEventCategory } from '../lib/database.types';
+
+/* ── Conversão: dado mock → CalendarEventRow ─────────────────────── */
+function mockToRow(m: (typeof mockEvents)[number]): CalendarEventRow {
+  const statusMap: Record<string, CalendarEventStatus> = {
+    upcoming: 'upcoming',
+    registrationsOpen: 'registrations_open',
+    confirmed: 'confirmed',
+    finished: 'finished',
+  };
+  const catMap: Record<string, CalendarEventCategory> = {
+    Interclubes: 'interclubes',
+    'Sub-21': 'sub21',
+    Adulto: 'adulto',
+    Institucional: 'institucional',
+  };
+  return {
+    id: m.id,
+    title: m.title,
+    slug: m.id,
+    description: m.description ?? null,
+    full_description: null,
+    start_date: m.startDate,
+    end_date: m.endDate !== m.startDate ? m.endDate : null,
+    date_precision: m.datePrecision,
+    country: m.country,
+    city: m.city ?? null,
+    venue: null,
+    location_open: m.locationOpen ?? false,
+    sport: m.sport,
+    category: (m.category ? (catMap[m.category] ?? 'outro') : 'outro') as CalendarEventCategory,
+    event_type: m.type as CalendarEventType,
+    event_status: statusMap[m.status] ?? 'upcoming',
+    federation: m.federation ?? null,
+    link: m.link ?? null,
+    cover_url: null,
+    status: 'published',
+    featured: false,
+    sort_order: 0,
+    created_at: '',
+    updated_at: '',
+  };
+}
 
 /* ── Helpers de locale ───────────────────────────────────────────── */
 function getLocale(lang: string) {
@@ -24,80 +63,76 @@ function getLocale(lang: string) {
 }
 
 /* ── Bloco de data lateral ───────────────────────────────────────── */
-interface DateBlock { primary: string; secondary: string | null }
-
 function getDateBlock(
   startDate: string,
-  endDate: string,
-  precision: DatePrecision,
+  endDate: string | null,
+  precision: string,
   lang: string,
-): DateBlock {
+) {
   const locale = getLocale(lang);
   const s = new Date(startDate + 'T12:00:00');
-  const e = new Date(endDate   + 'T12:00:00');
+  const e = endDate ? new Date(endDate + 'T12:00:00') : null;
 
-  if (precision === 'full') {
+  if (precision === 'full' && e) {
     const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
-    const dayPrimary = sameMonth && startDate !== endDate
-      ? `${s.getDate()}–${e.getDate()}`
-      : String(s.getDate());
+    const dayPrimary = sameMonth ? `${s.getDate()}\u2013${e.getDate()}` : String(s.getDate());
     return {
-      primary:   dayPrimary,
+      primary: dayPrimary,
       secondary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
     };
   }
-
+  if (precision === 'full') {
+    return {
+      primary: String(s.getDate()),
+      secondary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
+    };
+  }
   if (precision === 'month') {
     return {
-      primary:   s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
+      primary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
       secondary: String(s.getFullYear()),
     };
   }
-
   return { primary: String(s.getFullYear()), secondary: null };
 }
 
-/* ── Texto de data legível ───────────────────────────────────────── */
 function formatDateRange(
   startDate: string,
-  endDate: string,
-  precision: DatePrecision,
+  endDate: string | null,
+  precision: string,
   lang: string,
 ): string {
   const locale = getLocale(lang);
   const s = new Date(startDate + 'T12:00:00');
-  const e = new Date(endDate   + 'T12:00:00');
+  const e = endDate ? new Date(endDate + 'T12:00:00') : null;
 
-  if (precision === 'year')  return String(s.getFullYear());
+  if (precision === 'year') return String(s.getFullYear());
   if (precision === 'month') return s.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
-
-  if (startDate === endDate)
+  if (!e || startDate === endDate)
     return s.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
 
   const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
   return sameMonth
-    ? `${s.getDate()}–${e.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`
-    : `${s.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} – ${e.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    ? `${s.getDate()}\u2013${e.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`
+    : `${s.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} \u2013 ${e.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`;
 }
 
-/* ── Chave + rótulo de agrupamento ───────────────────────────────── */
-function getGroupKey(ev: typeof calendarEvents[number]): string {
-  const d = new Date(ev.startDate + 'T12:00:00');
-  if (ev.datePrecision === 'year') return `year:${d.getFullYear()}`;
+/* ── Agrupamento por período ─────────────────────────────────────── */
+function getGroupKey(ev: CalendarEventRow) {
+  const d = new Date(ev.start_date + 'T12:00:00');
+  if (ev.date_precision === 'year') return `year:${d.getFullYear()}`;
   return `month:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function getGroupLabel(key: string, lang: string): string {
   const locale = getLocale(lang);
   if (key.startsWith('year:')) return key.replace('year:', '');
-  const datePart = key.replace('month:', '');
-  const [year, month] = datePart.split('-');
-  return new Date(Number(year), Number(month) - 1, 1)
-    .toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  const [year, month] = key.replace('month:', '').split('-');
+  return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 }
 
 /* ── Configurações visuais ───────────────────────────────────────── */
-const typeBorderColor: Record<EventType, string> = {
+const typeBorderColor: Record<CalendarEventType, string> = {
   championship:  'border-l-[#003B73]',
   interclubs:    'border-l-[#D9A441]',
   congress:      'border-l-indigo-600',
@@ -105,37 +140,33 @@ const typeBorderColor: Record<EventType, string> = {
   institutional: 'border-l-emerald-600',
 };
 
-const typeIcon: Record<EventType, React.ReactNode> = {
-  championship:  <Trophy   className="w-3.5 h-3.5" />,
-  interclubs:    <Users    className="w-3.5 h-3.5" />,
-  congress:      <Trophy   className="w-3.5 h-3.5" />,
-  assembly:      <Trophy   className="w-3.5 h-3.5" />,
-  institutional: <Trophy   className="w-3.5 h-3.5" />,
+const typeIcon: Record<CalendarEventType, React.ReactNode> = {
+  championship:  <Trophy className="w-3.5 h-3.5" />,
+  interclubs:    <Users  className="w-3.5 h-3.5" />,
+  congress:      <Trophy className="w-3.5 h-3.5" />,
+  assembly:      <Trophy className="w-3.5 h-3.5" />,
+  institutional: <Trophy className="w-3.5 h-3.5" />,
 };
 
-const categoryBadgeStyle: Record<string, string> = {
-  'Interclubes': 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
-  'Sub-21':      'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
-  'Adulto':      'bg-blue-50 text-[#003B73] border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
+const categoryBadgeStyle: Record<CalendarEventCategory, string> = {
+  interclubes:   'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
+  sub21:         'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
+  adulto:        'bg-blue-50 text-[#003B73] border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
+  institucional: 'bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800',
+  outro:         'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
 };
 
-const statusBadgeStyle: Record<EventStatus, string> = {
-  upcoming:          'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  registrationsOpen: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  confirmed:         'bg-blue-100 text-[#003B73] dark:bg-blue-900/30 dark:text-blue-400',
-  finished:          'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+const statusBadgeStyle: Record<CalendarEventStatus, string> = {
+  upcoming:           'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  registrations_open: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+  confirmed:          'bg-blue-100 text-[#003B73] dark:bg-blue-900/30 dark:text-blue-400',
+  finished:           'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
 };
 
 /* ── Pill de filtro ──────────────────────────────────────────────── */
 function FilterPill({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+  active, onClick, children,
+}: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick}
@@ -151,22 +182,22 @@ function FilterPill({
 }
 
 /* ── Card de evento ──────────────────────────────────────────────── */
-function EventCard({ event }: { event: typeof calendarEvents[number] }) {
+function EventCard({ event }: { event: CalendarEventRow }) {
   const { t, lang } = useLanguage();
   const cp = t.calendarPage;
+  const ac = t.admin.calendar;
 
-  const dateBlock = getDateBlock(event.startDate, event.endDate, event.datePrecision, lang);
-  const dateRange = formatDateRange(event.startDate, event.endDate, event.datePrecision, lang);
-  const catStyle  = event.category
-    ? (categoryBadgeStyle[event.category] ?? 'bg-slate-100 text-slate-600 border border-slate-200')
-    : '';
+  const dateBlock   = getDateBlock(event.start_date, event.end_date, event.date_precision, lang);
+  const dateRange   = formatDateRange(event.start_date, event.end_date, event.date_precision, lang);
+  const catLabel    = ac.categories[event.category];
+  const statusLabel = ac.eventStatuses[event.event_status];
 
   return (
     <article
       className={`
         group flex bg-white dark:bg-white/[0.03] rounded-xl
         border border-slate-200 dark:border-white/10
-        border-l-4 ${typeBorderColor[event.type]}
+        border-l-4 ${typeBorderColor[event.event_type]}
         shadow-sm hover:shadow-md dark:hover:bg-white/[0.06]
         transition-all duration-200 overflow-hidden
       `}
@@ -175,8 +206,8 @@ function EventCard({ event }: { event: typeof calendarEvents[number] }) {
       <div className="hidden sm:flex flex-col items-center justify-center min-w-[80px] px-4 py-5 bg-slate-50 dark:bg-white/[0.03] border-r border-slate-100 dark:border-white/5 select-none">
         <span
           className={`font-bold text-[#003B73] dark:text-white leading-none ${
-            event.datePrecision === 'full'  ? 'text-2xl' :
-            event.datePrecision === 'month' ? 'text-lg'  : 'text-xl'
+            event.date_precision === 'full'  ? 'text-2xl' :
+            event.date_precision === 'month' ? 'text-lg'  : 'text-xl'
           }`}
         >
           {dateBlock.primary}
@@ -192,18 +223,18 @@ function EventCard({ event }: { event: typeof calendarEvents[number] }) {
       <div className="flex-1 p-5 min-w-0">
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          {event.category && (
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase ${catStyle}`}>
-              {typeIcon[event.type]}
-              {event.category}
+          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase ${categoryBadgeStyle[event.category]}`}>
+            {typeIcon[event.event_type]}
+            {catLabel}
+          </span>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${statusBadgeStyle[event.event_status]}`}>
+            {statusLabel}
+          </span>
+          {event.sport && (
+            <span className="text-[10px] font-medium text-[#D9A441] tracking-widest uppercase">
+              {event.sport}
             </span>
           )}
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${statusBadgeStyle[event.status]}`}>
-            {cp.statuses[event.status]}
-          </span>
-          <span className="text-[10px] font-medium text-[#D9A441] tracking-widest uppercase">
-            {event.sport}
-          </span>
         </div>
 
         {/* Título */}
@@ -216,7 +247,7 @@ function EventCard({ event }: { event: typeof calendarEvents[number] }) {
 
         {/* Localização */}
         <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-3">
-          {event.locationOpen ? (
+          {event.location_open ? (
             <>
               <HelpCircle className="w-3 h-3 shrink-0 text-amber-400" />
               <span className="text-amber-600 dark:text-amber-400 font-medium">{cp.locationOpen}</span>
@@ -282,28 +313,36 @@ function PeriodSeparator({ label }: { label: string }) {
 export default function CalendarPage() {
   const { t, lang } = useLanguage();
   const cp = t.calendarPage;
+  const ac = t.admin.calendar;
 
-  const [activeCategory, setActiveCategory] = useState<string>('all');
-  const [activeStatus, setActiveStatus]     = useState<EventStatus | 'all'>('all');
+  const [events, setEvents]         = useState<CalendarEventRow[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<CalendarEventCategory | 'all'>('all');
+  const [activeStatus, setActiveStatus]     = useState<CalendarEventStatus | 'all'>('all');
 
-  /* Categorias únicas na ordem em que aparecem nos dados */
-  const allCategories = useMemo(() => {
-    const seen = new Set<string>();
-    calendarEvents.forEach((ev) => { if (ev.category) seen.add(ev.category); });
-    return Array.from(seen);
+  useEffect(() => {
+    listPublishedCalendarEvents().then(({ data }) => {
+      setEvents(data.length > 0 ? data : mockEvents.map(mockToRow));
+      setDataLoading(false);
+    });
   }, []);
 
-  const allStatuses: EventStatus[] = ['finished', 'confirmed', 'upcoming', 'registrationsOpen'];
+  const allCategories = useMemo(() => {
+    const seen = new Set<CalendarEventCategory>();
+    events.forEach((ev) => seen.add(ev.category));
+    return Array.from(seen);
+  }, [events]);
 
-  const filtered = useMemo(() => calendarEvents.filter((ev) => {
-    const matchCat    = activeCategory === 'all' || ev.category === activeCategory;
-    const matchStatus = activeStatus   === 'all' || ev.status   === activeStatus;
+  const allStatuses: CalendarEventStatus[] = ['finished', 'confirmed', 'upcoming', 'registrations_open'];
+
+  const filtered = useMemo(() => events.filter((ev) => {
+    const matchCat    = activeCategory === 'all' || ev.category     === activeCategory;
+    const matchStatus = activeStatus   === 'all' || ev.event_status === activeStatus;
     return matchCat && matchStatus;
-  }), [activeCategory, activeStatus]);
+  }), [events, activeCategory, activeStatus]);
 
-  /* Agrupa preservando a ordem de inserção do array */
   const grouped = useMemo(() => {
-    const map = new Map<string, { label: string; events: typeof filtered }>();
+    const map = new Map<string, { label: string; events: CalendarEventRow[] }>();
     filtered.forEach((ev) => {
       const key   = getGroupKey(ev);
       const label = getGroupLabel(key, lang);
@@ -327,9 +366,9 @@ export default function CalendarPage() {
           {/* Intro */}
           <div className="mb-10">
             <p className="text-xs font-medium tracking-widest uppercase text-[#D9A441] mb-2">
-              {calendarEvents.length} {cp.eventsLabel} · 2025–2027
+              {dataLoading ? '\u2026' : `${events.length} ${cp.eventsLabel} \u00B7 2025\u20132027`}
             </p>
-            <p className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug whitespace-nowrap">
+            <p className="text-lg sm:text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug whitespace-nowrap">
               {cp.introHeadline}
             </p>
           </div>
@@ -337,8 +376,6 @@ export default function CalendarPage() {
           {/* Filtros */}
           <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl p-4 mb-8 shadow-sm">
             <div className="flex flex-col gap-4">
-
-              {/* Por categoria */}
               <div>
                 <p className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-2.5">
                   <Filter className="w-3 h-3" />
@@ -350,13 +387,11 @@ export default function CalendarPage() {
                   </FilterPill>
                   {allCategories.map((cat) => (
                     <FilterPill key={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)}>
-                      {cat}
+                      {ac.categories[cat]}
                     </FilterPill>
                   ))}
                 </div>
               </div>
-
-              {/* Por status */}
               <div className="border-t border-slate-100 dark:border-white/5 pt-4">
                 <p className="text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-2.5">
                   {cp.filterStatus}
@@ -367,17 +402,22 @@ export default function CalendarPage() {
                   </FilterPill>
                   {allStatuses.map((s) => (
                     <FilterPill key={s} active={activeStatus === s} onClick={() => setActiveStatus(s)}>
-                      {cp.statuses[s]}
+                      {ac.eventStatuses[s]}
                     </FilterPill>
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
 
           {/* Lista */}
-          {filtered.length === 0 ? (
+          {dataLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-28 bg-white dark:bg-white/[0.03] rounded-xl border border-slate-200 dark:border-white/10 animate-pulse" />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
             <EmptyState
               icon={<CalendarDays className="w-7 h-7 text-slate-300 dark:text-slate-600" />}
               title={cp.noEvents}
@@ -385,13 +425,11 @@ export default function CalendarPage() {
             />
           ) : (
             <div className="space-y-2">
-              {Array.from(grouped.values()).map(({ label, events }) => (
+              {Array.from(grouped.values()).map(({ label, events: evs }) => (
                 <div key={label}>
                   <PeriodSeparator label={label} />
                   <div className="space-y-3 mt-3">
-                    {events.map((ev) => (
-                      <EventCard key={ev.id} event={ev} />
-                    ))}
+                    {evs.map((ev) => <EventCard key={ev.id} event={ev} />)}
                   </div>
                 </div>
               ))}

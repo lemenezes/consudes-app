@@ -58,7 +58,8 @@ export async function createNews(
   const published_at =
     form.status === 'published' ? new Date().toISOString() : null;
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('news')
     .insert({ ...form, published_at })
     .select()
@@ -86,7 +87,8 @@ export async function updateNews(
   const payload: Partial<NewsFormData & { published_at: string | null }> = { ...form };
   if (published_at !== undefined) payload.published_at = published_at;
 
-  const { data, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any)
     .from('news')
     .update(payload)
     .eq('id', id)
@@ -105,7 +107,8 @@ export async function setNewsStatus(
   const published_at =
     status === 'published' ? new Date().toISOString() : null;
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from('news')
     .update({ status, published_at })
     .eq('id', id);

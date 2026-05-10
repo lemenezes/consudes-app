@@ -10,7 +10,8 @@ export async function submitAccessRequest(data: {
   apartment: string;
   message?: string;
 }): Promise<void> {
-  const { error } = await supabase.from('access_requests').insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any).from('access_requests').insert({
     full_name: data.full_name,
     email: data.email,
     block: data.block,

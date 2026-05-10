@@ -13,11 +13,47 @@ export type AuditAction =
   | 'create_news' | 'edit_news' | 'publish_news' | 'unpublish_news' | 'delete_news'
   | 'upload_image' | 'delete_image'
   | 'create_report' | 'delete_report'
-  | 'create_federation' | 'edit_federation' | 'delete_federation';
+  | 'create_federation' | 'edit_federation' | 'delete_federation'
+  | 'create_calendar_event' | 'edit_calendar_event' | 'publish_calendar_event'
+  | 'unpublish_calendar_event' | 'delete_calendar_event';
+
+// ── Calendar event enums ──────────────────────────────────────────────────────
+
+export type CalendarEventCategory = 'interclubes' | 'sub21' | 'adulto' | 'institucional' | 'outro';
+export type CalendarEventType = 'championship' | 'interclubs' | 'congress' | 'assembly' | 'institutional';
+export type CalendarEventStatus = 'upcoming' | 'registrations_open' | 'confirmed' | 'finished';
+export type DatePrecision = 'full' | 'month' | 'year';
+
+export interface CalendarEventRow {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  full_description: string | null;
+  start_date: string; // date as YYYY-MM-DD
+  end_date: string | null;
+  date_precision: DatePrecision;
+  country: string;
+  city: string | null;
+  venue: string | null;
+  location_open: boolean;
+  sport: string;
+  category: CalendarEventCategory;
+  event_type: CalendarEventType;
+  event_status: CalendarEventStatus;
+  federation: string | null;
+  link: string | null;
+  cover_url: string | null;
+  status: PublishStatus;
+  featured: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
 
 // ── Enums — legado marketplace ───────────────────────────────────────────────
 
-export type ListingStatus = 'pending' | 'active' | 'inactive' | 'rejected';
+
 export type ProfileRole = 'user' | 'resident' | 'admin';
 export type ProfileStatus = 'approved' | 'suspended';
 export type AccessRequestStatus = 'pending' | 'approved' | 'rejected';
@@ -287,56 +323,7 @@ export type Database = {
         Relationships: [];
       };
 
-      // ── Legado marketplace ────────────────────────────────────────────────
 
-      listings: {
-        Row: {
-          id: string;
-          title: string;
-          description: string;
-          category: 'venda' | 'servicos' | 'indicacoes' | 'doacao' | 'imoveis';
-          price: number | null;
-          whatsapp: string;
-          image_url: string | null;
-          image_urls: string[] | null;
-          user_id: string;
-          author_name: string;
-          apartment: string | null;
-          status: ListingStatus;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          description: string;
-          category: 'venda' | 'servicos' | 'indicacoes' | 'doacao' | 'imoveis';
-          price?: number | null;
-          whatsapp: string;
-          image_url?: string | null;
-          image_urls?: string[] | null;
-          user_id: string;
-          author_name: string;
-          apartment?: string | null;
-          status?: ListingStatus;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          description?: string;
-          category?: 'venda' | 'servicos' | 'indicacoes' | 'doacao' | 'imoveis';
-          price?: number | null;
-          whatsapp?: string;
-          image_url?: string | null;
-          image_urls?: string[] | null;
-          user_id?: string;
-          author_name?: string;
-          apartment?: string | null;
-          status?: ListingStatus;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
 
       profiles: {
         Row: {
@@ -442,6 +429,63 @@ export type Database = {
         Relationships: [];
       };
 
+      /** Eventos do calendário esportivo institucional */
+      calendar_events: {
+        Row: CalendarEventRow;
+        Insert: {
+          id?: string;
+          title: string;
+          slug: string;
+          description?: string | null;
+          full_description?: string | null;
+          start_date: string;
+          end_date?: string | null;
+          date_precision?: DatePrecision;
+          country?: string;
+          city?: string | null;
+          venue?: string | null;
+          location_open?: boolean;
+          sport?: string;
+          category?: CalendarEventCategory;
+          event_type?: CalendarEventType;
+          event_status?: CalendarEventStatus;
+          federation?: string | null;
+          link?: string | null;
+          cover_url?: string | null;
+          status?: PublishStatus;
+          featured?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          slug?: string;
+          description?: string | null;
+          full_description?: string | null;
+          start_date?: string;
+          end_date?: string | null;
+          date_precision?: DatePrecision;
+          country?: string;
+          city?: string | null;
+          venue?: string | null;
+          location_open?: boolean;
+          sport?: string;
+          category?: CalendarEventCategory;
+          event_type?: CalendarEventType;
+          event_status?: CalendarEventStatus;
+          federation?: string | null;
+          link?: string | null;
+          cover_url?: string | null;
+          status?: PublishStatus;
+          featured?: boolean;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -462,10 +506,6 @@ export type FormerPresidentRow = Database['public']['Tables']['former_presidents
 export type AuditLogRow        = Database['public']['Tables']['admin_audit_logs']['Row'];
 export type AuditLogInsert     = Database['public']['Tables']['admin_audit_logs']['Insert'];
 
-// ── Helpers de tipo — legado marketplace ─────────────────────────────────────
-
-export type ListingRow       = Database['public']['Tables']['listings']['Row'];
-export type ListingInsert    = Database['public']['Tables']['listings']['Insert'];
 export type ProfileRow       = Database['public']['Tables']['profiles']['Row'];
 export type AccessRequestRow = Database['public']['Tables']['access_requests']['Row'];
 
