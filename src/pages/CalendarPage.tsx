@@ -329,7 +329,7 @@ export default function CalendarPage() {
             <p className="text-xs font-medium tracking-widest uppercase text-[#D9A441] mb-2">
               {calendarEvents.length} {cp.eventsLabel} · 2025–2027
             </p>
-            <p className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug max-w-lg">
+            <p className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug whitespace-nowrap">
               {cp.introHeadline}
             </p>
           </div>
