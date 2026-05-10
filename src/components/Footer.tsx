@@ -14,18 +14,17 @@ export default function Footer() {
         { to: '/historia', label: t.nav.history },
         { to: '/missao', label: t.nav.mission },
         { to: '/valores', label: t.nav.values },
+        { to: '/sede', label: t.nav.headquarters },
         { to: '/equipe', label: t.nav.team },
+        { to: '/ex-presidentes', label: t.nav.formerPresidents },
         { to: '/federacoes', label: t.nav.federations },
       ],
     },
     {
-      heading: t.nav.championships,
+      heading: t.nav.transparency,
       links: [
-        { to: '/campeonatos', label: t.nav.championships },
-        { to: '/interclubes', label: t.nav.interclubs },
-        { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames },
-        { to: '/rankings', label: t.nav.rankings },
-        { to: '/calendario', label: t.nav.calendar },
+        { to: '/relatorios', label: t.nav.reports },
+        { href: 'https://webmail.hostinger.com', label: 'Webmail' },
       ],
     },
     {
@@ -34,7 +33,8 @@ export default function Footer() {
         { to: '/noticias', label: t.nav.news },
         { to: '/galeria', label: t.nav.gallery },
         { to: '/esportes', label: t.nav.sports },
-        { to: '/transparencia', label: t.nav.transparency },
+        { to: '/calendario', label: t.nav.calendar },
+        { to: '/interclubes', label: t.nav.interclubs },
       ],
     },
     {
@@ -51,21 +51,23 @@ export default function Footer() {
       {/* Faixa decorativa topo */}
       <div className="h-[3px] bg-gradient-to-r from-transparent via-[#D9A441] to-transparent opacity-60" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-16 pb-10">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-14 pb-10">
 
-        {/* Grid principal */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr] gap-12 lg:gap-8 mb-14">
+        {/* Grid principal — brand fixo + nav agrupado */}
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 mb-12">
 
           {/* Brand */}
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-4 lg:w-[210px] flex-shrink-0">
             <Link to="/" className="inline-block w-fit group">
-              <img
-                src="/logo-novo-consudes-removebg-preview-1.png"
-                alt="CONSUDES"
-                className="h-16 w-auto object-contain brightness-0 invert opacity-90 group-hover:opacity-100 transition-opacity duration-200"
-              />
+              <span className="inline-flex items-center justify-center bg-white/95 rounded-md px-3 py-2 shadow-[0_1px_6px_rgba(0,0,0,0.18)] group-hover:bg-white transition-colors duration-200">
+                <img
+                  src="/logo-novo-consudes-removebg-preview-1.png"
+                  alt="CONSUDES"
+                  className="h-12 w-auto object-contain block"
+                />
+              </span>
             </Link>
-            <p className="text-white/40 text-[12px] leading-[1.75] max-w-[200px] font-light tracking-wide">
+            <p className="text-white/40 text-[12px] leading-[1.8] font-light tracking-wide">
               {t.topbar}
             </p>
             <a
@@ -78,25 +80,38 @@ export default function Footer() {
           </div>
 
           {/* Colunas de links */}
-          {cols.map(({ heading, links }) => (
-            <div key={heading}>
-              <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-5 opacity-80">
-                {heading}
-              </p>
-              <ul className="flex flex-col gap-3">
-                {links.map(({ to, label }) => (
-                  <li key={to}>
-                    <Link
-                      to={to}
-                      className="text-[13px] text-white/45 hover:text-white transition-colors duration-150 font-light tracking-wide"
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8">
+            {cols.map(({ heading, links }) => (
+              <div key={heading}>
+                <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4 opacity-80">
+                  {heading}
+                </p>
+                <ul className="flex flex-col gap-2.5">
+                  {links.map((link) => (
+                    <li key={link.href ?? link.to}>
+                      {link.href ? (
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[13px] text-white/45 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.to!}
+                          className="text-[13px] text-white/45 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                        >
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Divisória */}
