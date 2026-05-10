@@ -11,17 +11,28 @@ export type EventStatus =
   | 'confirmed'
   | 'finished';
 
+/**
+ * Précisão da data do evento:
+ * - 'full'  → datas exatas conhecidas (YYYY-MM-DD)
+ * - 'month' → apenas mês/ano conhecidos (use dia 01)
+ * - 'year'  → apenas o ano é conhecido (use 01-01)
+ */
+export type DatePrecision = 'full' | 'month' | 'year';
+
 export interface CalendarEvent {
   id: string;
   title: string;
-  startDate: string; // ISO date string YYYY-MM-DD
+  startDate: string; // YYYY-MM-DD (use 01 quando dia/mês desconhecido)
   endDate: string;
+  datePrecision: DatePrecision;
   country: string;
-  city: string;
-  sport?: string;
+  city?: string;
+  locationOpen?: boolean; // true quando sede ainda não definida
+  sport: string;
+  category?: string;  // e.g. 'Interclubes', 'Sub-21', 'Adulto'
   type: EventType;
   status: EventStatus;
-  description: string;
+  description?: string;
   federation?: string;
   link?: string;
 }
@@ -29,111 +40,98 @@ export interface CalendarEvent {
 export const calendarEvents: CalendarEvent[] = [
   {
     id: '1',
-    title: 'Campeonato Sul-Americano de Natação',
-    startDate: '2026-03-10',
-    endDate: '2026-03-15',
-    country: 'Brasil',
-    city: 'São Paulo',
-    sport: 'Natação',
-    type: 'championship',
-    status: 'finished',
-    description:
-      'Competição continental de natação para atletas surdos, com representação de todas as federações afiliadas à CONSUDES.',
-    federation: 'CBDS',
-  },
-  {
-    id: '2',
-    title: 'Interclubes Sul-Americano de Futsal',
-    startDate: '2026-05-20',
-    endDate: '2026-05-25',
+    title: 'Torneo Interclubes de Fútbol Sala',
+    startDate: '2025-08-01',
+    endDate: '2025-08-31',
+    datePrecision: 'month',
     country: 'Argentina',
     city: 'Buenos Aires',
-    sport: 'Futsal',
+    sport: 'Fútbol Sala',
+    category: 'Interclubes',
     type: 'interclubs',
-    status: 'registrationsOpen',
+    status: 'finished',
     description:
-      'Torneio interclubes de futsal reunindo os principais clubes de surdos da América do Sul em disputa pelo título continental.',
+      'Torneo interclubes de fútbol sala disputado en Buenos Aires, reuniendo los principales clubes de sordos de Sudamérica.',
     federation: 'FASDS',
   },
   {
+    id: '2',
+    title: 'Campeonato Sudamericano de Fútbol Sala – Sub-21',
+    startDate: '2025-12-01',
+    endDate: '2025-12-31',
+    datePrecision: 'month',
+    country: 'Brasil',
+    city: 'São José dos Pinhais',
+    sport: 'Fútbol Sala',
+    category: 'Sub-21',
+    type: 'championship',
+    status: 'finished',
+    description:
+      'Campeonato sudamericano de fútbol sala categoría Sub-21, disputado en São José dos Pinhais, Brasil.',
+    federation: 'CBDS',
+  },
+  {
     id: '3',
-    title: 'Assembleia Geral Ordinária CONSUDES 2026',
-    startDate: '2026-06-12',
-    endDate: '2026-06-13',
-    country: 'Uruguai',
-    city: 'Montevidéu',
-    type: 'assembly',
+    title: 'Torneo Interclubes de Fútbol Sala',
+    startDate: '2026-10-11',
+    endDate: '2026-10-18',
+    datePrecision: 'full',
+    country: 'Uruguay',
+    city: 'Florida',
+    sport: 'Fútbol Sala',
+    category: 'Interclubes',
+    type: 'interclubs',
     status: 'confirmed',
     description:
-      'Assembleia anual com votações, prestação de contas e planejamento estratégico para o biênio 2026–2028.',
+      'Torneo interclubes de fútbol sala en Florida, Uruguay. Fechas confirmadas: 11 al 18 de octubre de 2026.',
     federation: 'CONSUDES',
   },
   {
     id: '4',
-    title: 'Campeonato Sul-Americano de Atletismo',
-    startDate: '2026-07-08',
-    endDate: '2026-07-14',
-    country: 'Chile',
-    city: 'Santiago',
-    sport: 'Atletismo',
-    type: 'championship',
-    status: 'confirmed',
+    title: 'Torneo Interclubes de Fútbol Sala',
+    startDate: '2027-06-01',
+    endDate: '2027-06-30',
+    datePrecision: 'month',
+    country: 'Paraguay',
+    sport: 'Fútbol Sala',
+    category: 'Interclubes',
+    type: 'interclubs',
+    status: 'upcoming',
     description:
-      'Maior competição de atletismo do calendário sul-americano de surdos, válida como classificatória para os Deaflympics.',
-    federation: 'FDSOCH',
+      'Torneo interclubes de fútbol sala con sede en Paraguay, programado para junio de 2027.',
+    federation: 'CONSUDES',
   },
   {
     id: '5',
-    title: 'Congresso Técnico de Arbitragem CONSUDES',
-    startDate: '2026-08-03',
-    endDate: '2026-08-04',
-    country: 'Peru',
-    city: 'Lima',
-    type: 'congress',
+    title: 'Campeonato Sudamericano de Fútbol Sala – Sub-21',
+    startDate: '2027-01-01',
+    endDate: '2027-12-31',
+    datePrecision: 'year',
+    country: '',
+    locationOpen: true,
+    sport: 'Fútbol Sala',
+    category: 'Sub-21',
+    type: 'championship',
     status: 'upcoming',
     description:
-      'Congresso técnico para capacitação e certificação de árbitros e juízes esportivos nas modalidades reconhecidas pela CONSUDES.',
+      'Sede abierta a propuestas. Las federaciones interesadas pueden enviar su candidatura a CONSUDES.',
     federation: 'CONSUDES',
   },
   {
     id: '6',
-    title: 'Campeonato Sul-Americano de Tênis de Mesa',
-    startDate: '2026-09-15',
-    endDate: '2026-09-20',
-    country: 'Colômbia',
-    city: 'Bogotá',
-    sport: 'Tênis de Mesa',
+    title: 'Campeonato Sudamericano de Fútbol Sala',
+    startDate: '2027-01-01',
+    endDate: '2027-12-31',
+    datePrecision: 'year',
+    country: '',
+    locationOpen: true,
+    sport: 'Fútbol Sala',
+    category: 'Adulto',
     type: 'championship',
     status: 'upcoming',
     description:
-      'Disputa pelo título continental de tênis de mesa nas categorias individual, duplas e mistas, masculino e feminino.',
-    federation: 'FEDESDES',
-  },
-  {
-    id: '7',
-    title: 'Fórum Internacional de Esporte Surdo',
-    startDate: '2026-10-22',
-    endDate: '2026-10-24',
-    country: 'Brasil',
-    city: 'Rio de Janeiro',
-    type: 'institutional',
-    status: 'upcoming',
-    description:
-      'Evento de debate, troca de experiências e difusão de boas práticas no esporte surdo latino-americano.',
-    federation: 'CONSUDES',
-  },
-  {
-    id: '8',
-    title: 'Campeonato Sul-Americano de Futebol',
-    startDate: '2026-11-10',
-    endDate: '2026-11-18',
-    country: 'Equador',
-    city: 'Quito',
-    sport: 'Futebol',
-    type: 'championship',
-    status: 'upcoming',
-    description:
-      'Competição de futebol de campo masculino e feminino reunindo as seleções nacionais sul-americanas da comunidade surda.',
+      'Sede abierta a propuestas. Las federaciones interesadas pueden enviar su candidatura a CONSUDES.',
     federation: 'CONSUDES',
   },
 ];
+
