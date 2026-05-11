@@ -157,7 +157,12 @@ export default function Header() {
             <nav className="hidden lg:flex items-stretch h-full">
               {navItems.map((item) =>
                 item.type === 'dropdown' ? (
-                  <div key={item.key} className="relative flex items-stretch">
+                  <div
+                    key={item.key}
+                    className="relative flex items-stretch"
+                    onMouseEnter={() => setOpenDropdowns(new Set([item.key]))}
+                    onMouseLeave={() => setOpenDropdowns(new Set())}
+                  >
                     {(() => {
                       const hasActiveChild = item.links.some(
                         (l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')),
