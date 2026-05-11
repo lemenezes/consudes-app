@@ -9,6 +9,7 @@ import {
   Filter,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSEO } from '../hooks/useSEO';
 import PageHero from '../components/PageHero';
 import EmptyState from '../components/EmptyState';
 import { listPublishedCalendarEvents } from '../services/calendarService';
@@ -314,6 +315,12 @@ export default function CalendarPage() {
   const { t, lang } = useLanguage();
   const cp = t.calendarPage;
   const ac = t.admin.calendar;
+
+  useSEO({
+    title: t.nav.calendar,
+    description: t.calendarPage.subtitle,
+    url: '/calendario',
+  });
 
   const [events, setEvents]         = useState<CalendarEventRow[]>([]);
   const [dataLoading, setDataLoading] = useState(true);

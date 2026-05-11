@@ -2,10 +2,17 @@ import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
 import NewsCard from '../components/NewsCard';
 import { usePublicNews } from '../hooks/usePublicNews';
+import { useSEO } from '../hooks/useSEO';
 
 export default function NewsPage() {
   const { t } = useLanguage();
   const { news, loading, error } = usePublicNews();
+
+  useSEO({
+    title: t.nav.news,
+    description: t.news.subtitle,
+    url: '/noticias',
+  });
 
   return (
     <>

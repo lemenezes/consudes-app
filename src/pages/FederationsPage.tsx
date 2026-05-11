@@ -2,9 +2,17 @@ import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
 import FederationCard from '../components/FederationCard';
 import { federationsData } from '../data/federationsData';
+import { useSEO } from '../hooks/useSEO';
 
 export default function FederationsPage() {
   const { t } = useLanguage();
+
+  useSEO({
+    title: t.nav.federations,
+    description: t.federationsPage.subtitle,
+    url: '/federacoes',
+  });
+
   return (
     <>
       <PageHero

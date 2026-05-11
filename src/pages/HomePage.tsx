@@ -2,6 +2,7 @@ import { ArrowRight, Users, BookOpen, HeartHandshake, Globe, Mail, Phone } from 
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { usePublicNews } from '../hooks/usePublicNews';
+import { useSEO } from '../hooks/useSEO';
 import NewsCard from '../components/NewsCard';
 
 const STAT_VALUES = ['60+', '20', '15', '100k+'];
@@ -16,6 +17,11 @@ const PROGRAM_ICONS = [
 export default function HomePage() {
   const { t } = useLanguage();
   const { news, loading: newsLoading } = usePublicNews({ limit: 3 });
+
+  useSEO({
+    url: '/',
+    description: 'Confederación Sudamericana Deportiva de Sordos (CONSUDES). Organización oficial que representa y conecta a las federaciones deportivas de sordos en Sudamérica.',
+  });
 
   return (
     <>

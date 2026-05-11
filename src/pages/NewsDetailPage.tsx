@@ -4,6 +4,7 @@ import { Calendar, ArrowLeft, Languages } from 'lucide-react';
 import { getPublishedNewsBySlug } from '../services/newsPublicService';
 import { useLanguage } from '../context/LanguageContext';
 import { translatePlain, translateHTML } from '../utils/translateContent';
+import { useSEO } from '../hooks/useSEO';
 import type { NewsRow } from '../lib/database.types';
 
 function formatDate(iso: string | null, locale: string): string {
@@ -25,6 +26,14 @@ export default function NewsDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useSEO({
+    title: news?.title ?? undefined,
+    description: news?.excerpt ?? undefined,
+    image: news?.cover_url ?? undefined,
+    url: news ? `/noticias/${news.slug}` : '/noticias',
+    type: 'article',
+  });
+
   // ── Tradução automática ────────────────────────────────────────────────────
   const [displayTitle, setDisplayTitle] = useState('');
   const [displayContent, setDisplayContent] = useState('');
@@ -42,12 +51,9 @@ export default function NewsDetailPage() {
         setError(err ?? 'Noticia no encontrada');
       } else {
         setNews(data);
-        document.title = `${data.title} — CONSUDES`;
       }
       setLoading(false);
     });
-
-    return () => { document.title = 'CONSUDES'; };
   }, [slug]);
 
   useEffect(() => {

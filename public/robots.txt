@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Admin panel — não indexar
+Disallow: /admin/
+Disallow: /admin
+
+Sitemap: https://consudes.org.br/sitemap.xml
