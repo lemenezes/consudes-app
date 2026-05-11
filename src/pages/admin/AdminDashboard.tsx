@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { listNews } from '../../services/newsService';
 import { listCalendarEvents } from '../../services/calendarService';
-import type { NewsRow, CalendarEventRow } from '../../lib/database.types';
+import { listReports } from '../../services/reportsService';
+import type { NewsRow, CalendarEventRow, ReportRow } from '../../lib/database.types';
 
 const COMING_SOON = [
   {
@@ -12,14 +13,6 @@ const COMING_SOON = [
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Relatórios',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>
     ),
   },
@@ -39,12 +32,14 @@ export default function AdminDashboard() {
 
   const [news, setNews] = useState<NewsRow[]>([]);
   const [calEvents, setCalEvents] = useState<CalendarEventRow[]>([]);
+  const [reports, setReports] = useState<ReportRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([listNews(), listCalendarEvents()]).then(([{ data: n }, { data: c }]) => {
+    Promise.all([listNews(), listCalendarEvents(), listReports()]).then(([{ data: n }, { data: c }, { data: r }]) => {
       setNews(n);
       setCalEvents(c);
+      setReports(r);
       setLoading(false);
     });
   }, []);
@@ -148,6 +143,40 @@ export default function AdminDashboard() {
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors"
             >
               {t.admin.dashboard.manageCalendar}
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Card Transparência — ATIVO ── */}
+        <div className="bg-white rounded-xl shadow-sm border border-[#003B73]/20 ring-1 ring-[#003B73]/10 flex flex-col">
+          <div className="p-6 flex-1">
+            <div className="flex items-center justify-between mb-5">
+              <span className="text-sm font-semibold text-[#1F2937]">Transparência</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                {t.admin.dashboard.active}
+              </span>
+            </div>
+            {loading ? (
+              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+            ) : (
+              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                {reports.length}
+              </p>
+            )}
+            <p className="text-xs text-gray-400 mt-1.5">
+              {loading ? '…' : `${reports.filter((r) => r.status === 'published').length} publicados · ${reports.length} total`}
+            </p>
+          </div>
+          <div className="px-6 pb-5">
+            <Link
+              to="/admin/transparencia"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors"
+            >
+              Gerenciar
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
