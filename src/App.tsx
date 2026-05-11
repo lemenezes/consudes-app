@@ -10,8 +10,10 @@ const AdminLoginPage        = lazy(() => import('./pages/admin/AdminLoginPage'))
 const AdminDashboard        = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminNewsListPage     = lazy(() => import('./pages/admin/AdminNewsListPage'))
 const AdminNewsFormPage     = lazy(() => import('./pages/admin/AdminNewsFormPage'))
-const AdminCalendarListPage = lazy(() => import('./pages/admin/AdminCalendarListPage'))
-const AdminCalendarFormPage = lazy(() => import('./pages/admin/AdminCalendarFormPage'))
+const AdminCalendarListPage  = lazy(() => import('./pages/admin/AdminCalendarListPage'))
+const AdminCalendarFormPage  = lazy(() => import('./pages/admin/AdminCalendarFormPage'))
+const AdminReportsListPage   = lazy(() => import('./pages/admin/AdminReportsListPage'))
+const AdminReportsFormPage   = lazy(() => import('./pages/admin/AdminReportsFormPage'))
 const HomePage              = lazy(() => import('./pages/HomePage'))
 const HistoryPage           = lazy(() => import('./pages/HistoryPage'))
 const MissionPage           = lazy(() => import('./pages/MissionPage'))
@@ -80,6 +82,9 @@ const router = createBrowserRouter([
       { path: 'calendario', element: <AdminCalendarListPage /> },
       { path: 'calendario/novo', element: <AdminCalendarFormPage /> },
       { path: 'calendario/:id/editar', element: <AdminCalendarFormPage /> },
+      { path: 'transparencia', element: <AdminReportsListPage /> },
+      { path: 'transparencia/novo', element: <AdminReportsFormPage /> },
+      { path: 'transparencia/:id/editar', element: <AdminReportsFormPage /> },
     ],
   },
 ])

@@ -142,7 +142,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
     {
       heading: 'Institucional',
       items: [
-        { kind: 'soon', label: 'Transparência', icon: <IconReports /> },
+        { kind: 'link', to: '/admin/transparencia', end: false, label: 'Transparência', icon: <IconReports /> },
         { kind: 'soon', label: 'Federações',    icon: <IconFederations /> },
       ],
     },

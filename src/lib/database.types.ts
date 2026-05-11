@@ -7,7 +7,29 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 export type Lang = 'es' | 'pt' | 'en';
 export type PublishStatus = 'draft' | 'published' | 'archived';
-export type ReportCategory = 'financeiro' | 'ata' | 'estatuto' | 'outro';
+export type ReportCategory =
+  | 'relatorio'
+  | 'estatuto'
+  | 'regulamento'
+  | 'ata'
+  | 'prestacao_contas'
+  | 'documento_oficial';
+
+export interface ReportRow {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  category: ReportCategory;
+  year: number;
+  doc_date: string | null;
+  file_url: string | null;
+  status: PublishStatus;
+  featured: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
 export type ChampionshipStatus = 'upcoming' | 'ongoing' | 'finished';
 export type AuditAction =
   | 'create_news' | 'edit_news' | 'publish_news' | 'unpublish_news' | 'delete_news'
@@ -498,7 +520,6 @@ export type Database = {
 
 export type NewsRow            = Database['public']['Tables']['news']['Row'];
 export type FederationRow      = Database['public']['Tables']['federations']['Row'];
-export type ReportRow          = Database['public']['Tables']['reports']['Row'];
 export type GalleryRow         = Database['public']['Tables']['gallery']['Row'];
 export type ChampionshipRow    = Database['public']['Tables']['championships']['Row'];
 export type TeamMemberRow      = Database['public']['Tables']['team_members']['Row'];

@@ -1,29 +1,242 @@
+import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSEO } from '../hooks/useSEO';
 import PageHero from '../components/PageHero';
+import { listPublishedReports } from '../services/reportsPublicService';
+import { categoryLabel, REPORT_CATEGORIES } from '../services/reportsService';
+import type { ReportPublicItem } from '../services/reportsPublicService';
+import type { ReportCategory } from '../lib/database.types';
+
+const CATEGORY_COLORS: Record<ReportCategory, string> = {
+  relatorio:         'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
+  estatuto:          'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
+  regulamento:       'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+  ata:               'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300',
+  prestacao_contas:  'bg-orange-50 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
+  documento_oficial: 'bg-slate-50 text-slate-600 dark:bg-slate-700/30 dark:text-slate-300',
+};
+
+function IconFile() {
+  return (
+    <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+    </svg>
+  );
+}
+
+function IconDownload() {
+  return (
+    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+    </svg>
+  );
+}
+
+function Skeleton() {
+  return (
+    <div className="animate-pulse space-y-3">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="h-20 bg-gray-100 dark:bg-white/5 rounded-xl" />
+      ))}
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-20">
+      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#003B73]/6 dark:bg-white/5 mb-5">
+        <IconFile />
+      </div>
+      <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#1F2937] dark:text-white mb-2">
+        Nenhum documento encontrado
+      </p>
+      <p className="text-[#1F2937]/55 dark:text-white/40 text-sm">
+        Tente ajustar os filtros ou consulte novamente em breve.
+      </p>
+    </div>
+  );
+}
 
 export default function TransparencyPage() {
   const { t } = useLanguage();
+
+  useSEO({
+    title: t.nav.transparency,
+    description: 'Documentos oficiais, relatórios, estatutos e prestação de contas da CONSUDES.',
+    url: '/transparencia',
+  });
+
+  const [reports, setReports] = useState<ReportPublicItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterYear, setFilterYear] = useState<number | ''>('');
+  const [filterCat, setFilterCat] = useState<ReportCategory | ''>('');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    setLoading(true);
+    listPublishedReports({
+      year: filterYear !== '' ? filterYear : undefined,
+      category: filterCat !== '' ? filterCat : undefined,
+    }).then(({ data }) => {
+      setReports(data);
+      setLoading(false);
+    });
+  }, [filterYear, filterCat]);
+
+  const years = [...new Set(reports.map((r) => r.year))].sort((a, b) => b - a);
+
+  const filtered = search.trim()
+    ? reports.filter((r) =>
+        r.title.toLowerCase().includes(search.toLowerCase()) ||
+        r.description?.toLowerCase().includes(search.toLowerCase()),
+      )
+    : reports;
+
+  const grouped = filtered.reduce<Record<number, ReportPublicItem[]>>((acc, r) => {
+    if (!acc[r.year]) acc[r.year] = [];
+    acc[r.year].push(r);
+    return acc;
+  }, {});
+  const sortedYears = Object.keys(grouped).map(Number).sort((a, b) => b - a);
+
   return (
     <>
       <PageHero
         label="CONSUDES"
         title={t.nav.transparency}
-        subtitle="Documentos, relatórios e prestação de contas da confederação."
+        subtitle="Documentos oficiais, relatórios e prestação de contas da confederação."
       />
+
       <section className="bg-white dark:bg-[#0d1624] py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          {['Estatuto Social', 'Relatório Anual 2024', 'Ata de Assembléia', 'Balanço Financeiro'].map((doc) => (
-            <div key={doc} className="flex items-center justify-between border border-gray-200 dark:border-white/10 rounded-xl px-6 py-4">
-              <span className="text-[#003B73] dark:text-white font-medium">{doc}</span>
-              <span className="text-xs text-[#1F2937]/40 dark:text-white/30 border border-gray-200 dark:border-white/10 px-3 py-1 rounded-full">
-                Em breve
-              </span>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* ── Intro ────────────────────────────────────────────── */}
+          <div className="mb-10">
+            <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-3" aria-hidden="true">
+              CONSUDES
+            </p>
+            <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3">
+              Acesso à informação
+            </h2>
+            <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55 max-w-xl">
+              Documentos institucionais disponibilizados pela CONSUDES em cumprimento aos
+              princípios de transparência e acesso público à informação.
+            </p>
+          </div>
+
+          {/* ── Filtros ──────────────────────────────────────────── */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+            <div className="relative flex-1">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1F2937]/35 dark:text-white/30" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar documento…"
+                className="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[#1F2937] dark:text-white placeholder:text-[#1F2937]/35 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#003B73]/30"
+              />
             </div>
-          ))}
+            <select
+              value={filterCat}
+              onChange={(e) => setFilterCat(e.target.value as ReportCategory | '')}
+              className="px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[#1F2937] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#003B73]/30"
+              aria-label="Filtrar por categoria"
+            >
+              <option value="">Todas as categorias</option>
+              {REPORT_CATEGORIES.map((c) => (
+                <option key={c.value} value={c.value}>{c.label}</option>
+              ))}
+            </select>
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value ? Number(e.target.value) : '')}
+              className="px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-[#1F2937] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#003B73]/30"
+              aria-label="Filtrar por ano"
+            >
+              <option value="">Todos os anos</option>
+              {years.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* ── Lista ────────────────────────────────────────────── */}
+          {loading ? (
+            <Skeleton />
+          ) : filtered.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="space-y-10">
+              {sortedYears.map((year) => (
+                <div key={year}>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="font-['Cormorant_Garamond'] text-4xl font-bold text-[#003B73]/10 dark:text-white/10 leading-none select-none" aria-hidden="true">
+                      {year}
+                    </span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#003B73]/10 via-[#D9A441]/25 to-transparent dark:from-white/8 dark:via-[#D9A441]/15" aria-hidden="true" />
+                  </div>
+
+                  <ul className="space-y-3" aria-label={`Documentos de ${year}`}>
+                    {grouped[year].map((doc) => (
+                      <li
+                        key={doc.id}
+                        className="group flex items-center gap-4 bg-white dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06] hover:border-[#D9A441]/40 dark:hover:border-[#D9A441]/20 shadow-[0_1px_6px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_16px_rgba(0,59,115,0.08)] transition-all duration-200 p-5"
+                      >
+                        <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg bg-[#003B73]/6 dark:bg-white/8 text-[#003B73] dark:text-white/70 shrink-0 group-hover:bg-[#D9A441]/10 transition-colors" aria-hidden="true">
+                          <IconFile />
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase ${CATEGORY_COLORS[doc.category]}`}>
+                              {categoryLabel(doc.category)}
+                            </span>
+                            {doc.doc_date && (
+                              <time dateTime={doc.doc_date} className="text-[11px] text-[#1F2937]/45 dark:text-white/35">
+                                {new Date(doc.doc_date + 'T12:00:00').toLocaleDateString('pt-BR', {
+                                  day: '2-digit', month: 'short', year: 'numeric',
+                                })}
+                              </time>
+                            )}
+                          </div>
+                          <p className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937] dark:text-white leading-snug">
+                            {doc.title}
+                          </p>
+                          {doc.description && (
+                            <p className="text-sm text-[#1F2937]/55 dark:text-white/40 mt-0.5 line-clamp-1">
+                              {doc.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {doc.file_url ? (
+                          <a
+                            href={doc.file_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Baixar ${doc.title}`}
+                            className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] hover:bg-[#0057A8] text-white text-[12px] font-semibold tracking-wide transition-colors duration-150"
+                          >
+                            <IconDownload />
+                            <span className="hidden sm:inline">Baixar</span>
+                          </a>
+                        ) : (
+                          <span className="shrink-0 text-[11px] text-[#1F2937]/35 dark:text-white/25 border border-gray-200 dark:border-white/10 px-3 py-1.5 rounded-lg">
+                            Em breve
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          )}
+
         </div>
-        <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm mt-12">
-          Conteúdo em construção
-        </p>
       </section>
     </>
   );
