@@ -194,8 +194,8 @@ export const translations = {
       groupPresidency: 'Presidencia',
       groupVicePresidency: 'Vicepresidencia',
       groupBoard: 'Directorio',
-      groupAdvisors: 'Asesores',
-      membersLabel: 'miembros',
+      groupAdvisors: 'Asesoría',
+      membersLabel: 'integrantes',
       countriesLabel: 'países representados',
       roles: {
         president: 'Presidente',
@@ -424,8 +424,8 @@ export const translations = {
       groupPresidency: 'Presidência',
       groupVicePresidency: 'Vice-presidência',
       groupBoard: 'Diretoria',
-      groupAdvisors: 'Assessores',
-      membersLabel: 'membros',
+      groupAdvisors: 'Assessoria',
+      membersLabel: 'integrantes',
       countriesLabel: 'países representados',
       roles: {
         president: 'Presidente',
@@ -654,7 +654,7 @@ export const translations = {
       groupPresidency: 'Presidency',
       groupVicePresidency: 'Vice-Presidency',
       groupBoard: 'Board of Directors',
-      groupAdvisors: 'Advisors',
+      groupAdvisors: 'Advisory Council',
       membersLabel: 'members',
       countriesLabel: 'countries represented',
       roles: {
