@@ -111,19 +111,9 @@ function SectionHeading({ label, index }: { label: string; index: number }) {
 /* ── Página ─────────────────────────────────────────────────────── */
 export default function TeamPage() {
   const { t } = useLanguage();
-  const tp = (t as any).teamPage as {
-    subtitle: string;
-    mandate: string;
-    introHeadline: string;
-    groupPresidency: string;
-    groupVicePresidency: string;
-    groupBoard: string;
-    groupAdvisors: string;
-    membersLabel: string;
-    countriesLabel: string;
-    roles: Record<string, string>;
-    countries: Record<string, string>;
-  };
+  const tp = t.teamPage;
+  const roles = tp.roles as Record<string, string>;
+  const countryLabels = tp.countries as Record<string, string>;
 
   useSEO({
     title: t.nav.team,
@@ -135,7 +125,7 @@ export default function TeamPage() {
   const vicePresidency = teamByGroup('vicePresidency');
   const board          = teamByGroup('board');
   const advisors       = teamByGroup('advisors');
-  const countries = [...new Set(teamMembers.map((m) => m.countryCode))].length;
+  const countriesCount = [...new Set(teamMembers.map((m) => m.countryCode))].length;
 
   return (
     <>
@@ -161,7 +151,7 @@ export default function TeamPage() {
             {/* Stats discretos */}
             <div
               className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto"
-              aria-label={`${teamMembers.length} ${tp.membersLabel}, ${countries} ${tp.countriesLabel}`}
+              aria-label={`${teamMembers.length} ${tp.membersLabel}, ${countriesCount} ${tp.countriesLabel}`}
             >
               <div className="text-center px-7 py-4" aria-hidden="true">
                 <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
@@ -173,7 +163,7 @@ export default function TeamPage() {
               </div>
               <div className="text-center px-7 py-4" aria-hidden="true">
                 <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
-                  {countries}
+                  {countriesCount}
                 </span>
                 <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1">
                   {tp.countriesLabel}
@@ -186,7 +176,7 @@ export default function TeamPage() {
           <div className="mb-14">
             <SectionHeading label={tp.groupPresidency} index={1} />
             {presidency.map((m) => (
-              <PresidentCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
+              <PresidentCard key={m.id} member={m} roleLabel={roles[m.roleKey]} countries={countryLabels} />
             ))}
           </div>
 
@@ -195,7 +185,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupVicePresidency} index={2} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {vicePresidency.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
+                <MemberCard key={m.id} member={m} roleLabel={roles[m.roleKey]} countries={countryLabels} />
               ))}
             </div>
           </div>
@@ -205,7 +195,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupBoard} index={3} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {board.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
+                <MemberCard key={m.id} member={m} roleLabel={roles[m.roleKey]} countries={countryLabels} />
               ))}
             </div>
           </div>
@@ -215,7 +205,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupAdvisors} index={4} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {advisors.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
+                <MemberCard key={m.id} member={m} roleLabel={roles[m.roleKey]} countries={countryLabels} />
               ))}
             </div>
           </div>

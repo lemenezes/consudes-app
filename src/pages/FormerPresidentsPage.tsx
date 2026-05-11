@@ -31,29 +31,10 @@ function Portrait({ p }: { p: FormerPresident }) {
   );
 }
 
-/* ── Países traduzidos (igual teamPage) ──────────────────────────── */
-const COUNTRY_PT: Record<string, string> = {
-  BR: 'Brasil', AR: 'Argentina', UY: 'Uruguai', PY: 'Paraguai', CL: 'Chile',
-};
-const COUNTRY_ES: Record<string, string> = {
-  BR: 'Brasil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile',
-};
-const COUNTRY_EN: Record<string, string> = {
-  BR: 'Brazil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile',
-};
-
 /* ── Página ──────────────────────────────────────────────────────── */
 export default function FormerPresidentsPage() {
-  const { t, lang } = useLanguage();
-  const fp = (t as any).formerPresidentsPage as {
-    subtitle: string;
-    historyTitle: string;
-    historySubtitle: string;
-    mandatesLabel: string;
-    countriesLabel: string;
-    yearsLabel: string;
-    mandate: string;
-  };
+  const { t } = useLanguage();
+  const fp = t.formerPresidentsPage;
 
   useSEO({
     title: t.nav.formerPresidents,
@@ -61,8 +42,7 @@ export default function FormerPresidentsPage() {
     url: '/ex-presidentes',
   });
 
-  const countryMap =
-    lang === 'pt' ? COUNTRY_PT : lang === 'en' ? COUNTRY_EN : COUNTRY_ES;
+  const countryMap = fp.countries as Record<string, string>;
 
   const uniqueCountries = [...new Set(formerPresidents.map((p) => p.countryCode))].length;
   const yearsOfHistory = new Date().getFullYear() - 1985;
