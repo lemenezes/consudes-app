@@ -33,7 +33,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Confederação Argentina de Esportes de Surdos',
     fullNameEn: 'Argentine Confederation of Deaf Sports',
     flag: '🇦🇷',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/CADES.jpg',
+    logo: '/images/federations/cades.jpg',
     socials: {
       website:   'http://www.cades.org.ar/',
       instagram: 'https://www.instagram.com/cades_argentina/',
@@ -51,7 +51,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Boliviana de Surdos',
     fullNameEn: 'Bolivian Federation of the Deaf',
     flag: '🇧🇴',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/FEBOS.jpg',
+    logo: '/images/federations/febos.jpg',
     socials: {
       facebook: 'https://www.facebook.com/Febos.Bolivia/',
     },
@@ -66,7 +66,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Confederação Brasileira de Desportos de Surdos',
     fullNameEn: 'Brazilian Confederation of Deaf Sports',
     flag: '🇧🇷',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/CBDS.jpg',
+    logo: '/images/federations/cbds.jpg',
     socials: {
       website:   'https://www.cbds.org.br/cbds/',
       instagram: 'https://www.instagram.com/cbdsbrasil/',
@@ -85,7 +85,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva Nacional de Surdos do Chile',
     fullNameEn: 'Chilean National Sports Federation of the Deaf',
     flag: '🇨🇱',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/fedenasc.jpg',
+    logo: '/images/federations/fedenasc.jpg',
     socials: {
       website:   'https://fedenaschile.cl/',
       instagram: 'https://www.instagram.com/fedenaschile/',
@@ -102,7 +102,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Nacional de Surdos da Colômbia',
     fullNameEn: 'National Federation of the Deaf of Colombia',
     flag: '🇨🇴',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/FENASCOL.jpg',
+    logo: '/images/federations/fenascol.jpg',
     socials: {
       website:   'https://fenascol.org.co/',
       instagram: 'https://www.instagram.com/fenascol/',
@@ -122,7 +122,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Equatoriana de Esporte para Pessoas Surdas',
     fullNameEn: 'Ecuadorian Sports Federation for Deaf Persons',
     flag: '🇪🇨',
-    logo: 'https://consudes.com/wp-content/uploads/2026/03/FEDEPDAL.jpeg',
+    logo: '/images/federations/fedepdal.jpg',
     socials: {
       instagram: 'https://www.instagram.com/fedepdal_ec_oficial/',
       facebook:  'https://www.facebook.com/FEDEPDAL',
@@ -138,7 +138,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva dos Surdos do Paraguai',
     fullNameEn: 'Sports Federation of the Deaf of Paraguay',
     flag: '🇵🇾',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/FEDESPAR.jpg',
+    logo: '/images/federations/fedespar.jpg',
     socials: {
       instagram: 'https://www.instagram.com/fedespar005/',
       facebook:  'https://www.facebook.com/100069831503386/videos/',
@@ -153,7 +153,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva Nacional dos Surdos do Peru',
     fullNameEn: 'National Sports Federation of the Deaf of Peru',
     flag: '🇵🇪',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/FDNSP.jpg',
+    logo: '/images/federations/fdnsp.jpg',
     socials: {
       facebook: 'https://www.facebook.com/profile.php?id=100087425774271',
     },
@@ -167,7 +167,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Organização Esportiva dos Surdos do Uruguai',
     fullNameEn: 'Sports Organization of the Deaf of Uruguay',
     flag: '🇺🇾',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/ODSU.png',
+    logo: '/images/federations/odsu.png',
     socials: {
       website:   'http://sordos.org.uy/',
       instagram: 'https://www.instagram.com/odsusordos/',
@@ -183,7 +183,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Poliesportiva Venezuelana de Surdos',
     fullNameEn: 'Venezuelan Multisports Federation of the Deaf',
     flag: '🇻🇪',
-    logo: 'https://consudes.com/wp-content/uploads/2025/12/feposor.jpg',
+    logo: '/images/federations/feposor.jpg',
     socials: {
       instagram: 'https://www.instagram.com/feposor_ve/',
       facebook:  'https://www.facebook.com/p/Feposor-Venezuela-100054981262698/',

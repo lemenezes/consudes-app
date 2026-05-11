@@ -12,8 +12,8 @@ function Avatar({ member, size = 'md' }: { member: TeamMember; size?: 'sm' | 'md
 
   const sizeClasses = {
     sm: 'w-20 h-20 text-lg',
-    md: 'w-[88px] h-[88px] text-xl',
-    lg: 'w-40 h-40 text-4xl',
+    md: 'w-[112px] h-[112px] text-2xl',
+    lg: 'w-44 h-44 text-4xl',
   };
 
   return (
@@ -35,7 +35,7 @@ function Avatar({ member, size = 'md' }: { member: TeamMember; size?: 'sm' | 'md
 }
 
 /* ── PresidentCard — branco elegante ─────────────────────────────── */
-function PresidentCard({ member, roleLabel }: { member: TeamMember; roleLabel: string }) {
+function PresidentCard({ member, roleLabel, countries }: { member: TeamMember; roleLabel: string; countries: Record<string, string> }) {
   return (
     <div className="relative bg-white dark:bg-white/[0.03] rounded-2xl overflow-hidden border border-[#D9A441]/25 dark:border-[#D9A441]/10 shadow-[0_2px_24px_rgba(0,59,115,0.07)] dark:shadow-none">
       {/* Barra dourada topo */}
@@ -49,53 +49,38 @@ function PresidentCard({ member, roleLabel }: { member: TeamMember; roleLabel: s
 
         {/* Info */}
         <div className="text-center sm:text-left flex-1">
-          <p className="text-[10px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-3">
-            CONSUDES · DIRECTORIO 2022–2026
-          </p>
-          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-[2.6rem] font-semibold text-[#1F2937] dark:text-white leading-[1.1] mb-3 tracking-tight">
+          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-[2.8rem] font-semibold text-[#1F2937] dark:text-white leading-[1.1] mb-4 tracking-tight">
             {member.name}
           </h2>
-          <div className="flex items-center justify-center sm:justify-start gap-3 mb-5">
-            <div className="h-px w-6 bg-[#D9A441]/60" />
-            <p className="text-[11px] font-bold tracking-[0.3em] uppercase text-[#003B73] dark:text-[#7db4e8]">
-              {roleLabel}
-            </p>
-          </div>
-          <div className="inline-flex items-center gap-2 text-sm text-[#1F2937]/45 dark:text-white/35">
+          <p className="text-[13px] font-bold tracking-[0.25em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-5">
+            {roleLabel}
+          </p>
+          <div className="inline-flex items-center gap-2 text-sm text-[#1F2937]/65 dark:text-white/55">
             <span className="text-base">{FLAG[member.countryCode]}</span>
-            <span>{member.country}</span>
+            <span>{countries[member.countryCode] ?? member.country}</span>
           </div>
         </div>
 
-        {/* Marca d'água discreta */}
-        <div className="hidden sm:block absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none select-none opacity-[0.025] dark:opacity-[0.04]">
-          <span
-            className="font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white"
-            style={{ fontSize: '180px', lineHeight: 1 }}
-          >
-            C
-          </span>
-        </div>
       </div>
     </div>
   );
 }
 
 /* ── MemberCard — horizontal, leve, institucional ────────────────── */
-function MemberCard({ member, roleLabel }: { member: TeamMember; roleLabel: string }) {
+function MemberCard({ member, roleLabel, countries }: { member: TeamMember; roleLabel: string; countries: Record<string, string> }) {
   return (
-    <div className="group flex items-center gap-5 bg-white dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06] hover:border-[#D9A441]/40 dark:hover:border-[#D9A441]/20 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,59,115,0.10)] dark:hover:shadow-none transition-all duration-300 hover:-translate-y-0.5 p-5 sm:p-6">
+    <div className="group flex items-center gap-6 bg-white dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06] hover:border-[#D9A441]/40 dark:hover:border-[#D9A441]/20 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,59,115,0.10)] dark:hover:shadow-none transition-all duration-300 hover:-translate-y-0.5 p-6 sm:p-7">
       <Avatar member={member} size="md" />
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#D9A441] mb-1.5 leading-snug">
+        <p className="text-[12px] font-bold tracking-[0.28em] uppercase text-[#D9A441] mb-2 leading-snug">
           {roleLabel}
         </p>
-        <h3 className="font-['Cormorant_Garamond'] text-[1.25rem] font-semibold text-[#1F2937] dark:text-white leading-snug mb-2.5">
+        <h3 className="font-['Cormorant_Garamond'] text-[1.5rem] font-semibold text-[#1F2937] dark:text-white leading-snug mb-3">
           {member.name}
         </h3>
-        <div className="flex items-center gap-1.5 text-xs text-[#1F2937]/40 dark:text-white/30">
-          <span>{FLAG[member.countryCode]}</span>
-          <span>{member.country}</span>
+        <div className="flex items-center gap-2 text-sm text-[#1F2937]/65 dark:text-white/55">
+          <span className="text-base">{FLAG[member.countryCode]}</span>
+          <span>{countries[member.countryCode] ?? member.country}</span>
         </div>
       </div>
     </div>
@@ -111,7 +96,7 @@ function SectionHeading({ label, index }: { label: string; index: number }) {
         {num}
       </span>
       <div className="flex-1">
-        <p className="text-[10px] font-bold tracking-[0.45em] uppercase text-[#D9A441] mb-1.5">
+        <p className="text-[11px] font-bold tracking-[0.45em] uppercase text-[#D9A441] mb-1.5">
           {label}
         </p>
         <div className="h-px bg-gradient-to-r from-[#003B73]/15 via-[#D9A441]/30 to-transparent dark:from-white/10 dark:via-[#D9A441]/15" />
@@ -134,6 +119,7 @@ export default function TeamPage() {
     membersLabel: string;
     countriesLabel: string;
     roles: Record<string, string>;
+    countries: Record<string, string>;
   };
 
   useSEO({
@@ -158,10 +144,13 @@ export default function TeamPage() {
           {/* ── Intro institucional ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
             <div className="flex-1">
-              <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#D9A441] mb-2">
-                {tp.mandate}
+              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-4">
+                CONSUDES
               </p>
-              <p className="text-2xl sm:text-3xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug max-w-md">
+              <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3">
+                {tp.mandate}
+              </h2>
+              <p className="text-sm sm:text-[15px] text-[#1F2937]/60 dark:text-white/50 max-w-lg">
                 {tp.introHeadline}
               </p>
             </div>
@@ -172,7 +161,7 @@ export default function TeamPage() {
                 <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
                   {teamMembers.length}
                 </p>
-                <p className="text-[9px] uppercase tracking-widest text-[#1F2937]/40 dark:text-white/35 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
                   {tp.membersLabel}
                 </p>
               </div>
@@ -180,7 +169,7 @@ export default function TeamPage() {
                 <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
                   {countries}
                 </p>
-                <p className="text-[9px] uppercase tracking-widest text-[#1F2937]/40 dark:text-white/35 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
                   {tp.countriesLabel}
                 </p>
               </div>
@@ -191,7 +180,7 @@ export default function TeamPage() {
           <div className="mb-14">
             <SectionHeading label={tp.groupPresidency} index={1} />
             {presidency.map((m) => (
-              <PresidentCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} />
+              <PresidentCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
             ))}
           </div>
 
@@ -200,7 +189,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupVicePresidency} index={2} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {vicePresidency.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} />
+                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
               ))}
             </div>
           </div>
@@ -210,7 +199,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupBoard} index={3} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {board.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} />
+                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
               ))}
             </div>
           </div>
@@ -220,7 +209,7 @@ export default function TeamPage() {
             <SectionHeading label={tp.groupAdvisors} index={4} />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {advisors.map((m) => (
-                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} />
+                <MemberCard key={m.id} member={m} roleLabel={tp.roles[m.roleKey]} countries={tp.countries} />
               ))}
             </div>
           </div>

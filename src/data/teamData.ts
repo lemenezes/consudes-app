@@ -24,6 +24,7 @@ export const FLAG: Record<string, string> = {
   AR: flagEmoji('AR'), // 🇦🇷
   CO: flagEmoji('CO'), // 🇨🇴
   PY: flagEmoji('PY'), // 🇵🇾
+  UY: flagEmoji('UY'), // 🇺🇾
 };
 
 export const teamMembers: TeamMember[] = [
@@ -34,7 +35,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'president',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/RoderigoMalta.png',
+    photo: '/images/team/rodrigo-malta.png',
     group: 'presidency',
   },
 
@@ -45,7 +46,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'vicePresident1',
     country: 'Argentina',
     countryCode: 'AR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/JuanCastiglia.png',
+    photo: '/images/team/juan-castiglia.png',
     group: 'vicePresidency',
   },
   {
@@ -54,7 +55,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'vicePresident2',
     country: 'Colombia',
     countryCode: 'CO',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/LurzCarreno.png',
+    photo: '/images/team/luz-carreno.png',
     group: 'vicePresidency',
   },
 
@@ -65,7 +66,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'treasurer',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/JoselioCoelho.png',
+    photo: '/images/team/joselio-coelho.png',
     group: 'board',
   },
   {
@@ -74,16 +75,16 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'legal',
     country: 'Argentina',
     countryCode: 'AR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/HoracioAleva.png',
+    photo: '/images/team/horacio-aleva.png',
     group: 'board',
   },
   {
     id: 'daniel-perrone',
     name: 'Daniel Perrone',
     roleKey: 'institutional',
-    country: 'Argentina',
-    countryCode: 'AR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/DanielPerrone.png',
+    country: 'Uruguay',
+    countryCode: 'UY',
+    photo: '/images/team/daniel-perrone.png',
     group: 'board',
   },
   {
@@ -92,16 +93,16 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'technical',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: 'https://consudes.com/wp-content/uploads/2026/03/VictorHugo.jpeg',
+    photo: '/images/team/victor-hugo.jpg',
     group: 'board',
   },
   {
     id: 'lourdes-carina',
     name: 'Lourdes Carina',
     roleKey: 'secretary',
-    country: 'Brasil',
-    countryCode: 'BR',
-    photo: 'https://consudes.com/wp-content/uploads/2026/03/LourdesCarina.jpeg',
+    country: 'Uruguay',
+    countryCode: 'UY',
+    photo: '/images/team/lourdes-carina.jpg',
     group: 'board',
   },
 
@@ -112,7 +113,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'adminAdvisor',
     country: 'Paraguay',
     countryCode: 'PY',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/MariaMongelos.png',
+    photo: '/images/team/maria-mongelos.png',
     group: 'advisors',
   },
   {
@@ -121,7 +122,16 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'technicalAdvisor',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: 'https://consudes.com/wp-content/uploads/2025/12/GustavoHorst.png',
+    photo: '/images/team/gustavo-horst.png',
+    group: 'advisors',
+  },
+  {
+    id: 'leandro-miglioli',
+    name: 'Leandro Miglioli',
+    roleKey: 'itSupport',
+    country: 'Brasil',
+    countryCode: 'BR',
+    photo: '/images/team/leandro-miglioli.jpg',
     group: 'advisors',
   },
 ];

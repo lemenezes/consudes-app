@@ -189,8 +189,8 @@ export const translations = {
     },
     teamPage: {
       subtitle: 'Directorio oficial de la Confederación Sudamericana Deportiva de Sordos',
-      mandate: 'Directorio 2022–2026',
-      introHeadline: 'Quienes dirigen el deporte sordo sudamericano',
+      mandate: 'Directorio Oficial 2022–2026',
+      introHeadline: 'Confederación Sudamericana Deportiva de Sordos',
       groupPresidency: 'Presidencia',
       groupVicePresidency: 'Vicepresidencia',
       groupBoard: 'Directorio',
@@ -208,7 +208,9 @@ export const translations = {
         secretary: 'Directora Secretaria',
         adminAdvisor: 'Asesora Administrativa',
         technicalAdvisor: 'Asesor Técnico',
+        itSupport: 'Soporte de TI y Sistemas',
       },
+      countries: { BR: 'Brasil', AR: 'Argentina', CO: 'Colombia', PY: 'Paraguay', UY: 'Uruguay' },
     },
     calendarPage: {
       subtitle: 'Calendario oficial de eventos deportivos e institucionales de la CONSUDES',
@@ -417,8 +419,8 @@ export const translations = {
     },
     teamPage: {
       subtitle: 'Diretoria oficial da Confederação Sul-Americana Desportiva de Surdos',
-      mandate: 'Diretoria 2022–2026',
-      introHeadline: 'Quem dirige o esporte surdo sul-americano',
+      mandate: 'Diretoria Oficial 2022–2026',
+      introHeadline: 'Confederação Sul-Americana Desportiva de Surdos',
       groupPresidency: 'Presidência',
       groupVicePresidency: 'Vice-presidência',
       groupBoard: 'Diretoria',
@@ -436,7 +438,9 @@ export const translations = {
         secretary: 'Diretora Secretária',
         adminAdvisor: 'Assessora Administrativa',
         technicalAdvisor: 'Assessor Técnico',
+        itSupport: 'Suporte de TI e Sistemas',
       },
+      countries: { BR: 'Brasil', AR: 'Argentina', CO: 'Colômbia', PY: 'Paraguai', UY: 'Uruguai' },
     },
     calendarPage: {
       subtitle: 'Calendário oficial de eventos esportivos e institucionais da CONSUDES',
@@ -645,8 +649,8 @@ export const translations = {
     },
     teamPage: {
       subtitle: 'Official board of the South American Sports Confederation of the Deaf',
-      mandate: 'Board 2022–2026',
-      introHeadline: 'The leaders of South American deaf sport',
+      mandate: 'Official Board 2022–2026',
+      introHeadline: 'South American Sports Confederation of the Deaf',
       groupPresidency: 'Presidency',
       groupVicePresidency: 'Vice-Presidency',
       groupBoard: 'Board of Directors',
@@ -664,7 +668,9 @@ export const translations = {
         secretary: 'Secretary Director',
         adminAdvisor: 'Administrative Advisor',
         technicalAdvisor: 'Technical Advisor',
+        itSupport: 'IT & Systems Support',
       },
+      countries: { BR: 'Brazil', AR: 'Argentina', CO: 'Colombia', PY: 'Paraguay', UY: 'Uruguay' },
     },
     calendarPage: {
       subtitle: 'Official calendar of sports and institutional events from CONSUDES',
