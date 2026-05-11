@@ -49,12 +49,12 @@ function PresidentCard({ member, roleLabel, countries }: { member: TeamMember; r
 
         {/* Info */}
         <div className="text-center sm:text-left flex-1">
-          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-[2.8rem] font-semibold text-[#1F2937] dark:text-white leading-[1.1] mb-4 tracking-tight">
+          <h3 className="font-['Cormorant_Garamond'] text-3xl sm:text-[2.8rem] font-semibold text-[#1F2937] dark:text-white leading-[1.1] mb-4 tracking-tight">
             {member.name}
-          </h2>
-          <p className="text-[13px] font-bold tracking-[0.25em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-5">
+          </h3>
+          <span className="block text-[13px] font-bold tracking-[0.25em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-5">
             {roleLabel}
-          </p>
+          </span>
           <div className="inline-flex items-center gap-2 text-sm text-[#1F2937]/75 dark:text-white/60">
             <span className="text-base">{FLAG[member.countryCode]}</span>
             <span>{countries[member.countryCode] ?? member.country}</span>
@@ -72,9 +72,9 @@ function MemberCard({ member, roleLabel, countries }: { member: TeamMember; role
     <div className="group flex items-center gap-6 bg-white dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06] hover:border-[#D9A441]/40 dark:hover:border-[#D9A441]/20 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,59,115,0.10)] dark:hover:shadow-none transition-all duration-300 hover:-translate-y-0.5 p-6 sm:p-7">
       <Avatar member={member} size="md" />
       <div className="min-w-0 flex-1">
-        <p className="text-[12px] font-bold tracking-[0.28em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-2 leading-snug">
+        <span className="block text-[12px] font-bold tracking-[0.28em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-2 leading-snug">
           {roleLabel}
-        </p>
+        </span>
         <h3 className="font-['Cormorant_Garamond'] text-[1.5rem] font-semibold text-[#1F2937] dark:text-white leading-snug mb-3">
           {member.name}
         </h3>
@@ -92,14 +92,14 @@ function SectionHeading({ label, index }: { label: string; index: number }) {
   const num = String(index).padStart(2, '0');
   return (
     <div className="flex items-center gap-5 mb-8">
-      <span className="font-['Cormorant_Garamond'] text-5xl font-bold leading-none flex-shrink-0 select-none text-[#003B73]/[0.07] dark:text-white/[0.07]">
+      <span aria-hidden="true" className="font-['Cormorant_Garamond'] text-5xl font-bold leading-none flex-shrink-0 select-none text-[#003B73]/[0.07] dark:text-white/[0.07]">
         {num}
       </span>
       <div className="flex-1">
-        <p className="text-[11px] font-bold tracking-[0.45em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-1.5">
+        <h2 className="text-[11px] font-bold tracking-[0.45em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-1.5">
           {label}
-        </p>
-        <div className="h-px bg-gradient-to-r from-[#003B73]/15 via-[#D9A441]/30 to-transparent dark:from-white/10 dark:via-[#D9A441]/15" />
+        </h2>
+        <div aria-hidden="true" className="h-px bg-gradient-to-r from-[#003B73]/15 via-[#D9A441]/30 to-transparent dark:from-white/10 dark:via-[#D9A441]/15" />
       </div>
     </div>
   );
@@ -160,19 +160,19 @@ export default function TeamPage() {
               className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto"
               aria-label={`${teamMembers.length} ${tp.membersLabel}, ${countries} ${tp.countriesLabel}`}
             >
-              <div className="text-center px-7 py-4">
-                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+              <div className="text-center px-7 py-4" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
                   {teamMembers.length}
                 </span>
-                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1">
                   {tp.membersLabel}
                 </span>
               </div>
-              <div className="text-center px-7 py-4">
-                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+              <div className="text-center px-7 py-4" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
                   {countries}
                 </span>
-                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1">
                   {tp.countriesLabel}
                 </span>
               </div>
