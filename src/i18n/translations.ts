@@ -212,6 +212,15 @@ export const translations = {
       },
       countries: { BR: 'Brasil', AR: 'Argentina', CO: 'Colombia', PY: 'Paraguay', UY: 'Uruguay' },
     },
+    formerPresidentsPage: {
+      subtitle: 'Registro histórico de las presidencias de la CONSUDES desde su fundación en 1985',
+      historyTitle: 'Registro Histórico de las Gestiones',
+      historySubtitle: 'Presidencias de la CONSUDES desde su fundación en 1985',
+      mandatesLabel: 'gestiones',
+      countriesLabel: 'países representados',
+      yearsLabel: 'años de historia',
+      mandate: 'Presidencia',
+    },
     calendarPage: {
       subtitle: 'Calendario oficial de eventos deportivos e institucionales de la CONSUDES',
       introHeadline: 'Competencias del deporte sordo sudamericano',
@@ -442,6 +451,15 @@ export const translations = {
       },
       countries: { BR: 'Brasil', AR: 'Argentina', CO: 'Colômbia', PY: 'Paraguai', UY: 'Uruguai' },
     },
+    formerPresidentsPage: {
+      subtitle: 'Registro histórico das presidências da CONSUDES desde sua fundação em 1985',
+      historyTitle: 'Registro Histórico das Gestões',
+      historySubtitle: 'Presidências da CONSUDES desde sua fundação em 1985',
+      mandatesLabel: 'gestões',
+      countriesLabel: 'países representados',
+      yearsLabel: 'anos de história',
+      mandate: 'Presidência',
+    },
     calendarPage: {
       subtitle: 'Calendário oficial de eventos esportivos e institucionais da CONSUDES',
       introHeadline: 'Competições do esporte surdo sul-americano',
@@ -671,6 +689,15 @@ export const translations = {
         itSupport: 'IT & Systems Support',
       },
       countries: { BR: 'Brazil', AR: 'Argentina', CO: 'Colombia', PY: 'Paraguay', UY: 'Uruguay' },
+    },
+    formerPresidentsPage: {
+      subtitle: 'Historical record of CONSUDES presidencies since its foundation in 1985',
+      historyTitle: 'Historical Record of Terms',
+      historySubtitle: 'CONSUDES Presidencies since its foundation in 1985',
+      mandatesLabel: 'terms',
+      countriesLabel: 'countries represented',
+      yearsLabel: 'years of history',
+      mandate: 'Presidency',
     },
     calendarPage: {
       subtitle: 'Official calendar of sports and institutional events from CONSUDES',
