@@ -55,7 +55,7 @@ function PresidentCard({ member, roleLabel, countries }: { member: TeamMember; r
           <p className="text-[13px] font-bold tracking-[0.25em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-5">
             {roleLabel}
           </p>
-          <div className="inline-flex items-center gap-2 text-sm text-[#1F2937]/65 dark:text-white/55">
+          <div className="inline-flex items-center gap-2 text-sm text-[#1F2937]/75 dark:text-white/60">
             <span className="text-base">{FLAG[member.countryCode]}</span>
             <span>{countries[member.countryCode] ?? member.country}</span>
           </div>
@@ -72,13 +72,13 @@ function MemberCard({ member, roleLabel, countries }: { member: TeamMember; role
     <div className="group flex items-center gap-6 bg-white dark:bg-white/[0.03] rounded-xl border border-gray-100 dark:border-white/[0.06] hover:border-[#D9A441]/40 dark:hover:border-[#D9A441]/20 shadow-[0_1px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_20px_rgba(0,59,115,0.10)] dark:hover:shadow-none transition-all duration-300 hover:-translate-y-0.5 p-6 sm:p-7">
       <Avatar member={member} size="md" />
       <div className="min-w-0 flex-1">
-        <p className="text-[12px] font-bold tracking-[0.28em] uppercase text-[#D9A441] mb-2 leading-snug">
+        <p className="text-[12px] font-bold tracking-[0.28em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-2 leading-snug">
           {roleLabel}
         </p>
         <h3 className="font-['Cormorant_Garamond'] text-[1.5rem] font-semibold text-[#1F2937] dark:text-white leading-snug mb-3">
           {member.name}
         </h3>
-        <div className="flex items-center gap-2 text-sm text-[#1F2937]/65 dark:text-white/55">
+        <div className="flex items-center gap-2 text-sm text-[#1F2937]/75 dark:text-white/60">
           <span className="text-base">{FLAG[member.countryCode]}</span>
           <span>{countries[member.countryCode] ?? member.country}</span>
         </div>
@@ -96,7 +96,7 @@ function SectionHeading({ label, index }: { label: string; index: number }) {
         {num}
       </span>
       <div className="flex-1">
-        <p className="text-[11px] font-bold tracking-[0.45em] uppercase text-[#D9A441] mb-1.5">
+        <p className="text-[11px] font-bold tracking-[0.45em] uppercase text-[#003B73] dark:text-[#7db4e8] mb-1.5">
           {label}
         </p>
         <div className="h-px bg-gradient-to-r from-[#003B73]/15 via-[#D9A441]/30 to-transparent dark:from-white/10 dark:via-[#D9A441]/15" />
@@ -144,32 +144,35 @@ export default function TeamPage() {
           {/* ── Intro institucional ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
             <div className="flex-1">
-              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-4">
+              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-4" aria-hidden="true">
                 CONSUDES
               </p>
               <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3">
                 {tp.mandate}
               </h2>
-              <p className="text-sm sm:text-[15px] text-[#1F2937]/60 dark:text-white/50 max-w-lg">
+              <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55 max-w-lg">
                 {tp.introHeadline}
               </p>
             </div>
 
             {/* Stats discretos */}
-            <div className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto">
+            <div
+              className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto"
+              aria-label={`${teamMembers.length} ${tp.membersLabel}, ${countries} ${tp.countriesLabel}`}
+            >
               <div className="text-center px-7 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
+                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {teamMembers.length}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {tp.membersLabel}
                 </p>
               </div>
               <div className="text-center px-7 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
+                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {countries}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {tp.countriesLabel}
                 </p>
               </div>

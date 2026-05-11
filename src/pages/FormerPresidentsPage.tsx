@@ -80,34 +80,37 @@ export default function FormerPresidentsPage() {
               <h2 className="font-['Cormorant_Garamond'] text-[1.85rem] sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3 whitespace-nowrap">
                 {fp.historyTitle}
               </h2>
-              <p className="text-sm sm:text-[15px] text-[#1F2937]/60 dark:text-white/50">
+              <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55">
                 {fp.historySubtitle}
               </p>
             </div>
 
             {/* Stats */}
-            <div className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto">
+              <div
+                className="flex items-center flex-shrink-0 divide-x divide-gray-100 dark:divide-white/10 border border-gray-100 dark:border-white/10 rounded-xl overflow-hidden self-start sm:self-auto"
+                aria-label={`${formerPresidents.length} ${fp.mandatesLabel}, ${uniqueCountries} ${fp.countriesLabel}, ${yearsOfHistory} ${fp.yearsLabel}`}
+              >
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
+                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {formerPresidents.length}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.mandatesLabel}
                 </p>
               </div>
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
+                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {uniqueCountries}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.countriesLabel}
                 </p>
               </div>
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none">
+                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {yearsOfHistory}
                 </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/60 dark:text-white/50 mt-1">
+                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.yearsLabel}
                 </p>
               </div>
@@ -175,7 +178,7 @@ export default function FormerPresidentsPage() {
 
                     {/* Nome + cargo + país */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#003B73]/45 dark:text-white/25 mb-1.5">
+                      <p className="text-[10px] font-bold tracking-[0.4em] uppercase text-[#003B73]/70 dark:text-white/40 mb-1.5">
                         {fp.mandate}
                       </p>
                       <h3 className="font-['Cormorant_Garamond'] text-[1.6rem] sm:text-[2rem] font-semibold text-[#1F2937] dark:text-white leading-tight">
@@ -183,7 +186,7 @@ export default function FormerPresidentsPage() {
                       </h3>
                       <div className="flex items-center gap-2 mt-2.5">
                         <span className="text-lg leading-none">{FLAG[p.countryCode]}</span>
-                        <span className="text-sm text-[#1F2937]/50 dark:text-white/40 tracking-wide">
+                        <span className="text-sm text-[#1F2937]/70 dark:text-white/55 tracking-wide">
                           {countryMap[p.countryCode] ?? p.countryCode}
                         </span>
                       </div>

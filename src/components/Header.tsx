@@ -146,7 +146,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-[68px]">
 
             {/* Logo */}
-            <Link to="/" onClick={close} className="flex-shrink-0 group">
+            <Link to="/" onClick={close} className="flex-shrink-0 group" aria-label="CONSUDES – Página inicial">
               <img
                 src="/logo-novo-consudes-removebg-preview-1.png"
                 alt="CONSUDES"

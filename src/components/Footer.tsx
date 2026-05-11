@@ -67,12 +67,12 @@ export default function Footer() {
                 />
               </span>
             </Link>
-            <p className="text-white/40 text-[12px] leading-[1.8] font-light tracking-wide">
+            <p className="text-white/55 text-[12px] leading-[1.8] font-light tracking-wide">
               {t.topbar}
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-2 text-[12px] text-white/40 hover:text-[#D9A441] transition-colors duration-150 group w-fit"
+              className="inline-flex items-center gap-2 text-[12px] text-white/55 hover:text-[#D9A441] transition-colors duration-150 group w-fit"
             >
               <Mail size={13} className="opacity-60 group-hover:opacity-100 transition-opacity" />
               {CONTACT_EMAIL}
@@ -94,14 +94,14 @@ export default function Footer() {
                           href={link.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[13px] text-white/45 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                          className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
                         >
                           {link.label}
                         </a>
                       ) : (
                         <Link
                           to={link.to!}
-                          className="text-[13px] text-white/45 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                          className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
                         >
                           {link.label}
                         </Link>
@@ -119,7 +119,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <p className="text-[11px] text-white/25 tracking-wide font-light">
+          <p className="text-[11px] text-white/40 tracking-wide font-light">
             © {new Date().getFullYear()} CONSUDES &nbsp;·&nbsp; {t.footer.rights}
           </p>
           <Link
