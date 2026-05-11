@@ -224,6 +224,7 @@ export default function Header() {
                     key={item.to}
                     to={item.to}
                     end={item.to === '/'}
+                    aria-label={item.to === '/' ? 'Navegar para a página inicial' : undefined}
                     className={({ isActive }) =>
                       `relative flex items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
                         isActive
@@ -333,6 +334,7 @@ export default function Header() {
                   to={item.to}
                   onClick={close}
                   end={item.to === '/'}
+                  aria-label={item.to === '/' ? 'Navegar para a página inicial' : undefined}
                   className={({ isActive }) =>
                     `flex items-center justify-between px-5 py-3.5 text-[13px] font-semibold border-b border-[#003B73]/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
                       isActive
