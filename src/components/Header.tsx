@@ -63,7 +63,6 @@ export default function Header() {
   }, []);
 
   const navItems: NavItem[] = [
-    { type: 'standalone', to: '/', label: 'Home' },
     {
       type: 'dropdown',
       key: 'institucional',
