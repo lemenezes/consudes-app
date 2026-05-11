@@ -70,6 +70,11 @@ const IconLogout = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 15l3-3m0 0l-3-3m3 3H9" />
   </svg>
 );
+const IconExternalLink = () => (
+  <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+  </svg>
+);
 
 /* ── Tipos de item de nav ────────────────────────────────────────────────── */
 type NavItem =
@@ -162,6 +167,19 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
         <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-3 text-center font-medium">
           {t.admin.panelTitle}
         </p>
+      </div>
+
+      {/* Link para o site público — acima do menu */}
+      <div className="px-3 pt-3 pb-1">
+        <a
+          href="https://consudes.leandrom.com.br"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-white/55 hover:text-white hover:bg-white/8 border border-transparent"
+        >
+          <IconExternalLink />
+          <span>Site público</span>
+        </a>
       </div>
 
       {/* Nav groups */}
