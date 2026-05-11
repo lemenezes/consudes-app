@@ -87,15 +87,7 @@ export default function Header() {
       ],
     },
     { type: 'standalone', to: '/federacoes', label: t.nav.federations },
-    {
-      type: 'dropdown',
-      key: 'transparencia',
-      label: t.nav.transparency,
-      links: [
-        { to: '/relatorios', label: t.nav.reports },
-        { href: 'https://webmail.hostinger.com', label: 'Webmail' },
-      ],
-    },
+    { type: 'standalone', to: '/transparencia', label: t.nav.transparency },
     { type: 'standalone', to: '/noticias', label: t.nav.news },
     {
       type: 'dropdown',
@@ -119,6 +111,14 @@ export default function Header() {
             {t.topbar}
           </p>
           <div className="flex items-center">
+            <a
+              href="https://webmail.hostinger.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/35 hover:text-white/65 text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
+            >
+              Webmail
+            </a>
             {LANGS.map(({ code, label }, i) => (
               <button
                 key={code}

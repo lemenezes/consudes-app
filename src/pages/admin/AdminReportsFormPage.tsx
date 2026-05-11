@@ -178,19 +178,8 @@ export default function AdminReportsFormPage() {
             />
           </div>
 
-          <div>
-            <label htmlFor="slug" className={labelCls}>Slug *</label>
-            <input
-              id="slug"
-              name="slug"
-              type="text"
-              value={form.slug}
-              onChange={handleChange}
-              required
-              placeholder="relatorio-anual-2024"
-              className={`${inputCls} font-mono text-xs`}
-            />
-          </div>
+          {/* Slug — oculto, gerado automaticamente do título */}
+          <input type="hidden" name="slug" value={form.slug} />
 
           <div>
             <label htmlFor="description" className={labelCls}>Descrição curta</label>

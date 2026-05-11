@@ -24,6 +24,15 @@ function IconFile() {
   );
 }
 
+function IconEye() {
+  return (
+    <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  );
+}
+
 function IconDownload() {
   return (
     <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
@@ -58,6 +67,94 @@ function EmptyState() {
   );
 }
 
+function PdfModal({ url, title, onClose }: { url: string; title: string; onClose: () => void }) {
+  const [iframeLoading, setIframeLoading] = useState(true);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Fechar com Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  // Timeout de 15s — Google Docs Viewer pode travar no primeiro load
+  useEffect(() => {
+    if (!iframeLoading) return;
+    const t = setTimeout(() => setTimedOut(true), 15000);
+    return () => clearTimeout(t);
+  }, [iframeLoading]);
+
+  // Google Docs Viewer — contorna Content-Disposition: attachment
+  const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Visualizar ${title}`}
+      className="fixed inset-0 z-50 flex flex-col bg-black/70 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      {/* Barra topo */}
+      <div className="flex items-center justify-between px-4 py-3 bg-[#002D5E] shrink-0">
+        <p className="text-white text-sm font-semibold truncate max-w-[calc(100%-3rem)]">{title}</p>
+        <button
+          onClick={onClose}
+          aria-label="Fechar visualizador"
+          className="text-white/60 hover:text-white transition-colors p-1"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      {/* Viewer */}
+      <div className="relative flex-1 w-full">
+        {iframeLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 gap-4 z-10">
+            {!timedOut ? (
+              <>
+                <svg className="w-8 h-8 text-[#003B73] animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-600">A carregar o documento…</p>
+                  <p className="text-xs text-gray-400 mt-1">A primeira abertura pode levar alguns segundos.</p>
+                </div>
+              </>
+            ) : (
+              <div className="text-center px-6 max-w-sm">
+                <svg className="w-10 h-10 text-amber-400 mx-auto mb-3" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-700 mb-1">O documento está a demorar</p>
+                <p className="text-xs text-gray-500 mb-4">O visualizador não conseguiu carregar a tempo. Pode baixar o arquivo diretamente.</p>
+                <a
+                  href={url}
+                  download
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-sm font-semibold hover:bg-[#0057A8] transition-colors"
+                >
+                  <IconDownload />
+                  Baixar documento
+                </a>
+              </div>
+            )}
+          </div>
+        )}
+        <iframe
+          src={viewerUrl}
+          title={title}
+          className="w-full h-full border-0"
+          allow="fullscreen"
+          onLoad={() => setIframeLoading(false)}
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function TransparencyPage() {
   const { t } = useLanguage();
 
@@ -73,6 +170,7 @@ export default function TransparencyPage() {
   const [filterYear, setFilterYear] = useState<number | ''>('');
   const [filterCat, setFilterCat] = useState<ReportCategory | ''>('');
   const [search, setSearch] = useState('');
+  const [previewDoc, setPreviewDoc] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -104,6 +202,13 @@ export default function TransparencyPage() {
 
   return (
     <>
+      {previewDoc && (
+        <PdfModal
+          url={previewDoc.url}
+          title={previewDoc.title}
+          onClose={() => setPreviewDoc(null)}
+        />
+      )}
       <PageHero
         label="CONSUDES"
         title={t.nav.transparency}
@@ -220,16 +325,25 @@ export default function TransparencyPage() {
                         </div>
 
                         {doc.file_url ? (
-                          <a
-                            href={doc.file_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label={`Baixar ${doc.title}`}
-                            className="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] hover:bg-[#0057A8] text-white text-[12px] font-semibold tracking-wide transition-colors duration-150"
-                          >
-                            <IconDownload />
-                            <span className="hidden sm:inline">Baixar</span>
-                          </a>
+                          <div className="shrink-0 flex items-center gap-2">
+                            <button
+                              onClick={() => setPreviewDoc({ url: doc.file_url!, title: doc.title })}
+                              aria-label={`Visualizar ${doc.title}`}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#003B73] hover:bg-[#0057A8] text-white text-[12px] font-semibold tracking-wide transition-colors duration-150"
+                            >
+                              <IconEye />
+                              <span className="hidden sm:inline">Visualizar</span>
+                            </button>
+                            <a
+                              href={doc.file_url}
+                              download
+                              aria-label={`Baixar ${doc.title}`}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#003B73]/20 hover:border-[#003B73]/50 text-[#003B73] hover:bg-[#003B73]/5 dark:border-white/20 dark:text-white/70 dark:hover:border-white/40 dark:hover:bg-white/5 text-[12px] font-semibold tracking-wide transition-colors duration-150"
+                            >
+                              <IconDownload />
+                              <span className="hidden sm:inline">Baixar</span>
+                            </a>
+                          </div>
                         ) : (
                           <span className="shrink-0 text-[11px] text-[#1F2937]/35 dark:text-white/25 border border-gray-200 dark:border-white/10 px-3 py-1.5 rounded-lg">
                             Em breve
