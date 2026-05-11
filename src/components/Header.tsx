@@ -149,6 +149,8 @@ export default function Header() {
               <img
                 src="/logo-novo-consudes-removebg-preview-1.png"
                 alt=""
+                width={546}
+                height={457}
                 className="h-12 sm:h-[56px] w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"
               />
             </Link>
@@ -283,7 +285,7 @@ export default function Header() {
                     className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
                       openDropdowns.has(item.key)
                         ? 'text-[#D9A441]'
-                        : 'text-[#003B73]/55 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
+                        : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
                     }`}
                   >
                     {item.label}

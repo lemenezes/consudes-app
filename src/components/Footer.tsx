@@ -63,6 +63,8 @@ export default function Footer() {
                 <img
                   src="/logo-novo-consudes-removebg-preview-1.png"
                   alt="CONSUDES"
+                  width={546}
+                  height={457}
                   className="h-12 w-auto object-contain block"
                 />
               </span>

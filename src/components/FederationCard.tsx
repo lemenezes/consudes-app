@@ -100,7 +100,7 @@ export default function FederationCard({ federation: f }: Props) {
               <h2 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] leading-none">
                 {countryName}
               </h2>
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold tracking-widest text-blue-700/70 uppercase">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold tracking-widest text-blue-700 uppercase">
                 {f.acronym}
               </span>
             </div>
@@ -117,6 +117,8 @@ export default function FederationCard({ federation: f }: Props) {
               <img
                 src={f.logo}
                 alt={`Logo ${f.acronym}`}
+                width={112}
+                height={80}
                 className="w-full h-full object-contain object-center"
               />
             </div>

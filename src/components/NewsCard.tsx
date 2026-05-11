@@ -38,6 +38,8 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
           <img
             src={cover_url}
             alt={title}
+            width={800}
+            height={450}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
@@ -57,7 +59,7 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
       <div className="flex flex-col flex-1 p-5 gap-2">
         {/* Data */}
         {published_at && (
-          <div className="flex items-center gap-1.5 text-[#0057A8]/60 dark:text-white/35 text-xs">
+          <div className="flex items-center gap-1.5 text-[#0057A8]/80 dark:text-white/50 text-xs">
             <Calendar className="w-3 h-3 shrink-0" />
             <time dateTime={published_at}>{formatDate(published_at)}</time>
           </div>
@@ -70,7 +72,7 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
 
         {/* Conteúdo truncado — texto puro, sem HTML */}
         {content && (
-          <p className="text-[#1F2937]/60 dark:text-slate-400 text-sm leading-relaxed line-clamp-4 flex-1">
+          <p className="text-[#1F2937]/70 dark:text-slate-400 text-sm leading-relaxed line-clamp-4 flex-1">
             {content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}
           </p>
         )}

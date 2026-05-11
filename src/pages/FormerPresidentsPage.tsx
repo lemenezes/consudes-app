@@ -16,6 +16,8 @@ function Portrait({ p }: { p: FormerPresident }) {
         <img
           src={p.photo}
           alt={p.name}
+          width={128}
+          height={144}
           className="w-full h-full object-cover object-top"
           loading="lazy"
           onError={() => setFailed(true)}

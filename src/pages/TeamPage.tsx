@@ -24,6 +24,8 @@ function Avatar({ member, size = 'md', loading = 'lazy' }: { member: TeamMember;
         <img
           src={member.photo}
           alt={member.name}
+          width={176}
+          height={176}
           className="w-full h-full object-cover"
           loading={loading}
           onError={() => setFailed(true)}
