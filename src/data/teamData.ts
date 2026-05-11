@@ -35,7 +35,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'president',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: '/images/team/rodrigo-malta.png',
+    photo: '/images/team/rodrigo-malta.webp',
     group: 'presidency',
   },
 
@@ -46,7 +46,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'vicePresident1',
     country: 'Argentina',
     countryCode: 'AR',
-    photo: '/images/team/juan-castiglia.png',
+    photo: '/images/team/juan-castiglia.webp',
     group: 'vicePresidency',
   },
   {
@@ -55,7 +55,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'vicePresident2',
     country: 'Colombia',
     countryCode: 'CO',
-    photo: '/images/team/luz-carreno.png',
+    photo: '/images/team/luz-carreno.webp',
     group: 'vicePresidency',
   },
 
@@ -66,7 +66,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'treasurer',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: '/images/team/joselio-coelho.png',
+    photo: '/images/team/joselio-coelho.webp',
     group: 'board',
   },
   {
@@ -75,7 +75,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'legal',
     country: 'Argentina',
     countryCode: 'AR',
-    photo: '/images/team/horacio-aleva.png',
+    photo: '/images/team/horacio-aleva.webp',
     group: 'board',
   },
   {
@@ -84,7 +84,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'institutional',
     country: 'Uruguay',
     countryCode: 'UY',
-    photo: '/images/team/daniel-perrone.png',
+    photo: '/images/team/daniel-perrone.webp',
     group: 'board',
   },
   {
@@ -93,7 +93,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'technical',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: '/images/team/victor-hugo.jpg',
+    photo: '/images/team/victor-hugo.webp',
     group: 'board',
   },
   {
@@ -102,7 +102,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'secretary',
     country: 'Uruguay',
     countryCode: 'UY',
-    photo: '/images/team/lourdes-carina.jpg',
+    photo: '/images/team/lourdes-carina.webp',
     group: 'board',
   },
 
@@ -113,7 +113,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'adminAdvisor',
     country: 'Paraguay',
     countryCode: 'PY',
-    photo: '/images/team/maria-mongelos.png',
+    photo: '/images/team/maria-mongelos.webp',
     group: 'advisors',
   },
   {
@@ -122,7 +122,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'technicalAdvisor',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: '/images/team/gustavo-horst.png',
+    photo: '/images/team/gustavo-horst.webp',
     group: 'advisors',
   },
   {
@@ -131,7 +131,7 @@ export const teamMembers: TeamMember[] = [
     roleKey: 'itSupport',
     country: 'Brasil',
     countryCode: 'BR',
-    photo: '/images/team/leandro-miglioli.jpg',
+    photo: '/images/team/leandro-miglioli.webp',
     group: 'advisors',
   },
 ];

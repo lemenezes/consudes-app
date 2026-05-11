@@ -159,7 +159,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
       <div className="px-5 py-6 border-b border-white/8">
         <div className="bg-white rounded-xl px-4 py-3 flex justify-center">
           <img
-            src="/logo-novo-consudes-removebg-preview-1.png"
+            src="/logo-novo-consudes-removebg-preview-1.webp"
             alt="CONSUDES"
             className="h-14 w-auto"
           />
@@ -238,7 +238,7 @@ export default function AdminLayout() {
         <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
           <div className="bg-white rounded-lg px-2 py-1">
             <img
-              src="/logo-novo-consudes-removebg-preview-1.png"
+              src="/logo-novo-consudes-removebg-preview-1.webp"
               alt="CONSUDES"
               className="h-8 w-auto"
             />

@@ -61,7 +61,7 @@ export default function Footer() {
             <Link to="/" className="inline-block w-fit group">
               <span className="inline-flex items-center justify-center bg-white/95 rounded-md px-3 py-2 shadow-[0_1px_6px_rgba(0,0,0,0.18)] group-hover:bg-white transition-colors duration-200">
                 <img
-                  src="/logo-novo-consudes-removebg-preview-1.png"
+                  src="/logo-novo-consudes-removebg-preview-1.webp"
                   alt="CONSUDES"
                   width={546}
                   height={457}

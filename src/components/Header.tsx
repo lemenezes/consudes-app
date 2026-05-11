@@ -147,7 +147,7 @@ export default function Header() {
             {/* Logo */}
             <Link to="/" onClick={close} className="flex-shrink-0 group" aria-label="CONSUDES – Página inicial">
               <img
-                src="/logo-novo-consudes-removebg-preview-1.png"
+                src="/logo-novo-consudes-removebg-preview-1.webp"
                 alt=""
                 width={546}
                 height={457}

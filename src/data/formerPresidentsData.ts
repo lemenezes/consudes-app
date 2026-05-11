@@ -22,7 +22,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'BR',
     mandateStart: 1985,
     mandateEnd: 1998,
-    photo: '/images/former-presidents/sentil-dellatorre.jpg',
+    photo: '/images/former-presidents/sentil-dellatorre.webp',
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'AR',
     mandateStart: 1999,
     mandateEnd: 2000,
-    photo: '/images/former-presidents/oscar-rodriguez.jpg',
+    photo: '/images/former-presidents/oscar-rodriguez.webp',
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'AR',
     mandateStart: 2000,
     mandateEnd: 2001,
-    photo: '/images/former-presidents/edith-libonatti.jpg',
+    photo: '/images/former-presidents/edith-libonatti.webp',
   },
   {
     id: 4,
@@ -46,7 +46,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'UY',
     mandateStart: 2002,
     mandateEnd: 2005,
-    photo: '/images/former-presidents/daniel-perrone-ex.jpg',
+    photo: '/images/former-presidents/daniel-perrone-ex.webp',
   },
   {
     id: 5,
@@ -54,7 +54,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'AR',
     mandateStart: 2005,
     mandateEnd: 2006,
-    photo: '/images/former-presidents/roberto-gonzalez.jpg',
+    photo: '/images/former-presidents/roberto-gonzalez.webp',
   },
   {
     id: 6,
@@ -62,7 +62,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'AR',
     mandateStart: 2006,
     mandateEnd: 2007,
-    photo: '/images/former-presidents/edith-libonatti.jpg',
+    photo: '/images/former-presidents/edith-libonatti.webp',
   },
   {
     id: 7,
@@ -70,7 +70,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'PY',
     mandateStart: 2007,
     mandateEnd: 2012,
-    photo: '/images/former-presidents/maria-mongelos-ex.jpg',
+    photo: '/images/former-presidents/maria-mongelos-ex.webp',
   },
   {
     id: 8,
@@ -78,7 +78,7 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'CL',
     mandateStart: 2012,
     mandateEnd: 2016,
-    photo: '/images/former-presidents/pedro-bonnassiolle.jpg',
+    photo: '/images/former-presidents/pedro-bonnassiolle.webp',
   },
   {
     id: 9,
@@ -86,6 +86,6 @@ export const formerPresidents: FormerPresident[] = [
     countryCode: 'AR',
     mandateStart: 2016,
     mandateEnd: 2020,
-    photo: '/images/former-presidents/horacio-aleva-ex.jpg',
+    photo: '/images/former-presidents/horacio-aleva-ex.webp',
   },
 ];

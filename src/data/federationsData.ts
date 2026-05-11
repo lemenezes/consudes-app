@@ -33,7 +33,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Confederação Argentina de Esportes de Surdos',
     fullNameEn: 'Argentine Confederation of Deaf Sports',
     flag: '🇦🇷',
-    logo: '/images/federations/cades.jpg',
+    logo: '/images/federations/cades.webp',
     socials: {
       website:   'http://www.cades.org.ar/',
       instagram: 'https://www.instagram.com/cades_argentina/',
@@ -51,7 +51,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Boliviana de Surdos',
     fullNameEn: 'Bolivian Federation of the Deaf',
     flag: '🇧🇴',
-    logo: '/images/federations/febos.jpg',
+    logo: '/images/federations/febos.webp',
     socials: {
       facebook: 'https://www.facebook.com/Febos.Bolivia/',
     },
@@ -66,7 +66,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Confederação Brasileira de Desportos de Surdos',
     fullNameEn: 'Brazilian Confederation of Deaf Sports',
     flag: '🇧🇷',
-    logo: '/images/federations/cbds.jpg',
+    logo: '/images/federations/cbds.webp',
     socials: {
       website:   'https://www.cbds.org.br/cbds/',
       instagram: 'https://www.instagram.com/cbdsbrasil/',
@@ -85,7 +85,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva Nacional de Surdos do Chile',
     fullNameEn: 'Chilean National Sports Federation of the Deaf',
     flag: '🇨🇱',
-    logo: '/images/federations/fedenasc.jpg',
+    logo: '/images/federations/fedenasc.webp',
     socials: {
       website:   'https://fedenaschile.cl/',
       instagram: 'https://www.instagram.com/fedenaschile/',
@@ -102,7 +102,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Nacional de Surdos da Colômbia',
     fullNameEn: 'National Federation of the Deaf of Colombia',
     flag: '🇨🇴',
-    logo: '/images/federations/fenascol.jpg',
+    logo: '/images/federations/fenascol.webp',
     socials: {
       website:   'https://fenascol.org.co/',
       instagram: 'https://www.instagram.com/fenascol/',
@@ -122,7 +122,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Equatoriana de Esporte para Pessoas Surdas',
     fullNameEn: 'Ecuadorian Sports Federation for Deaf Persons',
     flag: '🇪🇨',
-    logo: '/images/federations/fedepdal.jpg',
+    logo: '/images/federations/fedepdal.webp',
     socials: {
       instagram: 'https://www.instagram.com/fedepdal_ec_oficial/',
       facebook:  'https://www.facebook.com/FEDEPDAL',
@@ -138,7 +138,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva dos Surdos do Paraguai',
     fullNameEn: 'Sports Federation of the Deaf of Paraguay',
     flag: '🇵🇾',
-    logo: '/images/federations/fedespar.jpg',
+    logo: '/images/federations/fedespar.webp',
     socials: {
       instagram: 'https://www.instagram.com/fedespar005/',
       facebook:  'https://www.facebook.com/100069831503386/videos/',
@@ -153,7 +153,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Esportiva Nacional dos Surdos do Peru',
     fullNameEn: 'National Sports Federation of the Deaf of Peru',
     flag: '🇵🇪',
-    logo: '/images/federations/fdnsp.jpg',
+    logo: '/images/federations/fdnsp.webp',
     socials: {
       facebook: 'https://www.facebook.com/profile.php?id=100087425774271',
     },
@@ -167,7 +167,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Organização Esportiva dos Surdos do Uruguai',
     fullNameEn: 'Sports Organization of the Deaf of Uruguay',
     flag: '🇺🇾',
-    logo: '/images/federations/odsu.png',
+    logo: '/images/federations/odsu.webp',
     socials: {
       website:   'http://sordos.org.uy/',
       instagram: 'https://www.instagram.com/odsusordos/',
@@ -183,7 +183,7 @@ export const federationsData: Federation[] = [
     fullNamePt: 'Federação Poliesportiva Venezuelana de Surdos',
     fullNameEn: 'Venezuelan Multisports Federation of the Deaf',
     flag: '🇻🇪',
-    logo: '/images/federations/feposor.jpg',
+    logo: '/images/federations/feposor.webp',
     socials: {
       instagram: 'https://www.instagram.com/feposor_ve/',
       facebook:  'https://www.facebook.com/p/Feposor-Venezuela-100054981262698/',

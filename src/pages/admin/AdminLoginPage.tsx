@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
         {/* Logo + título */}
         <div className="text-center mb-6">
           <img
-            src="/logo-novo-consudes-removebg-preview-1.png"
+            src="/logo-novo-consudes-removebg-preview-1.webp"
             alt="CONSUDES"
             className="h-24 w-auto mx-auto mb-5"
           />
