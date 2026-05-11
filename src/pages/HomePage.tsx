@@ -5,8 +5,6 @@ import { usePublicNews } from '../hooks/usePublicNews';
 import { useSEO } from '../hooks/useSEO';
 import NewsCard from '../components/NewsCard';
 
-const STAT_VALUES = ['60+', '20', '15', '100k+'];
-
 const PROGRAM_ICONS = [
   <Users className="w-6 h-6" />,
   <BookOpen className="w-6 h-6" />,
@@ -90,11 +88,11 @@ export default function HomePage() {
           {/* Stats */}
           <div
             className="flex flex-wrap items-center justify-center gap-8 sm:gap-14"
-            aria-label={t.stats.map((s, i) => `${STAT_VALUES[i]} ${s.label}`).join(', ')}
+            aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
           >
-            {t.stats.map(({ label }, i) => (
-              <div key={i} className="text-center" aria-hidden="true">
-                <span className="block text-2xl sm:text-3xl font-bold text-white tabular-nums">{STAT_VALUES[i]}</span>
+            {t.stats.map(({ label, value }) => (
+              <div key={label} className="text-center" aria-hidden="true">
+                <span className="block text-2xl sm:text-3xl font-bold text-white tabular-nums">{value}</span>
                 <span className="block text-white/70 text-xs mt-0.5 tracking-wider uppercase">{label}</span>
               </div>
             ))}
@@ -140,16 +138,16 @@ export default function HomePage() {
           {/* Stats grid */}
           <div
             className="grid grid-cols-2 gap-4"
-            aria-label={t.stats.map((s, i) => `${STAT_VALUES[i]} ${s.label}`).join(', ')}
+            aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
           >
-            {t.stats.map((_, i) => (
+            {t.stats.map(({ value, label }) => (
               <div
-                key={i}
+                key={label}
                 aria-hidden="true"
                 className="bg-white dark:bg-[#0d1624] border-l-4 border-[#0057A8] dark:border-[#0057A8] rounded-r-lg p-6"
               >
-                <span className="block text-3xl font-extrabold text-[#003B73] dark:text-white tabular-nums">{STAT_VALUES[i]}</span>
-                <span className="block text-[#1F2937]/65 dark:text-slate-400 text-xs mt-1 leading-tight tracking-wide">{t.stats[i].label}</span>
+                <span className="block text-3xl font-extrabold text-[#003B73] dark:text-white tabular-nums">{value}</span>
+                <span className="block text-[#1F2937]/65 dark:text-slate-400 text-xs mt-1 leading-tight tracking-wide">{label}</span>
               </div>
             ))}
           </div>

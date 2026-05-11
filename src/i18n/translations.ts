@@ -36,10 +36,9 @@ export const translations = {
       cta2: 'Contáctenos',
     },
     stats: [
-      { label: 'Entidades afiliadas' },
-      { label: 'Años de actuación' },
-      { label: 'Estados atendidos' },
-      { label: 'Personas beneficiadas' },
+      { value: '10',       label: 'Federaciones afiliadas' },
+      { value: '1985',     label: 'Fundación' },
+      { value: '+40 años', label: 'Historia institucional' },
     ],
     about: {
       label: 'Quiénes somos',
@@ -354,10 +353,9 @@ export const translations = {
       cta2: 'Entre em contato',
     },
     stats: [
-      { label: 'Entidades filiadas' },
-      { label: 'Anos de atuação' },
-      { label: 'Estados atendidos' },
-      { label: 'Pessoas beneficiadas' },
+      { value: '10',       label: 'Federações filiadas' },
+      { value: '1985',     label: 'Fundação' },
+      { value: '+40 anos', label: 'História institucional' },
     ],
     about: {
       label: 'Quem somos',
@@ -672,10 +670,9 @@ export const translations = {
       cta2: 'Get in touch',
     },
     stats: [
-      { label: 'Affiliated entities' },
-      { label: 'Years of activity' },
-      { label: 'States served' },
-      { label: 'People benefited' },
+      { value: '10',        label: 'Affiliated federations' },
+      { value: '1985',      label: 'Founded' },
+      { value: '+40 years', label: 'Institutional history' },
     ],
     about: {
       label: 'About us',
