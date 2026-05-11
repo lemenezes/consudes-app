@@ -46,7 +46,7 @@ export default function HomePage() {
           {/* Assinatura institucional */}
           <div className="flex items-center justify-center gap-4 mb-10">
             <span className="hidden sm:block w-8 h-px bg-[#D9A441]/50 shrink-0" />
-            <p className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-xl lg:text-2xl font-light tracking-[0.08em] uppercase italic text-center">
+            <p className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-xl lg:text-2xl font-light tracking-[0.08em] uppercase italic text-center" aria-hidden="true">
               {t.hero.fullName.split('Deportiva').length === 2 ? (
                 <>
                   {t.hero.fullName.split('Deportiva')[0]}
