@@ -11,6 +11,7 @@ import {
   REPORT_CATEGORIES,
 } from '../../services/reportsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import { useLanguage } from '../../context/LanguageContext';
 import type { ReportFormData } from '../../services/reportsService';
 import type { PublishStatus } from '../../lib/database.types';
 
@@ -27,17 +28,19 @@ const EMPTY: ReportFormData = {
   sort_order: 0,
 };
 
-const STATUS_OPTIONS: { value: PublishStatus; label: string }[] = [
-  { value: 'draft',     label: 'Rascunho' },
-  { value: 'published', label: 'Publicado' },
-  { value: 'archived',  label: 'Arquivado' },
-];
-
 export default function AdminReportsFormPage() {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { log } = useAuditLog();
+  const { t } = useLanguage();
+  const tr = t.admin.reports;
+  const catLabels = t.transparencyPage.categories as Record<string, string>;
+  const statusOptions: { value: PublishStatus; label: string }[] = [
+    { value: 'draft',     label: tr.statusLabels.draft },
+    { value: 'published', label: tr.statusLabels.published },
+    { value: 'archived',  label: tr.statusLabels.archived },
+  ];
 
   const [form, setForm] = useState<ReportFormData>(EMPTY);
   const [loading, setLoading] = useState(isEditing);
@@ -45,7 +48,6 @@ export default function AdminReportsFormPage() {
   const [error, setError] = useState<string | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Carregar dados para edição ─────────────────────────────────────────
@@ -90,10 +92,8 @@ export default function AdminReportsFormPage() {
     if (err) { setError(err); return; }
 
     setUploading(true);
-    setUploadProgress('Enviando arquivo…');
     const { url, error } = await uploadReportPdf(file);
     setUploading(false);
-    setUploadProgress(null);
 
     if (error) { setError(error); return; }
     setForm((prev) => ({ ...prev, file_url: url ?? '' }));
@@ -101,10 +101,10 @@ export default function AdminReportsFormPage() {
 
   // ── Validação ──────────────────────────────────────────────────────────
   const validate = (): string | null => {
-    if (!form.title.trim()) return 'Título é obrigatório.';
-    if (!form.slug.trim()) return 'Slug é obrigatório.';
-    if (!/^[a-z0-9-]+$/.test(form.slug)) return 'Slug deve conter apenas letras minúsculas, números e hífens.';
-    if (!form.year || form.year < 1900 || form.year > 2100) return 'Ano inválido.';
+    if (!form.title.trim()) return tr.validTitle;
+    if (!form.slug.trim()) return tr.validSlug;
+    if (!/^[a-z0-9-]+$/.test(form.slug)) return tr.validSlugFormat;
+    if (!form.year || form.year < 1900 || form.year > 2100) return tr.validYear;
     return null;
   };
 
@@ -148,7 +148,7 @@ export default function AdminReportsFormPage() {
           </svg>
         </Link>
         <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-          {isEditing ? 'Editar documento' : 'Novo documento'}
+          {isEditing ? tr.formTitleEdit : tr.formTitleNew}
         </h1>
       </div>
 
@@ -162,10 +162,10 @@ export default function AdminReportsFormPage() {
 
         {/* Título + slug */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">Identificação</h2>
+          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionIdentification}</h2>
 
           <div>
-            <label htmlFor="title" className={labelCls}>Título *</label>
+            <label htmlFor="title" className={labelCls}>{tr.labelTitle} *</label>
             <input
               id="title"
               name="title"
@@ -173,7 +173,7 @@ export default function AdminReportsFormPage() {
               value={form.title}
               onChange={handleChange}
               required
-              placeholder="Ex: Relatório Anual 2024"
+              placeholder={tr.placeholderTitle}
               className={inputCls}
             />
           </div>
@@ -182,14 +182,14 @@ export default function AdminReportsFormPage() {
           <input type="hidden" name="slug" value={form.slug} />
 
           <div>
-            <label htmlFor="description" className={labelCls}>Descrição curta</label>
+            <label htmlFor="description" className={labelCls}>{tr.labelDesc}</label>
             <textarea
               id="description"
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={2}
-              placeholder="Breve descrição do documento (opcional)"
+              placeholder={tr.placeholderDesc}
               className={`${inputCls} resize-none`}
             />
           </div>
@@ -197,11 +197,11 @@ export default function AdminReportsFormPage() {
 
         {/* Categoria + ano + data */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">Classificação</h2>
+          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionClassification}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="sm:col-span-1">
-              <label htmlFor="category" className={labelCls}>Categoria *</label>
+              <label htmlFor="category" className={labelCls}>{tr.labelCategory} *</label>
               <select
                 id="category"
                 name="category"
@@ -210,13 +210,13 @@ export default function AdminReportsFormPage() {
                 className={inputCls}
               >
                 {REPORT_CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
+                  <option key={c.value} value={c.value}>{catLabels[c.value] ?? c.label}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label htmlFor="year" className={labelCls}>Ano *</label>
+              <label htmlFor="year" className={labelCls}>{tr.labelYear} *</label>
               <input
                 id="year"
                 name="year"
@@ -231,7 +231,7 @@ export default function AdminReportsFormPage() {
             </div>
 
             <div>
-              <label htmlFor="doc_date" className={labelCls}>Data do documento</label>
+              <label htmlFor="doc_date" className={labelCls}>{tr.labelDocDate}</label>
               <input
                 id="doc_date"
                 name="doc_date"
@@ -246,7 +246,7 @@ export default function AdminReportsFormPage() {
 
         {/* Upload PDF */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">Arquivo PDF</h2>
+          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionFile}</h2>
 
           {form.file_url ? (
             <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
@@ -254,7 +254,7 @@ export default function AdminReportsFormPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-green-700 font-medium">PDF vinculado</p>
+                <p className="text-sm text-green-700 font-medium">{tr.pdfLinked}</p>
                 <a href={form.file_url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:text-green-800 underline truncate block">
                   {form.file_url.split('/').pop()?.split('?')[0] ?? 'arquivo.pdf'}
                 </a>
@@ -263,7 +263,7 @@ export default function AdminReportsFormPage() {
                 type="button"
                 onClick={() => { setForm((p) => ({ ...p, file_url: '' })); if (fileInputRef.current) fileInputRef.current.value = ''; }}
                 className="text-green-600 hover:text-red-500 transition-colors p-1"
-                aria-label="Remover arquivo"
+                aria-label={tr.pdfRemove}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -276,11 +276,11 @@ export default function AdminReportsFormPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
               </svg>
               {uploading ? (
-                <p className="text-sm text-[#003B73]">{uploadProgress}</p>
+                <p className="text-sm text-[#003B73]">{tr.pdfUploading}</p>
               ) : (
                 <>
-                  <p className="text-sm text-gray-500">Clique para selecionar um PDF</p>
-                  <p className="text-xs text-gray-400">Máximo 20 MB</p>
+                  <p className="text-sm text-gray-500">{tr.pdfClickUpload}</p>
+                  <p className="text-xs text-gray-400">{tr.pdfMaxSize}</p>
                 </>
               )}
               <input
@@ -295,14 +295,14 @@ export default function AdminReportsFormPage() {
           )}
 
           <div>
-            <label htmlFor="file_url" className={labelCls}>Ou cole a URL do arquivo</label>
+            <label htmlFor="file_url" className={labelCls}>{tr.pdfPasteUrl}</label>
             <input
               id="file_url"
               name="file_url"
               type="url"
               value={form.file_url}
               onChange={handleChange}
-              placeholder="https://..."
+              placeholder={tr.placeholderUrl}
               className={inputCls}
             />
           </div>
@@ -310,20 +310,20 @@ export default function AdminReportsFormPage() {
 
         {/* Publicação */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">Publicação</h2>
+          <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionPublication}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="status" className={labelCls}>Status *</label>
+              <label htmlFor="status" className={labelCls}>{tr.labelStatus} *</label>
               <select id="status" name="status" value={form.status} onChange={handleChange} className={inputCls}>
-                {STATUS_OPTIONS.map((o) => (
+                {statusOptions.map((o) => (
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label htmlFor="sort_order" className={labelCls}>Ordem</label>
+              <label htmlFor="sort_order" className={labelCls}>{tr.labelOrder}</label>
               <input
                 id="sort_order"
                 name="sort_order"
@@ -343,7 +343,7 @@ export default function AdminReportsFormPage() {
                   onChange={handleChange}
                   className="w-4 h-4 rounded border-gray-300 text-[#003B73] focus:ring-[#003B73]/30"
                 />
-                <span className="text-sm text-[#1F2937]">Destaque</span>
+                <span className="text-sm text-[#1F2937]">{tr.labelFeatured}</span>
               </label>
             </div>
           </div>
@@ -355,14 +355,14 @@ export default function AdminReportsFormPage() {
             to="/admin/transparencia"
             className="px-5 py-2.5 text-sm text-gray-500 hover:text-[#1F2937] transition-colors"
           >
-            Cancelar
+            {tr.btnCancel}
           </Link>
           <button
             type="submit"
             disabled={saving || uploading}
             className="px-6 py-2.5 bg-[#003B73] hover:bg-[#0057A8] text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Publicar documento'}
+            {saving ? tr.btnSaving : isEditing ? tr.btnSave : tr.btnPublish}
           </button>
         </div>
       </form>

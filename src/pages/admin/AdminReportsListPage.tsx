@@ -4,9 +4,9 @@ import {
   listReports,
   setReportStatus,
   deleteReport,
-  categoryLabel,
 } from '../../services/reportsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
 import type { ReportRow, PublishStatus } from '../../lib/database.types';
 
@@ -16,13 +16,10 @@ const STATUS_COLORS: Record<PublishStatus, string> = {
   archived:  'bg-yellow-100 text-yellow-700',
 };
 
-const STATUS_LABELS: Record<PublishStatus, string> = {
-  draft:     'Rascunho',
-  published: 'Publicado',
-  archived:  'Arquivado',
-};
-
 export default function AdminReportsListPage() {
+  const { t } = useLanguage();
+  const tr = t.admin.reports;
+  const catLabels = t.transparencyPage.categories as Record<string, string>;
   const { log } = useAuditLog();
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +73,7 @@ export default function AdminReportsListPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-            Transparência / Relatórios
+            {tr.pageTitle}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">{reports.length} documento{reports.length !== 1 ? 's' : ''}</p>
         </div>
@@ -87,7 +84,7 @@ export default function AdminReportsListPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          Novo documento
+          {tr.newDoc}
         </Link>
       </div>
 
@@ -103,18 +100,18 @@ export default function AdminReportsListPage() {
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
-          <p className="font-['Cormorant_Garamond'] text-2xl mb-2">Nenhum documento cadastrado</p>
-          <p className="text-sm">Crie o primeiro documento usando o botão acima.</p>
+          <p className="font-['Cormorant_Garamond'] text-2xl mb-2">{tr.emptyTitle}</p>
+          <p className="text-sm">{tr.emptyDesc}</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left px-5 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">Documento</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden md:table-cell">Categoria</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden sm:table-cell">Ano</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">Status</th>
+                <th className="text-left px-5 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">{tr.colDoc}</th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden md:table-cell">{tr.colCategory}</th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden sm:table-cell">{tr.colYear}</th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">{tr.colStatus}</th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
@@ -128,14 +125,14 @@ export default function AdminReportsListPage() {
                     )}
                   </td>
                   <td className="px-4 py-4 hidden md:table-cell">
-                    <span className="text-xs text-gray-500">{categoryLabel(item.category)}</span>
+                    <span className="text-xs text-gray-500">{catLabels[item.category] ?? item.category}</span>
                   </td>
                   <td className="px-4 py-4 hidden sm:table-cell">
                     <span className="text-xs font-mono text-gray-500">{item.year}</span>
                   </td>
                   <td className="px-4 py-4">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${STATUS_COLORS[item.status as PublishStatus]}`}>
-                      {STATUS_LABELS[item.status as PublishStatus]}
+                      {tr.statusLabels[item.status as PublishStatus]}
                     </span>
                   </td>
                   <td className="px-4 py-4">
@@ -157,7 +154,7 @@ export default function AdminReportsListPage() {
                       <button
                         onClick={() => handleTogglePublish(item)}
                         disabled={actionLoading === item.id}
-                        title={item.status === 'published' ? 'Despublicar' : 'Publicar'}
+                        title={item.status === 'published' ? tr.tooltipUnpublish : tr.tooltipPublish}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors disabled:opacity-40"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
@@ -169,7 +166,7 @@ export default function AdminReportsListPage() {
                       </button>
                       <Link
                         to={`/admin/transparencia/${item.id}/editar`}
-                        title="Editar"
+                        title={tr.tooltipEdit}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-[#003B73] hover:bg-blue-50 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
@@ -178,7 +175,7 @@ export default function AdminReportsListPage() {
                       </Link>
                       <button
                         onClick={() => setToDelete(item)}
-                        title="Excluir"
+                        title={tr.tooltipDelete}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
@@ -196,7 +193,7 @@ export default function AdminReportsListPage() {
 
       {toDelete && (
         <DeleteConfirmModal
-          title="Apagar documento"
+          title={tr.deleteTitle}
           itemLabel={toDelete.title}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setToDelete(null)}
