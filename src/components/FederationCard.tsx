@@ -89,9 +89,9 @@ export default function FederationCard({ federation: f }: Props) {
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
 
           {/* Bandeira */}
-          <div className="shrink-0 text-6xl sm:text-5xl leading-none select-none" aria-label={f.country}>
+          <span role="img" aria-label={f.country} className="shrink-0 text-6xl sm:text-5xl leading-none select-none">
             {f.flag}
-          </div>
+          </span>
 
           {/* Info central */}
           <div className="flex-1 text-center sm:text-left min-w-0">

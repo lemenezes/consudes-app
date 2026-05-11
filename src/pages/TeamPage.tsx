@@ -6,7 +6,7 @@ import { teamMembers, teamByGroup, FLAG } from '../data/teamData';
 import type { TeamMember } from '../data/teamData';
 
 /* ── Avatar ──────────────────────────────────────────────────────── */
-function Avatar({ member, size = 'md' }: { member: TeamMember; size?: 'sm' | 'md' | 'lg' }) {
+function Avatar({ member, size = 'md', loading = 'lazy' }: { member: TeamMember; size?: 'sm' | 'md' | 'lg'; loading?: 'lazy' | 'eager' }) {
   const [failed, setFailed] = useState(false);
   const initials = member.name.split(' ').slice(0, 2).map((w) => w[0]).join('');
 
@@ -25,6 +25,7 @@ function Avatar({ member, size = 'md' }: { member: TeamMember; size?: 'sm' | 'md
           src={member.photo}
           alt={member.name}
           className="w-full h-full object-cover"
+          loading={loading}
           onError={() => setFailed(true)}
         />
       ) : (
@@ -44,7 +45,7 @@ function PresidentCard({ member, roleLabel, countries }: { member: TeamMember; r
       <div className="p-8 sm:p-12 flex flex-col sm:flex-row items-center sm:items-center gap-8 sm:gap-12">
         {/* Avatar grande */}
         <div className="flex-shrink-0">
-          <Avatar member={member} size="lg" />
+          <Avatar member={member} size="lg" loading="eager" />
         </div>
 
         {/* Info */}

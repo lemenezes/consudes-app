@@ -1,35 +1,37 @@
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import { LanguageProvider } from './context/LanguageContext'
 import { AuthProvider } from './context/AuthContext'
 import Layout from './components/Layout'
 import ProtectedAdminRoute from './components/ProtectedAdminRoute'
-import AdminLoginPage from './pages/admin/AdminLoginPage'
-import AdminDashboard from './pages/admin/AdminDashboard'
-import AdminNewsListPage from './pages/admin/AdminNewsListPage'
-import AdminNewsFormPage from './pages/admin/AdminNewsFormPage'
-import AdminCalendarListPage from './pages/admin/AdminCalendarListPage'
-import AdminCalendarFormPage from './pages/admin/AdminCalendarFormPage'
-import HomePage from './pages/HomePage'
-import HistoryPage from './pages/HistoryPage'
-import MissionPage from './pages/MissionPage'
-import ValuesPage from './pages/ValuesPage'
-import TeamPage from './pages/TeamPage'
-import FormerPresidentsPage from './pages/FormerPresidentsPage'
-import HeadquartersPage from './pages/HeadquartersPage'
-import FederationsPage from './pages/FederationsPage'
-import SportsPage from './pages/SportsPage'
-import ChampionshipsPage from './pages/ChampionshipsPage'
-import InterclubsPage from './pages/InterclubsPage'
-import SouthAmericanGamesPage from './pages/SouthAmericanGamesPage'
-import RankingsPage from './pages/RankingsPage'
-import CalendarPage from './pages/CalendarPage'
-import NewsPage from './pages/NewsPage'
-import NewsDetailPage from './pages/NewsDetailPage'
-import TransparencyPage from './pages/TransparencyPage'
-import ReportsPage from './pages/ReportsPage'
-import GalleryPage from './pages/GalleryPage'
-import ContactPage from './pages/ContactPage'
+
+const AdminLoginPage        = lazy(() => import('./pages/admin/AdminLoginPage'))
+const AdminDashboard        = lazy(() => import('./pages/admin/AdminDashboard'))
+const AdminNewsListPage     = lazy(() => import('./pages/admin/AdminNewsListPage'))
+const AdminNewsFormPage     = lazy(() => import('./pages/admin/AdminNewsFormPage'))
+const AdminCalendarListPage = lazy(() => import('./pages/admin/AdminCalendarListPage'))
+const AdminCalendarFormPage = lazy(() => import('./pages/admin/AdminCalendarFormPage'))
+const HomePage              = lazy(() => import('./pages/HomePage'))
+const HistoryPage           = lazy(() => import('./pages/HistoryPage'))
+const MissionPage           = lazy(() => import('./pages/MissionPage'))
+const ValuesPage            = lazy(() => import('./pages/ValuesPage'))
+const TeamPage              = lazy(() => import('./pages/TeamPage'))
+const FormerPresidentsPage  = lazy(() => import('./pages/FormerPresidentsPage'))
+const HeadquartersPage      = lazy(() => import('./pages/HeadquartersPage'))
+const FederationsPage       = lazy(() => import('./pages/FederationsPage'))
+const SportsPage            = lazy(() => import('./pages/SportsPage'))
+const ChampionshipsPage     = lazy(() => import('./pages/ChampionshipsPage'))
+const InterclubsPage        = lazy(() => import('./pages/InterclubsPage'))
+const SouthAmericanGamesPage = lazy(() => import('./pages/SouthAmericanGamesPage'))
+const RankingsPage          = lazy(() => import('./pages/RankingsPage'))
+const CalendarPage          = lazy(() => import('./pages/CalendarPage'))
+const NewsPage              = lazy(() => import('./pages/NewsPage'))
+const NewsDetailPage        = lazy(() => import('./pages/NewsDetailPage'))
+const TransparencyPage      = lazy(() => import('./pages/TransparencyPage'))
+const ReportsPage           = lazy(() => import('./pages/ReportsPage'))
+const GalleryPage           = lazy(() => import('./pages/GalleryPage'))
+const ContactPage           = lazy(() => import('./pages/ContactPage'))
 
 const router = createBrowserRouter([
   {
@@ -87,7 +89,9 @@ export default function App() {
     <AuthProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <RouterProvider router={router} />
+          <Suspense fallback={null}>
+            <RouterProvider router={router} />
+          </Suspense>
         </LanguageProvider>
       </ThemeProvider>
     </AuthProvider>

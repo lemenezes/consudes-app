@@ -148,7 +148,7 @@ export default function Header() {
             <Link to="/" onClick={close} className="flex-shrink-0 group" aria-label="CONSUDES – Página inicial">
               <img
                 src="/logo-novo-consudes-removebg-preview-1.png"
-                alt="CONSUDES"
+                alt=""
                 className="h-12 sm:h-[56px] w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"
               />
             </Link>
