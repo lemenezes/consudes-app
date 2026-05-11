@@ -57,19 +57,19 @@ export default function Footer() {
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 mb-12">
 
           {/* Brand */}
-          <div className="flex flex-col gap-4 lg:w-[210px] flex-shrink-0">
+          <div className="flex flex-col gap-5 lg:w-[240px] flex-shrink-0">
             <Link to="/" className="inline-block w-fit group">
-              <span className="inline-flex items-center justify-center bg-white/95 rounded-md px-3 py-2 shadow-[0_1px_6px_rgba(0,0,0,0.18)] group-hover:bg-white transition-colors duration-200">
+              <span className="inline-flex items-center justify-center bg-white/95 rounded-md px-4 py-2.5 shadow-[0_1px_8px_rgba(0,0,0,0.20)] group-hover:bg-white transition-colors duration-200">
                 <img
                   src="/logo-novo-consudes-removebg-preview-1.webp"
                   alt="CONSUDES"
                   width={546}
                   height={457}
-                  className="h-12 w-auto object-contain block"
+                  className="h-[68px] w-auto object-contain block"
                 />
               </span>
             </Link>
-            <p className="text-white/65 text-[12px] leading-[1.8] font-light tracking-wide">
+            <p className="text-white/65 text-[13px] leading-[1.75] font-light tracking-wide">
               {t.topbar}
             </p>
             <a
