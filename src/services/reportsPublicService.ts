@@ -13,7 +13,7 @@ export async function listPublishedReports(filters?: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase as any)
     .from('reports')
-    .select('id, title, slug, description, category, year, doc_date, file_url, featured, sort_order')
+    .select('id, title, slug, description, category, year, doc_date, file_url, featured, sort_order, created_at')
     .eq('status', 'published')
     .order('year', { ascending: false })
     .order('sort_order', { ascending: true })

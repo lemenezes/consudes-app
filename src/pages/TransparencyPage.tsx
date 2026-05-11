@@ -69,6 +69,7 @@ export default function TransparencyPage() {
 
   const [reports, setReports] = useState<ReportPublicItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [filterYear, setFilterYear] = useState<number | ''>('');
   const [filterCat, setFilterCat] = useState<ReportCategory | ''>('');
   const [search, setSearch] = useState('');
@@ -78,7 +79,8 @@ export default function TransparencyPage() {
     listPublishedReports({
       year: filterYear !== '' ? filterYear : undefined,
       category: filterCat !== '' ? filterCat : undefined,
-    }).then(({ data }) => {
+    }).then(({ data, error }) => {
+      if (error) setFetchError(error);
       setReports(data);
       setLoading(false);
     });
@@ -164,6 +166,11 @@ export default function TransparencyPage() {
           </div>
 
           {/* ── Lista ────────────────────────────────────────────── */}
+          {fetchError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+              Erro ao carregar documentos: {fetchError}
+            </div>
+          )}
           {loading ? (
             <Skeleton />
           ) : filtered.length === 0 ? (
