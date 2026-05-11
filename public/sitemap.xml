@@ -4,106 +4,106 @@
 
   <!-- Home -->
   <url>
-    <loc>https://consudes.org.br/</loc>
+    <loc>https://consudes.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Institucional -->
   <url>
-    <loc>https://consudes.org.br/institucional/historia</loc>
+    <loc>https://consudes.com/institucional/historia</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/institucional/mision</loc>
+    <loc>https://consudes.com/institucional/mision</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/institucional/valores</loc>
+    <loc>https://consudes.com/institucional/valores</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/institucional/equipo</loc>
+    <loc>https://consudes.com/institucional/equipo</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/institucional/ex-presidentes</loc>
+    <loc>https://consudes.com/institucional/ex-presidentes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/institucional/sede</loc>
+    <loc>https://consudes.com/institucional/sede</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <!-- Deportes y competencias -->
   <url>
-    <loc>https://consudes.org.br/deportes</loc>
+    <loc>https://consudes.com/deportes</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/campeonatos</loc>
+    <loc>https://consudes.com/campeonatos</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/interclubes</loc>
+    <loc>https://consudes.com/interclubes</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/juegos-sudamericanos</loc>
+    <loc>https://consudes.com/juegos-sudamericanos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/rankings</loc>
+    <loc>https://consudes.com/rankings</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://consudes.org.br/calendario</loc>
+    <loc>https://consudes.com/calendario</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Federaciones -->
   <url>
-    <loc>https://consudes.org.br/federaciones</loc>
+    <loc>https://consudes.com/federaciones</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Noticias (listado) -->
   <url>
-    <loc>https://consudes.org.br/noticias</loc>
+    <loc>https://consudes.com/noticias</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Galería -->
   <url>
-    <loc>https://consudes.org.br/galeria</loc>
+    <loc>https://consudes.com/galeria</loc>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <!-- Transparencia -->
   <url>
-    <loc>https://consudes.org.br/transparencia</loc>
+    <loc>https://consudes.com/transparencia</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Contacto -->
   <url>
-    <loc>https://consudes.org.br/contacto</loc>
+    <loc>https://consudes.com/contacto</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>

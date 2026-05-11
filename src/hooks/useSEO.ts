@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'CONSUDES';
-const BASE_URL  = 'https://consudes.org.br';
+const BASE_URL  = 'https://consudes.com';
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 
 export interface SEOProps {

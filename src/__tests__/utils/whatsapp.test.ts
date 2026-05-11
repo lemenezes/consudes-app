@@ -5,7 +5,7 @@ import type { Listing } from '../../types';
 
 beforeAll(() => {
   Object.defineProperty(window, 'location', {
-    value: { origin: 'https://consudes.org.br' },
+    value: { origin: 'https://consudes.com' },
     writable: true,
   });
 });
@@ -25,7 +25,7 @@ const base: Listing = {
 
 describe('buildListingUrl', () => {
   it('inclui o origin e o id', () => {
-    expect(buildListingUrl(base)).toBe('https://consudes.org.br/anuncios/42');
+    expect(buildListingUrl(base)).toBe('https://consudes.com/anuncios/42');
   });
 });
 

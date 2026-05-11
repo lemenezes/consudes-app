@@ -86,7 +86,7 @@ describe('Header — mobile menu', () => {
 describe('ListingModal', () => {
   beforeEach(() => {
     Object.defineProperty(window, 'location', {
-      value: { origin: 'https://consudes.org.br' },
+      value: { origin: 'https://consudes.com' },
       writable: true,
     });
   });

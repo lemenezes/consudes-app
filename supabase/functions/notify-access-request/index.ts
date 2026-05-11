@@ -14,7 +14,7 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'onboarding@resend.dev';
 const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL') ?? 'lemenezes@gmail.com';
-const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://consudes.org.br';
+const SITE_URL = Deno.env.get('SITE_URL') ?? 'https://consudes.com';
 
 interface WebhookPayload {
   type: 'INSERT' | 'UPDATE' | 'DELETE';

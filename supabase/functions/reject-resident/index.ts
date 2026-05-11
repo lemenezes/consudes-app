@@ -5,7 +5,7 @@ const SUPABASE_ANON_KEY      = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const RESEND_API_KEY         = Deno.env.get('RESEND_API_KEY') ?? '';
 const FROM_EMAIL             = Deno.env.get('FROM_EMAIL') ?? 'onboarding@resend.dev';
-const SITE_URL               = Deno.env.get('SITE_URL') ?? 'https://consudes.org.br';
+const SITE_URL               = Deno.env.get('SITE_URL') ?? 'https://consudes.com';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',

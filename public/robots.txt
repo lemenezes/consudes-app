@@ -5,4 +5,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /admin
 
-Sitemap: https://consudes.org.br/sitemap.xml
+Sitemap: https://consudes.com/sitemap.xml
