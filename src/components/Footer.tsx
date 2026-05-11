@@ -83,7 +83,7 @@ export default function Footer() {
           <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8">
             {cols.map(({ heading, links }) => (
               <div key={heading}>
-                <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4 opacity-80">
+                <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
                   {heading}
                 </p>
                 <ul className="flex flex-col gap-2.5">
@@ -124,7 +124,7 @@ export default function Footer() {
           </p>
           <Link
             to="/admin/login"
-            className="inline-flex items-center gap-1.5 text-[11px] text-white/15 hover:text-white/40 transition-colors duration-150 group"
+            className="inline-flex items-center gap-1.5 text-[11px] text-white/35 hover:text-white/60 transition-colors duration-150 group"
           >
             <svg
               className="w-3 h-3 group-hover:opacity-100 opacity-60 transition-opacity"
