@@ -73,6 +73,8 @@ export async function createReport(form: ReportFormData): Promise<{ data: Report
     .from('reports')
     .insert({
       ...form,
+      year: Number(form.year),
+      sort_order: Number(form.sort_order),
       doc_date: form.doc_date || null,
       description: form.description || null,
       file_url: form.file_url || null,
@@ -80,7 +82,7 @@ export async function createReport(form: ReportFormData): Promise<{ data: Report
     .select()
     .single();
 
-  if (error) return { data: null, error: error.message };
+  if (error) return { data: null, error: `${error.message}${error.details ? ' — ' + error.details : ''}${error.hint ? ' — ' + error.hint : ''}` };
   return { data: data as ReportRow, error: null };
 }
 
@@ -93,6 +95,8 @@ export async function updateReport(
     .from('reports')
     .update({
       ...form,
+      year: Number(form.year),
+      sort_order: Number(form.sort_order),
       doc_date: form.doc_date || null,
       description: form.description || null,
       file_url: form.file_url || null,

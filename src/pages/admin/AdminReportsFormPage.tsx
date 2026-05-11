@@ -267,7 +267,7 @@ export default function AdminReportsFormPage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-green-700 font-medium">PDF vinculado</p>
                 <a href={form.file_url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:text-green-800 underline truncate block">
-                  {form.file_url}
+                  {form.file_url.split('/').pop()?.split('?')[0] ?? 'arquivo.pdf'}
                 </a>
               </div>
               <button
@@ -373,7 +373,7 @@ export default function AdminReportsFormPage() {
             disabled={saving || uploading}
             className="px-6 py-2.5 bg-[#003B73] hover:bg-[#0057A8] text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Criar documento'}
+            {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Publicar documento'}
           </button>
         </div>
       </form>
