@@ -161,20 +161,20 @@ export default function TeamPage() {
               aria-label={`${teamMembers.length} ${tp.membersLabel}, ${countries} ${tp.countriesLabel}`}
             >
               <div className="text-center px-7 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {teamMembers.length}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                </span>
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {tp.membersLabel}
-                </p>
+                </span>
               </div>
               <div className="text-center px-7 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {countries}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                </span>
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {tp.countriesLabel}
-                </p>
+                </span>
               </div>
             </div>
           </div>

@@ -91,28 +91,28 @@ export default function FormerPresidentsPage() {
                 aria-label={`${formerPresidents.length} ${fp.mandatesLabel}, ${uniqueCountries} ${fp.countriesLabel}, ${yearsOfHistory} ${fp.yearsLabel}`}
               >
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {formerPresidents.length}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                </span>
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.mandatesLabel}
-                </p>
+                </span>
               </div>
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {uniqueCountries}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                </span>
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.countriesLabel}
-                </p>
+                </span>
               </div>
               <div className="text-center px-6 py-4">
-                <p className="text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
+                <span className="block text-3xl font-['Cormorant_Garamond'] font-bold text-[#003B73] dark:text-white leading-none" aria-hidden="true">
                   {yearsOfHistory}
-                </p>
-                <p className="text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
+                </span>
+                <span className="block text-[10px] uppercase tracking-widest text-[#1F2937]/70 dark:text-white/55 mt-1" aria-hidden="true">
                   {fp.yearsLabel}
-                </p>
+                </span>
               </div>
             </div>
           </div>
