@@ -79,7 +79,7 @@ type NavItem =
 type NavGroup = { heading: string; items: NavItem[] };
 
 /* ── Componente NavLink ativo ────────────────────────────────────────────── */
-function SideNavLink({ item, onClick }: { item: NavItem; onClick?: () => void }) {
+function SideNavLink({ item, onClick, comingSoonLabel }: { item: NavItem; onClick?: () => void; comingSoonLabel: string }) {
   const base = 'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150';
 
   if (item.kind === 'soon') {
@@ -88,7 +88,7 @@ function SideNavLink({ item, onClick }: { item: NavItem; onClick?: () => void })
         {item.icon}
         <span>{item.label}</span>
         <span className="ml-auto text-[9px] font-bold tracking-widest uppercase text-white/20 border border-white/15 rounded px-1.5 py-0.5">
-          soon
+          {comingSoonLabel}
         </span>
       </div>
     );
@@ -175,7 +175,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
             )}
             <div className="space-y-0.5">
               {group.items.map((item, ii) => (
-                <SideNavLink key={ii} item={item} onClick={onNav} />
+                <SideNavLink key={ii} item={item} onClick={onNav} comingSoonLabel={t.admin.dashboard.comingSoon} />
               ))}
             </div>
           </div>
@@ -209,12 +209,12 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
       {/* ── Sidebar desktop (fixed) ── */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 w-60 bg-[#002D5C] z-30">
+      <aside className="hidden lg:block fixed inset-y-0 left-0 w-68 bg-[#002D5C] z-30">
         <SidebarContent />
       </aside>
 
       {/* ── Coluna de conteúdo ── */}
-      <div className="lg:pl-60 flex flex-col min-h-screen">
+      <div className="lg:pl-68 flex flex-col min-h-screen">
 
         {/* Top bar mobile */}
         <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
