@@ -88,11 +88,14 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14">
+          <div
+            className="flex flex-wrap items-center justify-center gap-8 sm:gap-14"
+            aria-label={t.stats.map((s, i) => `${STAT_VALUES[i]} ${s.label}`).join(', ')}
+          >
             {t.stats.map(({ label }, i) => (
-              <div key={i} className="text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-white tabular-nums">{STAT_VALUES[i]}</p>
-                <p className="text-white/50 text-xs mt-0.5 tracking-wider uppercase">{label}</p>
+              <div key={i} className="text-center" aria-hidden="true">
+                <span className="block text-2xl sm:text-3xl font-bold text-white tabular-nums">{STAT_VALUES[i]}</span>
+                <span className="block text-white/70 text-xs mt-0.5 tracking-wider uppercase">{label}</span>
               </div>
             ))}
           </div>
@@ -135,14 +138,18 @@ export default function HomePage() {
           </div>
 
           {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-4">
+          <div
+            className="grid grid-cols-2 gap-4"
+            aria-label={t.stats.map((s, i) => `${STAT_VALUES[i]} ${s.label}`).join(', ')}
+          >
             {t.stats.map((_, i) => (
               <div
                 key={i}
+                aria-hidden="true"
                 className="bg-white dark:bg-[#0d1624] border-l-4 border-[#0057A8] dark:border-[#0057A8] rounded-r-lg p-6"
               >
-                <p className="text-3xl font-extrabold text-[#003B73] dark:text-white tabular-nums">{STAT_VALUES[i]}</p>
-                <p className="text-[#1F2937]/55 dark:text-slate-400 text-xs mt-1 leading-tight tracking-wide">{t.stats[i].label}</p>
+                <span className="block text-3xl font-extrabold text-[#003B73] dark:text-white tabular-nums">{STAT_VALUES[i]}</span>
+                <span className="block text-[#1F2937]/65 dark:text-slate-400 text-xs mt-1 leading-tight tracking-wide">{t.stats[i].label}</span>
               </div>
             ))}
           </div>
@@ -162,7 +169,7 @@ export default function HomePage() {
             <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-semibold text-white mb-3">
               {t.programs.title}
             </h2>
-            <p className="text-white/55 text-sm max-w-md mx-auto">
+            <p className="text-white/65 text-sm max-w-md mx-auto">
               {t.programs.subtitle}
             </p>
           </div>
@@ -200,7 +207,7 @@ export default function HomePage() {
             <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-semibold text-[#1F2937] dark:text-white mb-3">
               {t.news.title}
             </h2>
-            <p className="text-[#1F2937]/50 dark:text-slate-500 text-sm">
+            <p className="text-[#1F2937]/65 dark:text-slate-500 text-sm">
               {t.news.subtitle}
             </p>
           </div>
