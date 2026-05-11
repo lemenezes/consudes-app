@@ -62,6 +62,16 @@ export default function Header() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // Abre automaticamente o dropdown que contém a página ativa ao abrir o menu mobile
+  useEffect(() => {
+    if (!isOpen) return;
+    const activeKey = navItems
+      .filter((i): i is Extract<NavItem, { type: 'dropdown' }> => i.type === 'dropdown')
+      .find((i) => i.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/'))));
+    if (activeKey) setOpenDropdowns(new Set([activeKey.key]));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
   const navItems: NavItem[] = [
     {
       type: 'dropdown',
@@ -283,7 +293,8 @@ export default function Header() {
                   <button
                     onClick={() => toggleDropdown(item.key)}
                     className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
-                      openDropdowns.has(item.key)
+                      openDropdowns.has(item.key) ||
+                      item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
                         ? 'text-[#D9A441]'
                         : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
                     }`}
@@ -315,10 +326,10 @@ export default function Header() {
                             to={link.to!}
                             onClick={close}
                             className={({ isActive }) =>
-                              `flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] font-medium transition-colors ${
+                              `flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] transition-colors ${
                                 isActive
-                                  ? 'text-[#0057A8] dark:text-white'
-                                  : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/60 dark:hover:text-white'
+                                  ? 'font-semibold text-[#003B73] bg-[#003B73]/10 border-l-2 border-l-[#D9A441] dark:text-white dark:bg-white/8'
+                                  : 'font-medium text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/60 dark:hover:text-white'
                               }`
                             }
                           >
@@ -342,19 +353,14 @@ export default function Header() {
                   end={item.to === '/'}
                   aria-label={item.to === '/' ? 'Navegar para a página inicial' : undefined}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-5 py-3.5 text-[13px] font-semibold border-b border-[#003B73]/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
+                    `flex items-center gap-3 px-5 py-3.5 text-[13px] border-b border-[#003B73]/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
                       isActive
-                        ? 'text-[#0057A8] dark:text-white'
-                        : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/65 dark:hover:text-white'
+                        ? 'font-bold text-[#003B73] bg-[#003B73]/10 border-l-2 border-l-[#D9A441] dark:text-white dark:bg-white/8'
+                        : 'font-semibold text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/65 dark:hover:text-white'
                     }`
                   }
                 >
-                  {({ isActive }) => (
-                    <>
-                      {item.label}
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#D9A441] flex-shrink-0" />}
-                    </>
-                  )}
+                  {item.label}
                 </NavLink>
               )
             )}

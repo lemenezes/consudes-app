@@ -124,8 +124,10 @@ export default function Footer() {
           <p className="text-[11px] text-white/60 tracking-wide font-light">
             © {new Date().getFullYear()} CONSUDES &nbsp;·&nbsp; {t.footer.rights}
           </p>
-          <Link
-            to="/admin/login"
+          <a
+            href="/admin/login"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-white/60 transition-colors duration-150 group"
           >
             <svg
@@ -139,7 +141,7 @@ export default function Footer() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
             Área administrativa
-          </Link>
+          </a>
         </div>
 
       </div>
