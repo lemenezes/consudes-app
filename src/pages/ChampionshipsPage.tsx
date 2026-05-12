@@ -23,7 +23,7 @@ export default function ChampionshipsPage() {
           ))}
         </div>
         <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm mt-12">
-          Conteúdo em construção
+          {t.common.contentUnderConstruction}
         </p>
       </section>
     </>

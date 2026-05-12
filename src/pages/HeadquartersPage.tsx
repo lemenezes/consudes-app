@@ -8,7 +8,7 @@ export default function HeadquartersPage() {
       <PageHero label="CONSUDES" title={t.nav.headquarters} />
       <section className="bg-white dark:bg-[#0d1624] py-20">
         <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm">
-          Conteúdo em construção
+          {t.common.contentUnderConstruction}
         </p>
       </section>
     </>

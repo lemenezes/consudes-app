@@ -23,84 +23,64 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ─── Hero ─────────────────────────────────────────────────────────── */}
+      {/* ─── Hero Refinado ─────────────────────────────────────────────────────────── */}
       <section className="relative bg-[#003B73] overflow-hidden">
-        {/* Camadas de fundo */}
+        {/* Camadas de fundo refinadas */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Gradiente principal */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#002d5a] via-[#0057A8] to-[#0076C8] opacity-80" />
-          {/* Blob central topo */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[380px] bg-[#0076C8]/25 rounded-full blur-3xl" />
-          {/* Blob inferior direito */}
-          <div className="absolute bottom-0 right-0 w-[480px] h-[280px] bg-[#002d5a]/50 rounded-full blur-3xl" />
-          {/* Blob esquerdo suave */}
-          <div className="absolute top-1/3 left-0 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#002d5a] via-[#003B73] to-[#0057A8] opacity-90" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#0076C8]/20 rounded-full blur-[120px]" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-[#002d5a]/40 rounded-full blur-[100px]" />
+          <div className="absolute top-1/3 left-0 w-72 h-72 bg-white/10 rounded-full blur-[80px]" />
         </div>
-        {/* Acento dourado vertical direito */}
-        <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-[#D9A441]/60 via-[#D9A441]/20 to-transparent" />
+        <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-[#D9A441]/70 via-[#D9A441]/30 to-transparent" />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-20 sm:py-32 text-center">
-
-          {/* Assinatura institucional */}
-          <div className="flex items-center justify-center gap-4 mb-10">
-            <span className="hidden sm:block w-8 h-px bg-[#D9A441]/50 shrink-0" />
-            <span className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-xl lg:text-2xl font-light tracking-[0.08em] uppercase italic text-center" aria-hidden="true">
-              {t.hero.fullName.split('Deportiva').length === 2 ? (
-                <>
-                  {t.hero.fullName.split('Deportiva')[0]}
-                  <span className="sm:hidden"><br /></span>
-                  {'Deportiva'}
-                  {t.hero.fullName.split('Deportiva')[1]}
-                </>
-              ) : t.hero.fullName}
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <span className="hidden sm:block w-10 h-px bg-[#D9A441]/60 shrink-0" />
+            <span className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-xl lg:text-2xl font-light tracking-[0.08em] uppercase italic text-center">
+              {t.hero.fullName}
             </span>
-            <span className="hidden sm:block w-8 h-px bg-[#D9A441]/50 shrink-0" />
+            <span className="hidden sm:block w-10 h-px bg-[#D9A441]/60 shrink-0" />
           </div>
 
-          {/* Headline */}
-          <h1 data-testid="hero-title" className="font-['Cormorant_Garamond'] text-5xl sm:text-6xl lg:text-7xl font-semibold text-white leading-[1.1] tracking-tight mb-6">
-            {t.hero.headline1}<br/>
+          <h1 className="font-['Cormorant_Garamond'] text-5xl sm:text-6xl lg:text-7xl font-semibold text-white leading-[1.1] tracking-tight mb-8">
+            {t.hero.headline1}<br />
             <span className="text-[#7FD6E8] italic">{t.hero.headline2}</span>
           </h1>
 
-          {/* Subtítulo */}
-          <p className="text-white/60 text-base sm:text-lg mb-10 max-w-xl mx-auto font-light tracking-wide">
+          <p className="text-white/70 text-base sm:text-lg mb-12 max-w-2xl mx-auto font-light tracking-wide">
             {t.hero.subtitle}
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
             <a
               href="#sobre"
-              className="inline-flex items-center gap-2 bg-white text-[#0057A8] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#f0f8ff] transition-colors shadow-lg text-sm sm:text-base"
+              className="inline-flex items-center gap-2 bg-white text-[#0057A8] font-semibold px-8 py-4 rounded-xl hover:bg-[#f0f8ff] transition-colors shadow-lg text-sm sm:text-base"
             >
               {t.hero.cta1}
               <ArrowRight size={16} />
             </a>
             <a
               href="#contato"
-              className="inline-flex items-center gap-2 border border-white/30 text-white font-medium px-8 py-3.5 rounded-xl hover:bg-white/10 transition-colors text-sm sm:text-base"
+              className="inline-flex items-center gap-2 border border-white/40 text-white font-medium px-8 py-4 rounded-xl hover:bg-white/10 transition-colors text-sm sm:text-base"
             >
               {t.hero.cta2}
             </a>
           </div>
 
-          {/* Stats */}
           <div
-            className="flex flex-wrap items-center justify-center gap-8 sm:gap-14"
+            className="flex flex-wrap items-center justify-center gap-10 sm:gap-16"
             aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
           >
             {t.stats.map(({ label, value }) => (
               <div key={label} className="text-center" aria-hidden="true">
-                <span className="block text-2xl sm:text-3xl font-bold text-white tabular-nums">{value}</span>
-                <span className="block text-white/70 text-xs mt-0.5 tracking-wider uppercase">{label}</span>
+                <span className="block text-3xl sm:text-4xl font-bold text-white tabular-nums">{value}</span>
+                <span className="block text-white/80 text-sm mt-1 tracking-wider uppercase">{label}</span>
               </div>
             ))}
           </div>
-
         </div>
 
-        {/* Wave divider */}
         <div className="absolute bottom-0 left-0 right-0 translate-y-[1px]">
           <svg viewBox="0 0 1440 56" className="w-full text-[#F5F7FA] dark:text-[#0d1624]" preserveAspectRatio="none">
             <path fill="currentColor" d="M0,56 C360,0 720,56 1080,28 C1260,14 1380,0 1440,0 L1440,56 Z" />

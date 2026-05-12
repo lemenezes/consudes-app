@@ -25,6 +25,9 @@ export const translations = {
       contact: 'Contacto',
       cta: 'Contáctenos',
     },
+    common: {
+      contentUnderConstruction: 'Contenido en construcción',
+    },
     hero: {
       badge: 'CONSUDES',
       fullName: 'Confederación Sudamericana Deportiva de Sordos',
@@ -342,6 +345,9 @@ export const translations = {
       contact: 'Contato',
       cta: 'Fale conosco',
     },
+    common: {
+      contentUnderConstruction: 'Conteúdo em construção',
+    },
     hero: {
       badge: 'CONSUDES',
       fullName: 'Confederação Sul-Americana Desportiva de Surdos',
@@ -658,6 +664,9 @@ export const translations = {
       gallery: 'Gallery',
       contact: 'Contact',
       cta: 'Contact us',
+    },
+    common: {
+      contentUnderConstruction: 'Content under construction',
     },
     hero: {
       badge: 'CONSUDES',
