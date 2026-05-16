@@ -25,10 +25,8 @@ const TeamPage              = lazy(() => import('./pages/TeamPage'))
 const FormerPresidentsPage  = lazy(() => import('./pages/FormerPresidentsPage'))
 const FederationsPage       = lazy(() => import('./pages/FederationsPage'))
 const SportsPage            = lazy(() => import('./pages/SportsPage'))
-const ChampionshipsPage     = lazy(() => import('./pages/ChampionshipsPage'))
 const InterclubsPage        = lazy(() => import('./pages/InterclubsPage'))
-const SouthAmericanGamesPage = lazy(() => import('./pages/SouthAmericanGamesPage'))
-const RankingsPage          = lazy(() => import('./pages/RankingsPage'))
+const NotFoundPage          = lazy(() => import('./pages/NotFoundPage'))
 const CalendarPage          = lazy(() => import('./pages/CalendarPage'))
 const NewsPage              = lazy(() => import('./pages/NewsPage'))
 const NewsDetailPage        = lazy(() => import('./pages/NewsDetailPage'))
@@ -53,11 +51,7 @@ const router = createBrowserRouter([
       // Standalone
       { path: 'federacoes', element: <FederationsPage /> },
       { path: 'esportes', element: <SportsPage /> },
-      // Campeonatos
-      { path: 'campeonatos', element: <ChampionshipsPage /> },
       { path: 'interclubes', element: <InterclubsPage /> },
-      { path: 'jogos-sul-americanos', element: <SouthAmericanGamesPage /> },
-      { path: 'rankings', element: <RankingsPage /> },
       { path: 'calendario', element: <CalendarPage /> },
       // Outros
       { path: 'noticias', element: <NewsPage /> },
@@ -66,6 +60,7 @@ const router = createBrowserRouter([
       { path: 'relatorios', element: <ReportsPage /> },
       { path: 'galeria', element: <GalleryPage /> },
       { path: 'contato', element: <ContactPage /> },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
   // ── Área administrativa ──────────────────────────────────────────────────

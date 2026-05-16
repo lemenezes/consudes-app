@@ -406,6 +406,11 @@ export const translations = {
       mandate: 'Presidencia',
       countries: { BR: 'Brasil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile' },
     },
+    notFound: {
+      title: 'Página no encontrada',
+      subtitle: 'La página que buscas no existe o fue eliminada.',
+      back: 'Volver al inicio',
+    },
   },
 
   pt: {
@@ -761,6 +766,11 @@ export const translations = {
       yearsLabel: 'anos de história',
       mandate: 'Presidência',
       countries: { BR: 'Brasil', AR: 'Argentina', UY: 'Uruguai', PY: 'Paraguai', CL: 'Chile' },
+    },
+    notFound: {
+      title: 'Página não encontrada',
+      subtitle: 'A página que você procura não existe ou foi removida.',
+      back: 'Voltar ao início',
     },
     calendarPage: {
       subtitle: 'Calendário oficial de eventos esportivos e institucionais da CONSUDES',
@@ -1168,6 +1178,11 @@ export const translations = {
       yearsLabel: 'years of history',
       mandate: 'Presidency',
       countries: { BR: 'Brazil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile' },
+    },
+    notFound: {
+      title: 'Page not found',
+      subtitle: 'The page you are looking for does not exist or has been removed.',
+      back: 'Back to home',
     },
     calendarPage: {
       subtitle: 'Official calendar of sports and institutional events from CONSUDES',
