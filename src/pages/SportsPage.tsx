@@ -1,37 +1,16 @@
 import { Link } from 'react-router-dom';
-import { Trophy, Shield, Globe, ListOrdered, CalendarDays, ArrowRight } from 'lucide-react';
+import { Shield, CalendarDays, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
 import { useSEO } from '../hooks/useSEO';
 
-const DESCS: Record<string, Record<'es' | 'pt' | 'en', string>> = {
-  championships: {
-    es: 'Resultados y clasificaciones de los campeonatos sudamericanos.',
-    pt: 'Resultados e classificações dos campeonatos sul-americanos.',
-    en: 'South American championship results and standings.',
-  },
-  southAmericanGames: {
-    es: 'Los Juegos Sudamericanos del Deporte Sordo.',
-    pt: 'Os Jogos Sul-Americanos do Desporto Surdo.',
-    en: 'The South American Deaf Sports Games.',
-  },
-  rankings: {
-    es: 'Clasificaciones actualizadas por deporte y categoría.',
-    pt: 'Classificações atualizadas por esporte e categoria.',
-    en: 'Updated standings by sport and category.',
-  },
-};
-
 export default function SportsPage() {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   useSEO({ title: t.nav.sports, url: '/esportes' });
 
   const cards = [
-    { to: '/campeonatos',          label: t.nav.championships,      desc: DESCS.championships[lang],       Icon: Trophy },
-    { to: '/interclubes',          label: t.nav.interclubs,          desc: t.interclubsPage.heroSubtitle,   Icon: Shield },
-    { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames, desc: DESCS.southAmericanGames[lang],  Icon: Globe },
-    { to: '/rankings',             label: t.nav.rankings,            desc: DESCS.rankings[lang],            Icon: ListOrdered },
-    { to: '/calendario',           label: t.nav.calendar,            desc: t.calendarPage.subtitle,         Icon: CalendarDays },
+    { to: '/interclubes', label: t.nav.interclubs, desc: t.interclubsPage.heroSubtitle, Icon: Shield },
+    { to: '/calendario',  label: t.nav.calendar,   desc: t.calendarPage.subtitle,        Icon: CalendarDays },
   ];
 
   return (

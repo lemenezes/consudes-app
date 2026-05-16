@@ -95,11 +95,8 @@ export default function Header() {
       label: t.nav.sports,
       to: '/esportes',
       links: [
-        { to: '/campeonatos',          label: t.nav.championships },
-        { to: '/interclubes',          label: t.nav.interclubs },
-        { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames },
-        { to: '/rankings',             label: t.nav.rankings },
-        { to: '/calendario',           label: t.nav.calendar },
+                { to: '/calendario',  label: t.nav.calendar },
+                { to: '/interclubes', label: t.nav.interclubs },
       ],
     },
     { to: '/galeria', label: t.nav.gallery, type: 'standalone' },
@@ -202,7 +199,6 @@ export default function Header() {
                       return item.to ? (
                         <Link
                           to={item.to}
-                          onClick={() => setOpenDropdowns(new Set())}
                           className={cls}
                         >
                           {indicator}
