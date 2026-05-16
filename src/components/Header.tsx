@@ -107,7 +107,7 @@ export default function Header() {
       {/* ── Topbar institucional ─────────────────────────────────────────── */}
       <div className="bg-[#002D5E] dark:bg-[#001630]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-8">
-          <p className="text-white/45 text-[10px] font-medium tracking-[0.18em] uppercase hidden sm:block select-none">
+          <p className="text-white/80 text-[10px] font-medium tracking-[0.18em] uppercase hidden sm:block select-none">
             {t.topbar}
           </p>
           <div className="flex items-center">
@@ -115,7 +115,7 @@ export default function Header() {
               href="https://webmail.hostinger.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/35 hover:text-white/65 text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
+              className="text-white/80 hover:text-white/90 text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
             >
               Webmail
             </a>
@@ -124,7 +124,7 @@ export default function Header() {
                 key={code}
                 onClick={() => setLang(code)}
                 className={`px-2.5 py-1 text-[10px] font-bold tracking-widest transition-colors duration-150 ${
-                  lang === code ? 'text-[#D9A441]' : 'text-white/35 hover:text-white/65'
+                  lang === code ? 'text-[#D9A441]' : 'text-white/80 hover:text-white/90'
                 } ${i < LANGS.length - 1 ? 'border-r border-white/10' : ''}`}
               >
                 {label}
@@ -135,7 +135,7 @@ export default function Header() {
               data-testid="theme-toggle"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              className="w-7 h-7 flex items-center justify-center text-white/35 hover:text-white/70 transition-colors"
+              className="w-7 h-7 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors"
             >
               {theme === 'dark' ? <Sun size={12} /> : <Moon size={12} />}
             </button>
