@@ -17,6 +17,7 @@ const AdminReportsFormPage   = lazy(() => import('./pages/admin/AdminReportsForm
 const AdminFederationsListPage = lazy(() => import('./pages/admin/AdminFederationsListPage'))
 const AdminFederationFormPage  = lazy(() => import('./pages/admin/AdminFederationFormPage'))
 const HomePage              = lazy(() => import('./pages/HomePage'))
+const InstitucionalPage     = lazy(() => import('./pages/InstitucionalPage'))
 const HistoryPage           = lazy(() => import('./pages/HistoryPage'))
 const MissionPage           = lazy(() => import('./pages/MissionPage'))
 const ValuesPage            = lazy(() => import('./pages/ValuesPage'))
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       // Institucional
+      { path: 'institucional', element: <InstitucionalPage /> },
       { path: 'historia', element: <HistoryPage /> },
       { path: 'missao', element: <MissionPage /> },
       { path: 'valores', element: <ValuesPage /> },

@@ -18,7 +18,7 @@ type DropdownLink =
   | { href: string; to?: never; label: string };
 
 type NavItem =
-  | { type: 'dropdown'; key: NonNullable<DropdownKey>; label: string; links: DropdownLink[] }
+  | { type: 'dropdown'; key: NonNullable<DropdownKey>; label: string; to?: string; links: DropdownLink[] }
   | { type: 'standalone'; to: string; label: string };
 
 export default function Header() {
@@ -77,6 +77,7 @@ export default function Header() {
       type: 'dropdown',
       key: 'institucional',
       label: t.nav.institutional,
+      to: '/institucional',
       links: [
         { to: '/historia', label: t.nav.history },
         { to: '/missao', label: t.nav.mission },
@@ -92,9 +93,13 @@ export default function Header() {
       type: 'dropdown',
       key: 'deportes',
       label: t.nav.sports,
+      to: '/esportes',
       links: [
-        { to: '/calendario', label: t.nav.calendar },
-        { to: '/interclubes', label: t.nav.interclubs },
+        { to: '/campeonatos',          label: t.nav.championships },
+        { to: '/interclubes',          label: t.nav.interclubs },
+        { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames },
+        { to: '/rankings',             label: t.nav.rankings },
+        { to: '/calendario',           label: t.nav.calendar },
       ],
     },
     { to: '/galeria', label: t.nav.gallery, type: 'standalone' },
@@ -180,23 +185,38 @@ export default function Header() {
                       );
                       const isOpen = openDropdowns.has(item.key);
                       const showIndicator = isOpen || hasActiveChild;
-                      return (
+                      const cls = `relative flex items-center gap-1 px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
+                        isOpen || hasActiveChild
+                          ? 'text-[#0057A8] dark:text-white'
+                          : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
+                      }`;
+                      const indicator = showIndicator && (
+                        <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
+                      );
+                      const chevron = (
+                        <ChevronDown
+                          size={12}
+                          className={`transition-transform duration-200 opacity-50 ${isOpen ? 'rotate-180' : ''}`}
+                        />
+                      );
+                      return item.to ? (
+                        <Link
+                          to={item.to}
+                          onClick={() => setOpenDropdowns(new Set())}
+                          className={cls}
+                        >
+                          {indicator}
+                          {item.label}
+                          {chevron}
+                        </Link>
+                      ) : (
                         <button
                           onClick={() => toggleDropdown(item.key)}
-                          className={`relative flex items-center gap-1 px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
-                            isOpen || hasActiveChild
-                              ? 'text-[#0057A8] dark:text-white'
-                              : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
-                          }`}
+                          className={cls}
                         >
-                          {showIndicator && (
-                            <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
-                          )}
+                          {indicator}
                           {item.label}
-                          <ChevronDown
-                            size={12}
-                            className={`transition-transform duration-200 opacity-50 ${isOpen ? 'rotate-180' : ''}`}
-                          />
+                          {chevron}
                         </button>
                       );
                     })()}
@@ -289,21 +309,49 @@ export default function Header() {
             {navItems.map((item) =>
               item.type === 'dropdown' ? (
                 <div key={item.key} className="border-b border-[#003B73]/5 dark:border-white/5 last:border-0">
-                  <button
-                    onClick={() => toggleDropdown(item.key)}
-                    className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
-                      openDropdowns.has(item.key) ||
-                      item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
-                        ? 'text-[#D9A441]'
-                        : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
-                    }`}
-                  >
-                    {item.label}
-                    <ChevronDown
-                      size={13}
-                      className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
-                    />
-                  </button>
+                  {item.to ? (
+                    <div className="flex items-stretch">
+                      <Link
+                        to={item.to}
+                        onClick={close}
+                        className={`flex-1 px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
+                          openDropdowns.has(item.key) ||
+                          item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
+                            ? 'text-[#D9A441]'
+                            : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
+                        }`}
+                      >
+                        {item.label}
+                      </Link>
+                      <button
+                        onClick={() => toggleDropdown(item.key)}
+                        aria-expanded={openDropdowns.has(item.key)}
+                        aria-label="Expandir submenu"
+                        className="px-4 py-3.5 text-[#003B73]/50 dark:text-white/30 hover:text-[#D9A441] dark:hover:text-[#D9A441] transition-colors"
+                      >
+                        <ChevronDown
+                          size={13}
+                          className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => toggleDropdown(item.key)}
+                      className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
+                        openDropdowns.has(item.key) ||
+                        item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
+                          ? 'text-[#D9A441]'
+                          : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
+                      }`}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={13}
+                        className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                  )}
                   {openDropdowns.has(item.key) && (
                     <div className="bg-[#003B73]/3 dark:bg-white/3 pb-2">
                       {item.links.map((link) =>

@@ -1,42 +1,24 @@
 import { Link } from 'react-router-dom';
-import { Trophy, Shield, Globe, ListOrdered, CalendarDays, ArrowRight } from 'lucide-react';
+import { BookOpen, Target, HeartHandshake, Users, Award, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
 import { useSEO } from '../hooks/useSEO';
 
-const DESCS: Record<string, Record<'es' | 'pt' | 'en', string>> = {
-  championships: {
-    es: 'Resultados y clasificaciones de los campeonatos sudamericanos.',
-    pt: 'Resultados e classificações dos campeonatos sul-americanos.',
-    en: 'South American championship results and standings.',
-  },
-  southAmericanGames: {
-    es: 'Los Juegos Sudamericanos del Deporte Sordo.',
-    pt: 'Os Jogos Sul-Americanos do Desporto Surdo.',
-    en: 'The South American Deaf Sports Games.',
-  },
-  rankings: {
-    es: 'Clasificaciones actualizadas por deporte y categoría.',
-    pt: 'Classificações atualizadas por esporte e categoria.',
-    en: 'Updated standings by sport and category.',
-  },
-};
-
-export default function SportsPage() {
-  const { t, lang } = useLanguage();
-  useSEO({ title: t.nav.sports, url: '/esportes' });
+export default function InstitucionalPage() {
+  const { t } = useLanguage();
+  useSEO({ title: t.nav.institutional, url: '/institucional' });
 
   const cards = [
-    { to: '/campeonatos',          label: t.nav.championships,      desc: DESCS.championships[lang],       Icon: Trophy },
-    { to: '/interclubes',          label: t.nav.interclubs,          desc: t.interclubsPage.heroSubtitle,   Icon: Shield },
-    { to: '/jogos-sul-americanos', label: t.nav.southAmericanGames, desc: DESCS.southAmericanGames[lang],  Icon: Globe },
-    { to: '/rankings',             label: t.nav.rankings,            desc: DESCS.rankings[lang],            Icon: ListOrdered },
-    { to: '/calendario',           label: t.nav.calendar,            desc: t.calendarPage.subtitle,         Icon: CalendarDays },
+    { to: '/historia',        label: t.nav.history,          desc: t.historyPage.heroSubtitle,         Icon: BookOpen },
+    { to: '/missao',          label: t.nav.mission,          desc: t.missionPage.heroSubtitle,         Icon: Target },
+    { to: '/valores',         label: t.nav.values,           desc: t.valuesPage.heroSubtitle,          Icon: HeartHandshake },
+    { to: '/equipe',          label: t.nav.team,             desc: t.teamPage.subtitle,                Icon: Users },
+    { to: '/ex-presidentes',  label: t.nav.formerPresidents, desc: t.formerPresidentsPage.subtitle,    Icon: Award },
   ];
 
   return (
     <>
-      <PageHero label="CONSUDES" title={t.nav.sports} />
+      <PageHero label="CONSUDES" title={t.nav.institutional} />
 
       <section className="bg-[#F5F7FA] dark:bg-[#080e1a] py-14 sm:py-20">
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
@@ -65,4 +47,3 @@ export default function SportsPage() {
     </>
   );
 }
-
