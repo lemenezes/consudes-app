@@ -34,48 +34,154 @@ export default function HomePage() {
         </div>
         <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-[#D9A441]/70 via-[#D9A441]/30 to-transparent" />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-24 sm:py-36 text-center">
-          <div className="flex items-center justify-center gap-4 mb-12">
-            <span className="hidden sm:block w-10 h-px bg-[#D9A441]/60 shrink-0" />
-            <span className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-xl lg:text-2xl font-light tracking-[0.08em] uppercase italic text-center">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-20">
+
+          {/* Nome completo centralizado */}
+          <div className="flex items-center justify-center gap-4 mb-5 sm:mb-10">
+            <span className="w-10 h-px bg-[#D9A441]/60 shrink-0" />
+            <span className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-lg font-light tracking-[0.08em] uppercase italic text-center">
               {t.hero.fullName}
             </span>
-            <span className="hidden sm:block w-10 h-px bg-[#D9A441]/60 shrink-0" />
+            <span className="w-10 h-px bg-[#D9A441]/60 shrink-0" />
           </div>
 
-          <h1 className="font-['Cormorant_Garamond'] text-5xl sm:text-6xl lg:text-7xl font-semibold text-white leading-[1.1] tracking-tight mb-8">
-            {t.hero.headline1}<br />
-            <span className="text-[#7FD6E8] italic">{t.hero.headline2}</span>
-          </h1>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-center">
 
-          <p className="text-white/70 text-base sm:text-lg mb-12 max-w-2xl mx-auto font-light tracking-wide">
-            {t.hero.subtitle}
-          </p>
+            {/* ── Conteúdo principal ── */}
+            <div className="lg:col-span-3">
+              <h1 className="font-['Cormorant_Garamond'] text-4xl sm:text-6xl lg:text-7xl font-semibold text-white leading-[1.1] tracking-tight mb-6">
+                {t.hero.headline1}<br />
+                <span className="text-[#7FD6E8] italic">{t.hero.headline2}</span>
+              </h1>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16">
-            <a
-              href="#sobre"
-              className="inline-flex items-center gap-2 bg-white text-[#0057A8] font-semibold px-8 py-4 rounded-xl hover:bg-[#f0f8ff] transition-colors shadow-lg text-sm sm:text-base"
-            >
-              {t.hero.cta1}
-              <ArrowRight size={16} />
-            </a>
-            <a
-              href="#contato"
-              className="inline-flex items-center gap-2 border border-white/40 text-white font-medium px-8 py-4 rounded-xl hover:bg-white/10 transition-colors text-sm sm:text-base"
-            >
-              {t.hero.cta2}
-            </a>
+              <p className="text-white/70 text-base sm:text-lg mb-10 max-w-xl font-light tracking-wide">
+                {t.hero.subtitle}
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-start gap-4 mb-8 sm:mb-12">
+                <a
+                  href="#sobre"
+                  className="inline-flex items-center gap-2 bg-white text-[#0057A8] font-semibold px-8 py-4 rounded-xl hover:bg-[#f0f8ff] transition-colors shadow-lg text-sm sm:text-base"
+                >
+                  {t.hero.cta1}
+                  <ArrowRight size={16} />
+                </a>
+                <a
+                  href="#contato"
+                  className="inline-flex items-center gap-2 border border-white/40 text-white font-medium px-8 py-4 rounded-xl hover:bg-white/10 transition-colors text-sm sm:text-base"
+                >
+                  {t.hero.cta2}
+                </a>
+              </div>
+            </div>
+
+            {/* ── Sidebar: Últimas Notícias ── */}
+            <div className="hidden lg:block lg:col-span-2">
+              <div className="bg-white/[0.04] border border-white/[0.07] rounded-2xl p-5 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-white/10">
+                  <span className="w-4 h-0.5 bg-[#D9A441] shrink-0" />
+                  <span className="text-[#D9A441] text-[10px] font-bold tracking-widest uppercase">
+                    {t.news.label}
+                  </span>
+                </div>
+
+                {newsLoading ? (
+                  <div className="space-y-4 animate-pulse">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="space-y-1.5">
+                        <div className="h-3 bg-white/10 rounded w-full" />
+                        <div className="h-3 bg-white/10 rounded w-3/4" />
+                        <div className="h-2 bg-white/10 rounded w-1/3 mt-1" />
+                      </div>
+                    ))}
+                  </div>
+                ) : news.length > 0 ? (
+                  <div className="divide-y divide-white/10">
+                    {news.map((item) => (
+                      <Link
+                        key={item.id}
+                        to={`/noticias/${item.slug}`}
+                        className="flex items-start gap-3 py-3.5 first:pt-0 last:pb-0 -mx-3 px-3 rounded-lg hover:bg-white/[0.06] transition-colors group"
+                      >
+                        {item.cover_url && (
+                          <div className="shrink-0 w-20 h-16 rounded-md overflow-hidden bg-white/10">
+                            <img
+                              src={item.cover_url}
+                              alt=""
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                            />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-white/85 text-sm font-medium leading-snug group-hover:text-[#7FD6E8] transition-colors line-clamp-2">
+                            {item.title}
+                          </p>
+                          <span className="text-white/40 text-xs mt-1.5 block">
+                            {new Date(item.published_at ?? '').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
+
+                <Link
+                  to="/noticias"
+                  className="flex items-center gap-1.5 text-[#7FD6E8] text-xs font-semibold mt-4 pt-3 border-t border-white/10 hover:text-white transition-colors"
+                >
+                  {t.news.viewAll}
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+            </div>
+
           </div>
 
+          {/* ── Mobile: card de notícia ── */}
+          {!newsLoading && news[0] && (
+            <div className="lg:hidden mt-5">
+              <Link
+                to={`/noticias/${news[0].slug}`}
+                className="flex items-center gap-3 bg-white/[0.06] border border-white/10 rounded-xl p-3 group"
+              >
+                {news[0].cover_url && (
+                  <div className="shrink-0 w-12 h-12 rounded-md overflow-hidden bg-white/10">
+                    <img src={news[0].cover_url} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-white/85 text-xs font-medium leading-snug line-clamp-2 group-hover:text-[#7FD6E8] transition-colors">
+                    {news[0].title}
+                  </p>
+                  <span className="text-white/40 text-[10px] mt-1 block">
+                    {new Date(news[0].published_at ?? '').toLocaleDateString('pt-BR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+                <ArrowRight size={13} className="text-[#7FD6E8] shrink-0 opacity-70" />
+              </Link>
+              <Link
+                to="/noticias"
+                className="flex items-center justify-center gap-1 text-[#7FD6E8] text-[11px] font-medium mt-2.5 hover:text-white transition-colors"
+              >
+                {t.news.viewAll}
+                <ArrowRight size={10} />
+              </Link>
+            </div>
+          )}
+
+          {/* ── Stats institucionais centradas ── */}
           <div
-            className="flex flex-wrap items-center justify-center gap-10 sm:gap-16"
+            className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center gap-3 sm:gap-16 mt-5 sm:mt-10 pt-5 sm:pt-8 border-t border-white/[0.12]"
             aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
           >
-            {t.stats.map(({ label, value }) => (
-              <div key={label} className="text-center" aria-hidden="true">
-                <span className="block text-3xl sm:text-4xl font-bold text-white tabular-nums">{value}</span>
-                <span className="block text-white/80 text-sm mt-1 tracking-wider uppercase">{label}</span>
+            {t.stats.map(({ label, value }, i) => (
+              <div
+                key={label}
+                aria-hidden="true"
+                className={`text-center ${i > 0 ? 'sm:pl-16 sm:border-l sm:border-white/20' : ''}`}
+              >
+                <span className="block text-2xl sm:text-4xl font-bold text-white tabular-nums">{value}</span>
+                <span className="block text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 tracking-wider uppercase">{label}</span>
               </div>
             ))}
           </div>
@@ -136,7 +242,7 @@ export default function HomePage() {
       </section>
 
       {/* ─── Programas ────────────────────────────────────────────────────── */}
-      <section id="programas" className="bg-[#003B73] dark:bg-[#001f42] py-20">
+      <section id="programas" className="bg-[#003B73] dark:bg-[#001f42] py-12 sm:py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">
@@ -156,9 +262,9 @@ export default function HomePage() {
             {t.programs.items.map((item, i) => (
               <div
                 key={i}
-                className="bg-white/10 border border-white/15 rounded-lg p-6 hover:bg-white/15 hover:border-[#D9A441]/50 transition-all duration-200 group"
+                className="bg-white/10 border border-white/15 rounded-lg p-4 sm:p-6 hover:bg-white/15 hover:border-[#D9A441]/50 transition-all duration-200 group"
               >
-                <div className="w-12 h-12 rounded-lg bg-[#D9A441]/20 text-[#D9A441] flex items-center justify-center mb-4 group-hover:bg-[#D9A441] group-hover:text-[#003B73] transition-colors duration-200">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-[#D9A441]/20 text-[#D9A441] flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-[#D9A441] group-hover:text-[#003B73] transition-colors duration-200">
                   {PROGRAM_ICONS[i]}
                 </div>
                 <h3 className="font-bold text-white text-sm mb-2 leading-snug">

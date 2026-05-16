@@ -51,10 +51,10 @@ export default function Footer() {
       {/* Faixa decorativa topo */}
       <div className="h-[3px] bg-gradient-to-r from-transparent via-[#D9A441] to-transparent opacity-60" />
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-14 pb-10">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14 pb-8 sm:pb-10">
 
         {/* Grid principal — brand fixo + nav agrupado */}
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 mb-12">
+<div className="flex flex-col lg:flex-row gap-7 lg:gap-14 mb-8 sm:mb-12">
 
           {/* Brand */}
           <div className="flex flex-col gap-5 lg:w-[240px] flex-shrink-0">
