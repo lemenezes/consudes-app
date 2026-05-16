@@ -1,9 +1,11 @@
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
+import { useSEO } from '../hooks/useSEO';
 
 export default function MissionPage() {
   const { t } = useLanguage();
   const m = t.missionPage;
+  useSEO({ title: t.nav.mission, url: '/missao' });
 
   const blocks = [
     {

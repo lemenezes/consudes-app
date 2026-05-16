@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileText, Trophy, Users } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
+import { useSEO } from '../hooks/useSEO';
 import { editions, championsM, championsF } from '../data/interclubsData';
 
 const COUNTRY_FLAGS: Record<string, string> = {
@@ -16,6 +17,7 @@ const MEDAL = ['🥇', '🥈', '🥉'];
 export default function InterclubsPage() {
   const { t } = useLanguage();
   const p = t.interclubsPage;
+  useSEO({ title: t.nav.interclubs, url: '/interclubes' });
 
   const tabs = [...editions.map((e) => String(e.year)), 'champions'];
   const [active, setActive] = useState('2005');

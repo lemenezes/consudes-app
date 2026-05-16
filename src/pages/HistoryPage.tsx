@@ -1,5 +1,6 @@
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
+import { useSEO } from '../hooks/useSEO';
 
 const COUNTRIES = [
   'Argentina', 'Bolivia', 'Brasil', 'Chile',
@@ -9,6 +10,7 @@ const COUNTRIES = [
 export default function HistoryPage() {
   const { t } = useLanguage();
   const h = t.historyPage;
+  useSEO({ title: t.nav.history, url: '/historia' });
 
   return (
     <>

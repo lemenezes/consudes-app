@@ -1,12 +1,14 @@
 import { Trophy, Users, Shield, Globe, HeartHandshake, Lightbulb } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageHero from '../components/PageHero';
+import { useSEO } from '../hooks/useSEO';
 
 const ICONS = [Trophy, Users, Shield, Globe, HeartHandshake, Lightbulb];
 
 export default function ValuesPage() {
   const { t } = useLanguage();
   const v = t.valuesPage;
+  useSEO({ title: t.nav.values, url: '/valores' });
 
   return (
     <>
