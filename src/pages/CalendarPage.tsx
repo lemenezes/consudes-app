@@ -328,8 +328,8 @@ export default function CalendarPage() {
   const [activeStatus, setActiveStatus]     = useState<CalendarEventStatus | 'all'>('all');
 
   useEffect(() => {
-    listPublishedCalendarEvents().then(({ data }) => {
-      setEvents(data.length > 0 ? data : mockEvents.map(mockToRow));
+    listPublishedCalendarEvents().then(({ data, error }) => {
+      setEvents(error ? mockEvents.map(mockToRow) : data);
       setDataLoading(false);
     });
   }, []);

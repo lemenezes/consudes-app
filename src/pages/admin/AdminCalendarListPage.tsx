@@ -17,16 +17,20 @@ const STATUS_COLORS: Record<PublishStatus, string> = {
   archived:  'bg-yellow-100 text-yellow-700',
 };
 
+function formatSingleDate(date: string | null, precision: string): string {
+  if (!date) return '—';
+  if (precision === 'year') return date.slice(0, 4);
+  const [y, m, d] = date.split('-');
+  if (precision === 'month') return `${m}/${y}`;
+  return `${d}/${m}/${y}`;
+}
+
 function formatEventDate(ev: CalendarEventRow): string {
-  if (ev.date_precision === 'year') return String(ev.start_date.slice(0, 4));
-  if (ev.date_precision === 'month') {
-    const [y, m] = ev.start_date.split('-');
-    return `${m}/${y}`;
-  }
-  const s = ev.start_date;
-  const e = ev.end_date;
-  if (!e || e === s) return s;
-  return `${s} – ${e}`;
+  const s = formatSingleDate(ev.start_date, ev.date_precision);
+  const e = ev.end_date && ev.end_date !== ev.start_date
+    ? formatSingleDate(ev.end_date, ev.date_precision)
+    : null;
+  return e ? `${s} – ${e}` : s;
 }
 
 export default function AdminCalendarListPage() {
@@ -181,7 +185,8 @@ export default function AdminCalendarListPage() {
                 <tr className="border-b border-gray-100 text-left">
                   <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">{t.admin.titleLabel}</th>
                   <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide hidden md:table-cell">{ac.startDateLabel}</th>
-                  <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell">{ac.categoryLabel}</th>
+                  <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide hidden lg:table-cell">{ac.endDateLabel}</th>
+                  <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide hidden xl:table-cell">{ac.categoryLabel}</th>
                   <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">{t.admin.statusLabel}</th>
                   <th className="px-5 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">{t.admin.visibleOnSite}</th>
                   <th className="px-5 py-3.5" />
@@ -197,9 +202,14 @@ export default function AdminCalendarListPage() {
                       </p>
                     </td>
                     <td className="px-5 py-4 hidden md:table-cell text-gray-500 text-xs">
-                      {formatEventDate(item)}
+                      {formatSingleDate(item.start_date, item.date_precision)}
                     </td>
-                    <td className="px-5 py-4 hidden lg:table-cell">
+                    <td className="px-5 py-4 hidden lg:table-cell text-gray-500 text-xs">
+                      {item.end_date && item.end_date !== item.start_date
+                        ? formatSingleDate(item.end_date, item.date_precision)
+                        : <span className="text-gray-300">—</span>}
+                    </td>
+                    <td className="px-5 py-4 hidden xl:table-cell">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-[#003B73] border border-blue-100 capitalize">
                         {item.category}
                       </span>

@@ -14,6 +14,8 @@ const AdminCalendarListPage  = lazy(() => import('./pages/admin/AdminCalendarLis
 const AdminCalendarFormPage  = lazy(() => import('./pages/admin/AdminCalendarFormPage'))
 const AdminReportsListPage   = lazy(() => import('./pages/admin/AdminReportsListPage'))
 const AdminReportsFormPage   = lazy(() => import('./pages/admin/AdminReportsFormPage'))
+const AdminFederationsListPage = lazy(() => import('./pages/admin/AdminFederationsListPage'))
+const AdminFederationFormPage  = lazy(() => import('./pages/admin/AdminFederationFormPage'))
 const HomePage              = lazy(() => import('./pages/HomePage'))
 const HistoryPage           = lazy(() => import('./pages/HistoryPage'))
 const MissionPage           = lazy(() => import('./pages/MissionPage'))
@@ -85,6 +87,9 @@ const router = createBrowserRouter([
       { path: 'transparencia', element: <AdminReportsListPage /> },
       { path: 'transparencia/novo', element: <AdminReportsFormPage /> },
       { path: 'transparencia/:id/editar', element: <AdminReportsFormPage /> },
+      { path: 'federacoes', element: <AdminFederationsListPage /> },
+      { path: 'federacoes/nova', element: <AdminFederationFormPage /> },
+      { path: 'federacoes/:id/editar', element: <AdminFederationFormPage /> },
     ],
   },
 ])

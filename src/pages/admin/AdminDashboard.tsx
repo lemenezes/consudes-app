@@ -5,7 +5,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { listNews } from '../../services/newsService';
 import { listCalendarEvents } from '../../services/calendarService';
 import { listReports } from '../../services/reportsService';
-import type { NewsRow, CalendarEventRow, ReportRow } from '../../lib/database.types';
+import { listFederations } from '../../services/federationsService';
+import type { NewsRow, CalendarEventRow, ReportRow, FederationRow } from '../../lib/database.types';
 
 const COMING_SOON = [
   {
@@ -13,14 +14,6 @@ const COMING_SOON = [
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Federações',
-    icon: (
-      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
       </svg>
     ),
   },
@@ -33,15 +26,19 @@ export default function AdminDashboard() {
   const [news, setNews] = useState<NewsRow[]>([]);
   const [calEvents, setCalEvents] = useState<CalendarEventRow[]>([]);
   const [reports, setReports] = useState<ReportRow[]>([]);
+  const [federations, setFederations] = useState<FederationRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([listNews(), listCalendarEvents(), listReports()]).then(([{ data: n }, { data: c }, { data: r }]) => {
-      setNews(n);
-      setCalEvents(c);
-      setReports(r);
-      setLoading(false);
-    });
+    Promise.all([listNews(), listCalendarEvents(), listReports(), listFederations()]).then(
+      ([{ data: n }, { data: c }, { data: r }, { data: f }]) => {
+        setNews(n);
+        setCalEvents(c);
+        setReports(r);
+        setFederations(f);
+        setLoading(false);
+      }
+    );
   }, []);
 
   const total = news.length;
@@ -174,6 +171,40 @@ export default function AdminDashboard() {
           <div className="px-6 pb-5">
             <Link
               to="/admin/transparencia"
+              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors"
+            >
+              Gerenciar
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Card Federações — ATIVO ── */}
+        <div className="bg-white rounded-xl shadow-sm border border-[#D9A441]/20 ring-1 ring-[#D9A441]/10 flex flex-col">
+          <div className="p-6 flex-1">
+            <div className="flex items-center justify-between mb-5">
+              <span className="text-sm font-semibold text-[#1F2937]">Federações</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                {t.admin.dashboard.active}
+              </span>
+            </div>
+            {loading ? (
+              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+            ) : (
+              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                {federations.length}
+              </p>
+            )}
+            <p className="text-xs text-gray-400 mt-1.5">
+              {loading ? '…' : `${federations.length} filiada${federations.length !== 1 ? 's' : ''}`}
+            </p>
+          </div>
+          <div className="px-6 pb-5">
+            <Link
+              to="/admin/federacoes"
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors"
             >
               Gerenciar
