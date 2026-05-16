@@ -1,4 +1,5 @@
-import { Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
@@ -6,6 +7,7 @@ const CONTACT_EMAIL = 'contato@consudes.org.br';
 
 export default function Footer() {
   const { t } = useLanguage();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const cols = [
     {
@@ -51,10 +53,10 @@ export default function Footer() {
       {/* Faixa decorativa topo */}
       <div className="h-[3px] bg-gradient-to-r from-transparent via-[#D9A441] to-transparent opacity-60" />
 
-      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-10 sm:pt-14 pb-8 sm:pb-10">
+      <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8">
 
         {/* Grid principal — brand fixo + nav agrupado */}
-<div className="flex flex-col lg:flex-row gap-7 lg:gap-14 mb-8 sm:mb-12">
+        <div className="flex flex-col lg:flex-row gap-7 lg:gap-14 mb-6 sm:mb-8">
 
           {/* Brand */}
           <div className="flex flex-col gap-5 lg:w-[240px] flex-shrink-0">
@@ -81,46 +83,136 @@ export default function Footer() {
             </a>
           </div>
 
-          {/* Colunas de links */}
-          <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-8">
-            {cols.map(({ heading, links }) => (
-              <div key={heading}>
-                <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
-                  {heading}
-                </p>
-                <ul className="flex flex-col gap-2.5">
-                  {links.map((link) => (
-                    <li key={link.href ?? link.to}>
-                      {link.href ? (
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
-                        >
-                          {link.label}
-                        </a>
-                      ) : (
-                        <Link
-                          to={link.to!}
-                          className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
-                        >
-                          {link.label}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          {/* Colunas de links — accordion no mobile, grid no desktop */}
+          <div className="flex-1">
+
+            {/* Mobile: accordion */}
+            <div className="sm:hidden divide-y divide-white/8">
+              {cols.map(({ heading, links }, i) => (
+                <div key={heading}>
+                  <button
+                    onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                    aria-expanded={openIndex === i}
+                    aria-controls={`footer-col-${i}`}
+                    className="w-full flex items-center justify-between py-3.5 text-left"
+                  >
+                    <span className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase">
+                      {heading}
+                    </span>
+                    <ChevronDown
+                      size={14}
+                      className={`text-white/40 transition-transform duration-200 flex-shrink-0 ${openIndex === i ? 'rotate-180' : ''}`}
+                    />
+                  </button>
+                  <div
+                    id={`footer-col-${i}`}
+                    className={`overflow-hidden transition-all duration-200 ${openIndex === i ? 'max-h-64 pb-3' : 'max-h-0'}`}
+                  >
+                    <ul className="flex flex-col gap-3 pl-1">
+                      {links.map((link) => (
+                        <li key={link.href ?? link.to}>
+                          {link.href ? (
+                            <a
+                              href={link.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                            >
+                              {link.label}
+                            </a>
+                          ) : (
+                            <Link
+                              to={link.to!}
+                              className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                            >
+                              {link.label}
+                            </Link>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: grid normal */}
+            <div className="hidden sm:grid sm:grid-cols-4 gap-8">
+              {cols.map(({ heading, links }) => (
+                <div key={heading}>
+                  <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
+                    {heading}
+                  </p>
+                  <ul className="flex flex-col gap-2.5">
+                    {links.map((link) => (
+                      <li key={link.href ?? link.to}>
+                        {link.href ? (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                          >
+                            {link.label}
+                          </a>
+                        ) : (
+                          <Link
+                            to={link.to!}
+                            className="text-[13px] text-white/65 hover:text-white transition-colors duration-150 font-light tracking-wide"
+                          >
+                            {link.label}
+                          </Link>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
           </div>
         </div>
 
         {/* Divisória */}
         <div className="border-t border-white/8" />
 
+        {/* Filiada a */}
+        <div className="py-5 border-b border-white/8">
+          <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
+            {t.footer.colRecognized}
+          </p>
+          <div className="flex flex-wrap items-center gap-3 sm:gap-6">
+            <a
+              href="https://www.deaflympics.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-4 py-2 sm:px-5 sm:py-3 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200 h-14 sm:h-[72px]"
+              aria-label="Deaflympics"
+            >
+              <img
+                src="/images/logo-deaflympics.jpg"
+                alt="Deaflympics"
+                className="h-9 sm:h-12 w-auto object-contain"
+              />
+            </a>
+            <a
+              href="https://panamdes.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-4 py-2 sm:px-5 sm:py-3 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200 h-14 sm:h-[72px]"
+              aria-label="PANAMDES"
+            >
+              <img
+                src="/images/logo-panamdes.png"
+                alt="PANAMDES"
+                className="h-9 sm:h-12 w-auto object-contain"
+              />
+            </a>
+          </div>
+        </div>
+
         {/* Bottom */}
-        <div className="pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <p className="text-[11px] text-white/60 tracking-wide font-light">
             © {new Date().getFullYear()} CONSUDES &nbsp;·&nbsp; {t.footer.rights}
           </p>

@@ -104,6 +104,7 @@ export const translations = {
       colInstitutional: 'Institucional',
       colContent: 'Contenido',
       colContact: 'Contacto',
+      colRecognized: 'Afiliada a',
     },
     admin: {
       panelTitle: 'Panel Administrativo',
@@ -428,6 +429,7 @@ export const translations = {
       colInstitutional: 'Institucional',
       colContent: 'Conteúdo',
       colContact: 'Contato',
+      colRecognized: 'Filiada a',
     },
     admin: {
       panelTitle: 'Painel Administrativo',
@@ -752,6 +754,7 @@ export const translations = {
       colInstitutional: 'Institutional',
       colContent: 'Content',
       colContact: 'Contact',
+      colRecognized: 'Member of',
     },
     admin: {
       panelTitle: 'Admin Panel',
