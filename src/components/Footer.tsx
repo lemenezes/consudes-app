@@ -80,9 +80,43 @@ export default function Footer() {
               <Mail size={13} className="opacity-60 group-hover:opacity-100 transition-opacity" />
               {CONTACT_EMAIL}
             </a>
+            {/* Filiada a — alinhada com a logo CONSUDES */}
+            <div className="pt-1">
+              <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-3">
+                {t.footer.colRecognized}
+              </p>
+              <div className="flex items-center gap-2.5">
+                <a
+                  href="https://www.deaflympics.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
+                  aria-label="Deaflympics"
+                >
+                  <img
+                    src="/images/logo-deaflympics.jpg"
+                    alt="Deaflympics"
+                    className="h-7 w-auto object-contain"
+                  />
+                </a>
+                <a
+                  href="https://panamdes.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
+                  aria-label="PANAMDES"
+                >
+                  <img
+                    src="/images/logo-panamdes.png"
+                    alt="PANAMDES"
+                    className="h-7 w-auto object-contain"
+                  />
+                </a>
+              </div>
+            </div>
           </div>
 
-          {/* Colunas de links — accordion no mobile, grid no desktop */}
+          {/* Colunas de links — accordion no mobile, grid no desktop */
           <div className="flex-1">
 
             {/* Mobile: accordion */}
@@ -173,42 +207,7 @@ export default function Footer() {
         </div>
 
         {/* Divisória */}
-        <div className="border-t border-white/8" />
-
-        {/* Filiada a */}
-        <div className="py-5 border-b border-white/8">
-          <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
-            {t.footer.colRecognized}
-          </p>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-6">
-            <a
-              href="https://www.deaflympics.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-4 py-2 sm:px-5 sm:py-3 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200 h-14 sm:h-[72px]"
-              aria-label="Deaflympics"
-            >
-              <img
-                src="/images/logo-deaflympics.jpg"
-                alt="Deaflympics"
-                className="h-9 sm:h-12 w-auto object-contain"
-              />
-            </a>
-            <a
-              href="https://panamdes.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-4 py-2 sm:px-5 sm:py-3 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200 h-14 sm:h-[72px]"
-              aria-label="PANAMDES"
-            >
-              <img
-                src="/images/logo-panamdes.png"
-                alt="PANAMDES"
-                className="h-9 sm:h-12 w-auto object-contain"
-              />
-            </a>
-          </div>
-        </div>
+        <div className="h-px w-16 bg-white/15" />
 
         {/* Bottom */}
         <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
