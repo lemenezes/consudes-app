@@ -81,7 +81,6 @@ export default function Header() {
         { to: '/historia', label: t.nav.history },
         { to: '/missao', label: t.nav.mission },
         { to: '/valores', label: t.nav.values },
-        { to: '/sede', label: t.nav.headquarters },
         { to: '/equipe', label: t.nav.team },
         { to: '/ex-presidentes', label: t.nav.formerPresidents },
       ],

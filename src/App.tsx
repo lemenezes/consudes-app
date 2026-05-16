@@ -22,7 +22,6 @@ const MissionPage           = lazy(() => import('./pages/MissionPage'))
 const ValuesPage            = lazy(() => import('./pages/ValuesPage'))
 const TeamPage              = lazy(() => import('./pages/TeamPage'))
 const FormerPresidentsPage  = lazy(() => import('./pages/FormerPresidentsPage'))
-const HeadquartersPage      = lazy(() => import('./pages/HeadquartersPage'))
 const FederationsPage       = lazy(() => import('./pages/FederationsPage'))
 const SportsPage            = lazy(() => import('./pages/SportsPage'))
 const ChampionshipsPage     = lazy(() => import('./pages/ChampionshipsPage'))
@@ -49,7 +48,6 @@ const router = createBrowserRouter([
       { path: 'valores', element: <ValuesPage /> },
       { path: 'equipe', element: <TeamPage /> },
       { path: 'ex-presidentes', element: <FormerPresidentsPage /> },
-      { path: 'sede', element: <HeadquartersPage /> },
       // Standalone
       { path: 'federacoes', element: <FederationsPage /> },
       { path: 'esportes', element: <SportsPage /> },
