@@ -221,20 +221,27 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Stats grid */}
-          <div
-            className="grid grid-cols-2 gap-4"
-            aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
-          >
-            {t.stats.map(({ value, label }) => (
-              <div
-                key={label}
-                aria-hidden="true"
-                className="bg-white dark:bg-[#0d1624] border-l-4 border-[#0057A8] dark:border-[#0057A8] rounded-r-lg p-6"
+          {/* Links institucionais */}
+          <div className="flex flex-col gap-3">
+            {[
+              { to: '/historia', label: t.nav.history },
+              { to: '/missao', label: t.nav.mission },
+              { to: '/valores', label: t.nav.values },
+              { to: '/federacoes', label: t.nav.federations },
+            ].map(({ to, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className="group flex items-center justify-between gap-4 bg-white dark:bg-[#0a1e35] border border-slate-200/80 dark:border-white/5 rounded-xl px-5 py-4 hover:border-[#D9A441]/50 hover:shadow-sm transition-all duration-200"
               >
-                <span className="block text-3xl font-extrabold text-[#003B73] dark:text-white tabular-nums">{value}</span>
-                <span className="block text-[#1F2937]/65 dark:text-slate-400 text-xs mt-1 leading-tight tracking-wide">{label}</span>
-              </div>
+                <div className="flex items-center gap-3">
+                  <span className="w-0.5 h-6 bg-[#D9A441] rounded-full shrink-0" />
+                  <span className="font-['Cormorant_Garamond'] text-xl font-semibold text-[#1F2937] dark:text-white group-hover:text-[#0057A8] dark:group-hover:text-[#7ab8f0] transition-colors">
+                    {label}
+                  </span>
+                </div>
+                <ArrowRight size={14} className="text-[#0057A8]/30 dark:text-white/20 shrink-0 group-hover:text-[#D9A441] group-hover:translate-x-0.5 transition-all" />
+              </Link>
             ))}
           </div>
         </div>
