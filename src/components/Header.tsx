@@ -115,7 +115,7 @@ export default function Header() {
               href="https://webmail.hostinger.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/80 hover:text-white/90 text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
+              className="text-white/80 hover:text-[#D9A441] text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
             >
               Webmail
             </a>
@@ -124,7 +124,7 @@ export default function Header() {
                 key={code}
                 onClick={() => setLang(code)}
                 className={`px-2.5 py-1 text-[10px] font-bold tracking-widest transition-colors duration-150 ${
-                  lang === code ? 'text-[#D9A441]' : 'text-white/80 hover:text-white/90'
+                  lang === code ? 'text-[#D9A441]' : 'text-white/80 hover:text-[#D9A441]'
                 } ${i < LANGS.length - 1 ? 'border-r border-white/10' : ''}`}
               >
                 {label}
@@ -135,7 +135,7 @@ export default function Header() {
               data-testid="theme-toggle"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              className="w-7 h-7 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors"
+              className="w-7 h-7 flex items-center justify-center text-white/80 hover:text-[#D9A441] transition-colors"
             >
               {theme === 'dark' ? <Sun size={12} /> : <Moon size={12} />}
             </button>
