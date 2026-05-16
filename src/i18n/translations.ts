@@ -272,6 +272,10 @@ export const translations = {
       locationOpen: 'Sede abierta · Enviar propuesta',
       noEvents: 'Sin eventos',
       noEventsDesc: 'No hay eventos que coincidan con los filtros seleccionados.',
+      searchPlaceholder: 'Buscar evento, país, deporte…',
+      clearFilters: 'Limpiar filtros',
+      monthEvents: 'evento',
+      monthEventsPlural: 'eventos',
       statuses: {
         upcoming: 'Próximamente',
         registrationsOpen: 'Inscripciones abiertas',
@@ -602,6 +606,10 @@ export const translations = {
       locationOpen: 'Sede aberta · Enviar proposta',
       noEvents: 'Sem eventos',
       noEventsDesc: 'Nenhum evento corresponde aos filtros selecionados.',
+      searchPlaceholder: 'Buscar evento, país, esporte…',
+      clearFilters: 'Limpar filtros',
+      monthEvents: 'evento',
+      monthEventsPlural: 'eventos',
       statuses: {
         upcoming: 'Em breve',
         registrationsOpen: 'Inscrições abertas',
@@ -922,6 +930,10 @@ export const translations = {
       locationOpen: 'Open venue · Send proposal',
       noEvents: 'No events',
       noEventsDesc: 'No events match the selected filters.',
+      searchPlaceholder: 'Search event, country, sport…',
+      clearFilters: 'Clear filters',
+      monthEvents: 'event',
+      monthEventsPlural: 'events',
       statuses: {
         upcoming: 'Coming soon',
         registrationsOpen: 'Registrations open',

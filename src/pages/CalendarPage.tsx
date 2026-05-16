@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import {
   MapPin,
   HelpCircle,
@@ -7,6 +7,9 @@ import {
   Trophy,
   Users,
   Filter,
+  Search,
+  X,
+  ChevronDown,
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSEO } from '../hooks/useSEO';
@@ -297,15 +300,48 @@ function EventCard({ event }: { event: CalendarEventRow }) {
   );
 }
 
-/* ── Separador de período ─────────────────────────────────────────── */
-function PeriodSeparator({ label }: { label: string }) {
+/* ── Seção de mês com accordion ──────────────────────────────────── */
+function MesSection({
+  label,
+  count,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string;
+  count: number;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="flex items-center gap-4 py-2">
-      <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
-      <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-slate-400 dark:text-slate-500 shrink-0">
-        {label}
-      </span>
-      <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" />
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="w-full flex items-center gap-3 py-2 group/mes cursor-pointer select-none"
+      >
+        <CalendarDays className="w-3.5 h-3.5 text-[#D9A441] shrink-0" aria-hidden="true" />
+        <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-slate-500 dark:text-slate-400 shrink-0">
+          {label}
+        </span>
+        <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+        <span className="shrink-0 text-[10px] tabular-nums text-slate-400 dark:text-slate-500">
+          {count}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          aria-hidden="true"
+        />
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-[9999px] opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <div className="space-y-3 pb-4">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
@@ -322,10 +358,13 @@ export default function CalendarPage() {
     url: '/calendario',
   });
 
-  const [events, setEvents]         = useState<CalendarEventRow[]>([]);
+  const [events, setEvents]           = useState<CalendarEventRow[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
+  const [search, setSearch]           = useState('');
   const [activeCategory, setActiveCategory] = useState<CalendarEventCategory | 'all'>('all');
   const [activeStatus, setActiveStatus]     = useState<CalendarEventStatus | 'all'>('all');
+  const [openMonths, setOpenMonths]   = useState<Set<string>>(new Set());
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     listPublishedCalendarEvents().then(({ data, error }) => {
@@ -333,6 +372,25 @@ export default function CalendarPage() {
       setDataLoading(false);
     });
   }, []);
+
+  /* Auto-open meses futuros/correntes, fechar meses encerrados */
+  useEffect(() => {
+    if (events.length === 0) return;
+    const now = new Date();
+    const initialOpen = new Set<string>();
+    events.forEach((ev) => {
+      const key = getGroupKey(ev);
+      const d = new Date(ev.start_date + 'T12:00:00');
+      if (d >= new Date(now.getFullYear(), now.getMonth(), 1)) {
+        initialOpen.add(key);
+      }
+    });
+    // Se nenhum aberto (todos no passado), abre todos
+    if (initialOpen.size === 0) {
+      events.forEach((ev) => initialOpen.add(getGroupKey(ev)));
+    }
+    setOpenMonths(initialOpen);
+  }, [events]);
 
   const allCategories = useMemo(() => {
     const seen = new Set<CalendarEventCategory>();
@@ -342,11 +400,42 @@ export default function CalendarPage() {
 
   const allStatuses: CalendarEventStatus[] = ['finished', 'confirmed', 'upcoming', 'registrations_open'];
 
-  const filtered = useMemo(() => events.filter((ev) => {
-    const matchCat    = activeCategory === 'all' || ev.category     === activeCategory;
-    const matchStatus = activeStatus   === 'all' || ev.event_status === activeStatus;
-    return matchCat && matchStatus;
-  }), [events, activeCategory, activeStatus]);
+  const hasActiveFilters = search.trim() !== '' || activeCategory !== 'all' || activeStatus !== 'all';
+
+  function clearFilters() {
+    setSearch('');
+    setActiveCategory('all');
+    setActiveStatus('all');
+  }
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return events.filter((ev) => {
+      const matchCat    = activeCategory === 'all' || ev.category     === activeCategory;
+      const matchStatus = activeStatus   === 'all' || ev.event_status === activeStatus;
+      if (!matchCat || !matchStatus) return false;
+      if (!q) return true;
+      const haystack = [
+        ev.title,
+        ev.city,
+        ev.country,
+        ev.sport,
+        ev.federation,
+        ev.description,
+      ].filter(Boolean).join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [events, activeCategory, activeStatus, search]);
+
+  /* Ao aplicar filtro, expande todos os grupos visíveis */
+  useEffect(() => {
+    if (!hasActiveFilters) return;
+    setOpenMonths((prev) => {
+      const next = new Set(prev);
+      filtered.forEach((ev) => next.add(getGroupKey(ev)));
+      return next;
+    });
+  }, [filtered, hasActiveFilters]);
 
   const grouped = useMemo(() => {
     const map = new Map<string, { label: string; events: CalendarEventRow[] }>();
@@ -358,6 +447,15 @@ export default function CalendarPage() {
     });
     return map;
   }, [filtered, lang]);
+
+  function toggleMonth(key: string) {
+    setOpenMonths((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }
 
   return (
     <>
@@ -381,8 +479,33 @@ export default function CalendarPage() {
           </div>
 
           {/* Filtros */}
-          <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl p-4 mb-8 shadow-sm">
-            <div className="flex flex-col gap-4">
+          <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl mb-8 shadow-sm overflow-hidden">
+            {/* Busca */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-white/5">
+              <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" aria-hidden="true" />
+              <input
+                ref={searchRef}
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={cp.searchPlaceholder}
+                aria-label={cp.searchPlaceholder}
+                className="flex-1 bg-transparent text-sm text-[#1F2937] dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => { setSearch(''); searchRef.current?.focus(); }}
+                  className="shrink-0 p-0.5 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                  aria-label="Limpar busca"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Pills de filtro */}
+            <div className="flex flex-col gap-4 p-4">
               <div>
                 <p className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-2.5">
                   <Filter className="w-3 h-3" />
@@ -414,6 +537,21 @@ export default function CalendarPage() {
                   ))}
                 </div>
               </div>
+              {hasActiveFilters && (
+                <div className="border-t border-slate-100 dark:border-white/5 pt-3 flex items-center justify-between">
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                    {filtered.length} {filtered.length === 1 ? cp.monthEvents : cp.monthEventsPlural}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#003B73]/8 text-[#003B73] dark:bg-blue-500/10 dark:text-blue-400 border border-[#003B73]/15 dark:border-blue-500/20 hover:bg-[#003B73]/15 dark:hover:bg-blue-500/20 transition-all"
+                  >
+                    <X className="w-3 h-3" />
+                    {cp.clearFilters}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -431,14 +569,17 @@ export default function CalendarPage() {
               description={cp.noEventsDesc}
             />
           ) : (
-            <div className="space-y-2">
-              {Array.from(grouped.values()).map(({ label, events: evs }) => (
-                <div key={label}>
-                  <PeriodSeparator label={label} />
-                  <div className="space-y-3 mt-3">
-                    {evs.map((ev) => <EventCard key={ev.id} event={ev} />)}
-                  </div>
-                </div>
+            <div className="space-y-1">
+              {Array.from(grouped.entries()).map(([key, { label, events: evs }]) => (
+                <MesSection
+                  key={key}
+                  label={label}
+                  count={evs.length}
+                  open={openMonths.has(key)}
+                  onToggle={() => toggleMonth(key)}
+                >
+                  {evs.map((ev) => <EventCard key={ev.id} event={ev} />)}
+                </MesSection>
               ))}
             </div>
           )}
