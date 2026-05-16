@@ -156,7 +156,7 @@ export default function AdminFederationsListPage() {
       {toDelete && (
         <DeleteConfirmModal
           title={`Apagar ${toDelete.acronym}?`}
-          description={`Esta ação removerá permanentemente a federação "${toDelete.name_es}".`}
+          itemLabel={toDelete.name_es}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setToDelete(null)}
         />
