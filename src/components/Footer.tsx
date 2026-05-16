@@ -116,7 +116,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Colunas de links — accordion no mobile, grid no desktop */
+          {/* Colunas de links — accordion no mobile, grid no desktop */}
           <div className="flex-1">
 
             {/* Mobile: accordion */}
