@@ -16,7 +16,7 @@ export default function ProgramsPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.programs.title}
       subtitle={t.programs.subtitle}
       breadcrumbs={[{ label: t.programs.title }]}

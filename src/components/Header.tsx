@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
+import { X, Sun, Moon, ChevronDown } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useLanguage } from '../context/LanguageContext';
 import type { Lang } from '../i18n/translations';
@@ -26,11 +26,27 @@ export default function Header() {
   const [openDropdowns, setOpenDropdowns] = useState<Set<NonNullable<DropdownKey>>>(new Set());
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
   const { theme, toggle } = useTheme();
   const { lang, setLang, t } = useLanguage();
   const { pathname } = useLocation();
 
-  const close = () => { setIsOpen(false); setOpenDropdowns(new Set()); };
+  const close = () => {
+    const top = document.body.style.top;
+    document.body.style.cssText = '';
+    if (top) window.scrollTo(0, -parseInt(top));
+    setIsOpen(false);
+    setOpenDropdowns(new Set());
+  };
+
+  const openMenu = () => {
+    const y = window.scrollY;
+    document.body.style.cssText = `overflow:hidden;position:fixed;top:-${y}px;width:100%`;
+    setIsOpen(true);
+    setTimeout(() => closeBtnRef.current?.focus(), 80);
+  };
+
   const toggleDropdown = (key: NonNullable<DropdownKey>) =>
     setOpenDropdowns((prev) => {
       if (prev.has(key)) return new Set();
@@ -61,6 +77,20 @@ export default function Header() {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Fecha drawer ao pressionar Esc
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        close();
+        setTimeout(() => hamburgerRef.current?.focus(), 50);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Abre automaticamente o dropdown que contém a página ativa ao abrir o menu mobile
   useEffect(() => {
@@ -287,138 +317,213 @@ export default function Header() {
               </NavLink>
 
               <button
-                className="lg:hidden w-10 h-10 flex items-center justify-center text-consudes-navy hover:bg-consudes-navy/6 rounded transition-colors dark:text-white/80 dark:hover:bg-white/8"
-                onClick={() => setIsOpen((v) => !v)}
+                ref={hamburgerRef}
+                className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-[5px] text-consudes-navy dark:text-white/80 hover:bg-consudes-navy/6 dark:hover:bg-white/8 rounded transition-colors"
+                onClick={() => isOpen ? close() : openMenu()}
                 aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
+                aria-expanded={isOpen}
+                aria-controls="mobile-drawer"
               >
-                {isOpen ? <X size={20} strokeWidth={2} /> : <Menu size={20} strokeWidth={1.75} />}
+                <span className={`block h-0.5 w-[18px] bg-current rounded-full transition-all duration-300 origin-center ${isOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+                <span className={`block h-0.5 w-[18px] bg-current rounded-full transition-all duration-300 ${isOpen ? 'opacity-0 scale-x-0' : ''}`} />
+                <span className={`block h-0.5 w-[18px] bg-current rounded-full transition-all duration-300 origin-center ${isOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Mobile Menu ───────────────────────────────────────────────────── */}
-      {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-consudes-dark border-t border-consudes-navy/8 dark:border-white/5 overflow-y-auto max-h-[calc(100svh-104px)] shadow-[0_8px_32px_rgba(0,45,94,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
-          <div className="py-1">
-            {navItems.map((item) =>
-              item.type === 'dropdown' ? (
-                <div key={item.key} className="border-b border-consudes-navy/5 dark:border-white/5 last:border-0">
+      {/* ── Overlay ───────────────────────────────────────────────────────── */}
+      <div
+        aria-hidden="true"
+        className={`lg:hidden fixed inset-0 z-[105] bg-black/60 backdrop-blur-[2px] transition-opacity duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => { close(); setTimeout(() => hamburgerRef.current?.focus(), 50); }}
+      />
+
+      {/* ── Drawer mobile ─────────────────────────────────────────────────── */}
+      <div
+        id="mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu de navegação"
+        className={`lg:hidden fixed top-0 right-0 z-[110] h-full w-[min(320px,88vw)] bg-consudes-navy flex flex-col transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0 shadow-[-8px_0_40px_rgba(0,0,0,0.35)]' : 'translate-x-full'
+        }`}
+      >
+        {/* Cabeçalho do drawer */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
+          <Link to="/" onClick={close} aria-label="CONSUDES – Página inicial">
+            <div className="bg-white rounded-lg px-3 py-1.5">
+              <img
+                src="/logo-novo-consudes-removebg-preview-1.webp"
+                alt="CONSUDES"
+                className="h-8 w-auto object-contain"
+              />
+            </div>
+          </Link>
+          <button
+            ref={closeBtnRef}
+            onClick={() => { close(); setTimeout(() => hamburgerRef.current?.focus(), 50); }}
+            aria-label="Fechar menu"
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Navegação */}
+        <nav aria-label="Menu principal" className="flex-1 overflow-y-auto py-2">
+          {navItems.map((item) =>
+            item.type === 'dropdown' ? (
+              <div key={item.key} className="border-b border-white/8 last:border-0">
+                <div className="flex items-stretch">
                   {item.to ? (
-                    <div className="flex items-stretch">
-                      <Link
-                        to={item.to}
-                        onClick={close}
-                        className={`flex-1 px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
-                          openDropdowns.has(item.key) ||
-                          item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
-                            ? 'text-consudes-gold'
-                            : 'text-consudes-navy/75 dark:text-white/40 hover:text-consudes-gold dark:hover:text-consudes-gold'
-                        }`}
-                      >
-                        {item.label}
-                      </Link>
-                      <button
-                        onClick={() => toggleDropdown(item.key)}
-                        aria-expanded={openDropdowns.has(item.key)}
-                        aria-label="Expandir submenu"
-                        className="px-4 py-3.5 text-consudes-navy/50 dark:text-white/30 hover:text-consudes-gold dark:hover:text-consudes-gold transition-colors"
-                      >
-                        <ChevronDown
-                          size={13}
-                          className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
-                        />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => toggleDropdown(item.key)}
-                      className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
-                        openDropdowns.has(item.key) ||
+                    <Link
+                      to={item.to}
+                      onClick={close}
+                      className={`flex-1 flex items-center px-5 py-4 text-[15px] font-semibold transition-colors ${
                         item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
                           ? 'text-consudes-gold'
-                          : 'text-consudes-navy/75 dark:text-white/40 hover:text-consudes-gold dark:hover:text-consudes-gold'
+                          : 'text-white/85 hover:text-white'
                       }`}
                     >
                       {item.label}
-                      <ChevronDown
-                        size={13}
-                        className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
-                      />
-                    </button>
+                    </Link>
+                  ) : (
+                    <span className="flex-1 flex items-center px-5 py-4 text-[15px] font-semibold text-white/85">
+                      {item.label}
+                    </span>
                   )}
-                  {openDropdowns.has(item.key) && (
-                    <div className="bg-consudes-navy/3 dark:bg-white/3 pb-2">
-                      {item.links.map((link) =>
-                        link.href ? (
-                          <a
-                            key={link.href}
-                            href={link.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={close}
-                              className="flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] font-medium text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/60 dark:hover:text-white transition-colors"
-                          >
-                              <span className="w-1 h-1 rounded-full bg-consudes-gold/50 flex-shrink-0" />
-                            {link.label}
-                          </a>
-                        ) : (
-                          <NavLink
-                            key={link.to}
-                            to={link.to!}
-                            onClick={close}
-                            className={({ isActive }) =>
-                              `flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] transition-colors ${
-                                isActive
-                                  ? 'font-semibold text-consudes-navy bg-consudes-navy/10 border-l-2 border-l-consudes-gold dark:text-white dark:bg-white/8'
-                                  : 'font-medium text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/60 dark:hover:text-white'
-                              }`
-                            }
-                          >
-                            {({ isActive }) => (
-                              <>
-                                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isActive ? 'bg-consudes-gold' : 'bg-consudes-gold/40'}`} />
-                                {link.label}
-                              </>
-                            )}
-                          </NavLink>
-                        )
-                      )}
-                    </div>
-                  )}
+                  <button
+                    onClick={() => toggleDropdown(item.key)}
+                    aria-expanded={openDropdowns.has(item.key)}
+                    aria-controls={`submenu-${item.key}`}
+                    aria-label={`${openDropdowns.has(item.key) ? 'Recolher' : 'Expandir'} submenu ${item.label}`}
+                    className="px-4 text-white/50 hover:text-consudes-gold transition-colors"
+                  >
+                    <ChevronDown
+                      size={14}
+                      className={`transition-transform duration-200 ${openDropdowns.has(item.key) ? 'rotate-180' : ''}`}
+                    />
+                  </button>
                 </div>
-              ) : (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={close}
-                  end={item.to === '/'}
-                  aria-label={item.to === '/' ? 'Navegar para a página inicial' : undefined}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-5 py-3.5 text-[13px] border-b border-consudes-navy/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
-                      isActive
-                        ? 'font-bold text-consudes-navy bg-consudes-navy/10 border-l-2 border-l-consudes-gold dark:text-white dark:bg-white/8'
-                        : 'font-semibold text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/65 dark:hover:text-white'
-                    }`
-                  }
+
+                {/* Submenu animado */}
+                <div
+                  id={`submenu-${item.key}`}
+                  className={`overflow-hidden transition-all duration-300 ${
+                    openDropdowns.has(item.key) ? 'max-h-[400px]' : 'max-h-0'
+                  }`}
                 >
-                  {item.label}
-                </NavLink>
-              )
-            )}
-          </div>
-          <div className="px-5 py-4 border-t border-consudes-navy/8 dark:border-white/5">
-            <NavLink
-              to="/contato"
-              onClick={close}
-              className="flex items-center justify-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-4 py-3.5 rounded text-[13px] tracking-wide transition-colors duration-150"
-            >
-              {t.nav.cta}
-            </NavLink>
+                  <div className="pb-2 bg-black/20">
+                    {item.links.map((link) =>
+                      link.href ? (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={close}
+                          className="flex items-center gap-3 pl-8 pr-5 py-3 text-sm text-white/65 hover:text-white transition-colors"
+                        >
+                          <span className="w-1 h-1 rounded-full bg-consudes-gold/50 flex-shrink-0" />
+                          {link.label}
+                        </a>
+                      ) : (
+                        <NavLink
+                          key={link.to}
+                          to={link.to!}
+                          onClick={close}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 pl-8 pr-5 py-3 text-sm transition-colors ${
+                              isActive
+                                ? 'font-semibold text-white bg-white/5 border-l-2 border-l-consudes-gold'
+                                : 'text-white/65 hover:text-white'
+                            }`
+                          }
+                        >
+                          {({ isActive }) => (
+                            <>
+                              <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isActive ? 'bg-consudes-gold' : 'bg-white/30'}`} />
+                              {link.label}
+                            </>
+                          )}
+                        </NavLink>
+                      )
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={close}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `relative flex items-center px-5 py-4 text-[15px] font-semibold border-b border-white/8 last:border-0 transition-colors duration-150 ${
+                    isActive ? 'text-white bg-white/5' : 'text-white/85 hover:text-white hover:bg-white/5'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <span className="absolute left-0 inset-y-0 w-0.5 bg-consudes-gold" aria-hidden="true" />
+                    )}
+                    {item.label}
+                  </>
+                )}
+              </NavLink>
+            )
+          )}
+        </nav>
+
+        {/* Rodapé do drawer */}
+        <div className="flex-shrink-0 border-t border-white/10 px-5 py-4 space-y-3">
+          <NavLink
+            to="/contato"
+            onClick={close}
+            className="flex items-center justify-center gap-2 bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-navy font-bold px-4 py-3.5 rounded-lg text-sm tracking-wide transition-colors duration-150"
+          >
+            {t.nav.cta}
+          </NavLink>
+          <div className="flex items-center justify-between text-[11px]">
+            <div className="flex items-center">
+              {LANGS.map(({ code, label }, i) => (
+                <button
+                  key={code}
+                  onClick={() => setLang(code)}
+                  className={`px-2.5 py-1 font-bold tracking-widest transition-colors ${
+                    lang === code ? 'text-consudes-gold' : 'text-white/45 hover:text-white'
+                  } ${i < LANGS.length - 1 ? 'border-r border-white/15' : ''}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://webmail.hostinger.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/45 hover:text-white transition-colors"
+              >
+                Webmail
+              </a>
+              <button
+                onClick={toggle}
+                aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
+                className="text-white/45 hover:text-consudes-gold transition-colors"
+              >
+                {theme === 'dark' ? <Sun size={13} /> : <Moon size={13} />}
+              </button>
+            </div>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }

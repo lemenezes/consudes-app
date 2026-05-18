@@ -5,7 +5,7 @@ export default function AboutPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.institutional}
       subtitle={t.about.title}
       breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.about.title }]}

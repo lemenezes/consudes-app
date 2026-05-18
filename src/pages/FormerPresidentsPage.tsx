@@ -49,7 +49,7 @@ export default function FormerPresidentsPage() {
 
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.formerPresidents}
       subtitle={fp.subtitle}
       breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.formerPresidents }]}

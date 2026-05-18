@@ -14,7 +14,7 @@ export default function SportsPage() {
   ];
 
   return (
-    <PageShell label="CONSUDES" title={t.nav.sports} breadcrumbs={[{ label: t.nav.sports }]}>
+    <PageShell title={t.nav.sports} breadcrumbs={[{ label: t.nav.sports }]}>
 
       <section className="bg-[#F5F7FA] dark:bg-[#080e1a] py-14 sm:py-20">
         <div className="max-w-4xl mx-auto px-6 sm:px-8">

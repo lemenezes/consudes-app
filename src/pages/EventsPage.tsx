@@ -5,7 +5,7 @@ export default function EventsPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.championships}
       subtitle="Calendário oficial de competições e eventos da confederação."
       breadcrumbs={[{ label: t.nav.championships }]}

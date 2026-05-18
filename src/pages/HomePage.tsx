@@ -1,4 +1,4 @@
-import { ArrowRight, Users, BookOpen, HeartHandshake, Globe, Mail } from 'lucide-react';
+import { ArrowRight, Users, BookOpen, HeartHandshake, Globe, Mail, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { usePublicNews } from '../hooks/usePublicNews';
@@ -24,7 +24,7 @@ export default function HomePage() {
   return (
     <>
       {/* ─── Hero Refinado ─────────────────────────────────────────────────────────── */}
-      <section className="relative bg-consudes-navy overflow-hidden">
+      <section className="relative bg-consudes-navy">
         {/* Fundo arquitetônico */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_50%_-20%,#002D5E,transparent)]" />
@@ -66,12 +66,13 @@ export default function HomePage() {
                   {t.hero.cta1}
                   <ArrowRight size={16} />
                 </a>
-                <a
-                  href="#contato"
-                  className="inline-flex items-center gap-2 border border-white/30 text-white font-medium px-8 py-4 rounded-lg hover:bg-white/8 transition-colors text-sm sm:text-base"
+                <Link
+                  to="/calendario"
+                  className="inline-flex items-center gap-2 border border-white/30 text-white font-medium px-8 py-4 rounded-lg hover:border-consudes-gold/50 hover:text-consudes-gold hover:bg-white/5 transition-colors text-sm sm:text-base"
                 >
+                  <Calendar size={15} />
                   {t.hero.cta2}
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -186,6 +187,9 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+
+        {/* Overlap anti-gap subpixel (Retina/Safari) */}
+        <div className="absolute inset-x-0 -bottom-px h-1 bg-consudes-navy" aria-hidden="true" />
       </section>
 
       {/* ─── Sobre ────────────────────────────────────────────────────────── */}
@@ -243,16 +247,15 @@ export default function HomePage() {
       {/* ─── Programas ────────────────────────────────────────────────────── */}
       <section id="programas" className="bg-consudes-navy dark:bg-consudes-dark-deep py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <span className="w-8 h-px bg-consudes-gold/70" />
-              <span className="text-consudes-gold text-xs font-bold tracking-widest uppercase">{t.programs.label}</span>
-              <span className="w-8 h-px bg-consudes-gold/70" />
-            </div>
+          <div className="mb-10">
+            <span className="inline-flex items-center gap-2 text-consudes-gold text-xs font-bold tracking-widest uppercase mb-4">
+              <span className="w-5 h-0.5 bg-consudes-gold/70 inline-block" />
+              {t.programs.label}
+            </span>
             <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-3">
               {t.programs.title}
             </h2>
-            <p className="text-white/70 text-sm max-w-lg mx-auto">
+            <p className="text-white/70 text-sm">
               {t.programs.subtitle}
             </p>
           </div>
@@ -281,16 +284,15 @@ export default function HomePage() {
       {/* ─── Notícias ─────────────────────────────────────────────────── */}
       <section id="noticias" className="bg-consudes-surface dark:bg-consudes-dark-body py-20 sm:py-28">
         <div className="max-w-6xl mx-auto px-6 sm:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <span className="w-8 h-px bg-consudes-gold/70" />
-              <span className="text-consudes-blue-mid dark:text-white/60 text-xs font-bold tracking-widest uppercase">{t.news.label}</span>
-              <span className="w-8 h-px bg-consudes-gold/70" />
-            </div>
+          <div className="mb-10">
+            <span className="inline-flex items-center gap-2 text-consudes-blue-mid dark:text-white/60 text-xs font-bold tracking-widest uppercase mb-4">
+              <span className="w-5 h-0.5 bg-consudes-gold/70 inline-block" />
+              {t.news.label}
+            </span>
             <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-consudes-blue-text dark:text-white mb-3">
               {t.news.title}
             </h2>
-            <p className="text-consudes-blue-text/65 dark:text-white/50 text-sm">
+            <p className="text-consudes-blue-text/65 dark:text-white/50 text-sm max-w-xl">
               {t.news.subtitle}
             </p>
           </div>
@@ -329,7 +331,7 @@ export default function HomePage() {
 
           {/* Ver todas */}
           {!newsLoading && news.length > 0 && (
-            <div className="text-center mt-10">
+            <div className="mt-10">
               <Link
                 to="/noticias"
                 className="inline-flex items-center gap-2 border border-consudes-blue-mid/25 text-consudes-blue-mid dark:text-white/70 font-semibold px-6 py-2.5 rounded-lg hover:bg-consudes-blue-mid/5 dark:hover:bg-white/5 transition-colors text-sm"
@@ -343,22 +345,22 @@ export default function HomePage() {
       </section>
 
       {/* ─── Contato ──────────────────────────────────────────────────────── */}
-      <section id="contato" className="bg-consudes-blue-mid py-16 sm:py-24">
-        <div className="max-w-2xl mx-auto px-6 sm:px-8 text-center">
-          <div className="w-16 h-[2px] bg-consudes-gold/70 mx-auto mb-10" />
+      <section id="contato" className="bg-consudes-navy border-t border-consudes-gold/25 py-20 sm:py-28">
+        <div className="max-w-4xl mx-auto px-6 sm:px-8">
+          <div className="w-12 h-[2px] bg-consudes-gold/70 mb-8" />
           <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-4">
             {t.contact.title}
           </h2>
-          <p className="text-white/75 mb-10 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+          <p className="text-white/75 mb-10 text-sm sm:text-base leading-relaxed">
             {t.contact.subtitle}
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start gap-4">
             <a
-              href="mailto:contato@consudes.org.br"
+              href="mailto:contato@consudes.com"
               className="inline-flex items-center gap-2 bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-navy font-bold px-7 py-3.5 rounded-lg text-sm transition-colors"
             >
               <Mail size={16} />
-              contato@consudes.org.br
+              contato@consudes.com
             </a>
             <Link
               to="/contato"

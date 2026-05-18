@@ -34,9 +34,9 @@ export const translations = {
       headline1: 'El deporte sordo',
       headline2: 'une a Sudamérica',
       subtitle:
-        'La confederación oficial que representa y articula a las entidades deportivas de la comunidad sorda en todo el continente sudamericano.',
+        'Desde 1985, CONSUDES representa las diez federaciones nacionales de Sudamérica y coordina la participación del continente en los Deaflympics y la PANAMDES.',
       cta1: 'Conoce CONSUDES',
-      cta2: 'Contáctenos',
+      cta2: 'Calendario deportivo',
     },
     stats: [
       { value: '10',       label: 'Federaciones afiliadas' },
@@ -46,15 +46,15 @@ export const translations = {
     about: {
       label: 'Quiénes somos',
       title: 'La confederación oficial del deporte sordo en Sudamérica',
-      p1: 'CONSUDES es el organismo rector del deporte de la comunidad sorda en América del Sur. Reúne y representa a las diez federaciones nacionales afiliadas, coordina competiciones continentales y articula la participación sudamericana en el movimiento deportivo sordo mundial.',
-      p2: 'Fundada en 1985 en Chile, la CONSUDES integra el movimiento global de los Deaflympics y el movimiento panamericano de la PANAMDES, trabajando para que cada surdoatleta del continente tenga los espacios y las oportunidades que merece.',
+      p1: 'CONSUDES es el organismo rector del deporte sordo en América del Sur. Agrupa las diez federaciones nacionales del continente, organiza campeonatos continentales e interclubes, y representa a Sudamérica ante los Deaflympics y la PANAMDES.',
+      p2: 'Fundada en 1985 en Santiago de Chile, lleva más de cuatro décadas impulsando el deporte sordo desde Argentina hasta Venezuela, con competencias de alto nivel que preparan a los surdoatletas del continente para la escena mundial.',
       link: 'Conoce nuestra actividad',
     },
     programs: {
       label: 'Lo que hacemos',
       title: 'Nuestra actividad deportiva',
       subtitle:
-        'Cuatro ejes que definen la acción de la CONSUDES en el continente sudamericano.',
+        'Lo que organiza, representa y fomenta la CONSUDES cada año en América del Sur.',
       items: [
         {
           title: 'Competiciones Continentales',
@@ -79,9 +79,9 @@ export const translations = {
       ],
     },
     news: {
-      label: 'Mantente informado',
+      label: 'Últimas noticias',
       title: 'Noticias y eventos',
-      subtitle: 'Comunicados, eventos y novedades oficiales de la CONSUDES.',
+      subtitle: 'Resultados, convocatorias y comunicados oficiales del deporte sordo sudamericano.',
       emptyState: 'Aún no hay noticias publicadas.',
       viewAll: 'Ver todas las noticias',
       loadError: 'No se pudieron cargar las noticias. Inténtelo más tarde.',
@@ -98,13 +98,13 @@ export const translations = {
     contact: {
       title: 'Habla con CONSUDES',
       subtitle:
-        'Escríbenos para conocer más sobre afiliación, competiciones y cómo tu federación puede participar del movimiento deportivo sordo sudamericano.',
+        'Consultas sobre afiliación, calendario de competencias, sede de torneos o representación ante los Deaflympics y la PANAMDES.',
       phoneLabel: 'Teléfono',
       phoneSoon: 'Próximamente',
     },
     historyPage: {
       label: 'Nuestra historia',
-      heroSubtitle: 'Más de cuatro décadas construyendo el deporte sordo sudamericano.',
+      heroSubtitle: 'Cuatro décadas de historia, desde la fundación en Santiago en 1985 hasta los campeonatos continentales de hoy.',
       foundingTitle: 'Fundación',
       foundingDate: '23 de agosto de 1985',
       foundingText:
@@ -117,12 +117,12 @@ export const translations = {
           text: 'La Confederación Sudamericana Deportiva de Sordos es constituida en Chile, con los países fundadores del continente, consolidando el primer organismo oficial del deporte sordo sudamericano.',
         },
         {
-          year: '1990s',
+          year: 'Década de 1990',
           title: 'Expansión continental',
           text: 'Adhesión progresiva de nuevas federaciones nacionales, consolidando la presencia de CONSUDES en todos los países de Sudamérica.',
         },
         {
-          year: '2000s',
+          year: 'Años 2000',
           title: 'Integración internacional',
           text: 'Filiación formal con Deaflympics y PANAMDES, integrando CONSUDES al movimiento deportivo sordo panamericano y mundial.',
         },
@@ -132,27 +132,27 @@ export const translations = {
           text: 'Argentina, Bolivia, Brasil, Chile, Colombia, Ecuador, Paraguay, Perú, Uruguay y Venezuela componen una confederación consolidada y reconocida internacionalmente.',
         },
       ],
-      quoteText: 'El deporte es el lenguaje universal que une a la comunidad sorda de todo un continente.',
+      quoteText: 'Cuatro décadas de campeonatos continentales demuestran que el deporte sordo sudamericano tiene identidad propia y presencia en la escena mundial.',
       countriesLabel: 'Países afiliados',
     },
     missionPage: {
       label: 'Identidad institucional',
-      heroSubtitle: 'La misión, visión y propósito que guían cada acción de CONSUDES.',
+      heroSubtitle: 'El marco que define la acción de la CONSUDES ante las federaciones afiliadas y el movimiento deportivo sordo mundial.',
       missionTitle: 'Misión',
       missionText:
-        'CONSUDES busca promover el desarrollo integral de los surdoatletas y generar espacios y oportunidades para que la comunidad sorda de los países sudamericanos comparta e interactúe en todos los ámbitos del deporte, eliminando barreras comunicativas y afirmando positivamente la identidad sorda.',
+        'La CONSUDES existe para que el deporte sordo en Sudamérica tenga organización, representación y visibilidad. Coordina campeonatos continentales, representa a las federaciones afiliadas ante los Deaflympics y la PANAMDES, y trabaja para que cada surdoatleta del continente acceda a la competencia de alto nivel.',
       visionTitle: 'Visión',
       visionText:
-        'Ser la principal referencia del deporte sordo en Sudamérica, promoviendo una confederación cohesionada, transparente y comprometida con la excelencia deportiva y el desarrollo humano integral de la comunidad sorda continental.',
+        'Una Sudamérica donde el deporte sordo de alto rendimiento sea una realidad en los diez países afiliados, con federaciones activas, competencias regulares y delegaciones preparadas para los Deaflympics.',
       purposeTitle: 'Propósito',
       purposeText:
-        'Articular, representar y fortalecer a las federaciones afiliadas, promoviendo el deporte como herramienta de inclusión, identidad y orgullo de la comunidad sorda sudamericana.',
+        'Ser el vínculo entre las diez federaciones nacionales y el movimiento deportivo sordo mundial, organizando competencias, representando al continente y promoviendo el reconocimiento del deporte sordo sudamericano en el ámbito internacional.',
     },
     valuesPage: {
       label: 'Nuestros valores',
-      heroSubtitle: 'Los pilares que guían nuestra acción institucional y deportiva.',
+      heroSubtitle: 'Los principios que orientan la gestión de la CONSUDES y sus relaciones con las federaciones afiliadas.',
       intro:
-        'Los valores de CONSUDES son los pilares sobre los que funciona la entidad. Son las fuerzas que impulsan las actividades deportivas y promueven el crecimiento institucional a nivel sudamericano.',
+        'Los valores de la CONSUDES definen la manera en que la confederación conduce sus competencias, se relaciona con las federaciones afiliadas y representa al continente ante los organismos deportivos internacionales.',
       values: [
         { title: 'Excelencia', text: 'Compromiso con los más altos estándares deportivos e institucionales en cada acción que emprendemos.' },
         { title: 'Inclusión', text: 'Garantizamos espacios donde cada surdoatleta, independientemente de su origen, tenga igualdad de oportunidades.' },
@@ -326,11 +326,13 @@ export const translations = {
       subtitle: 'Federaciones afiliadas a la Confederación Sudamericana Deportiva de Sordos',
       affiliatedCount: 'federaciones afiliadas',
       introHeadline: 'Representando el deporte sordo sudamericano',
+      viewCards: 'Cards',
+      viewList: 'Compacto',
     },
     teamPage: {
       subtitle: 'Directorio oficial de la Confederación Sudamericana Deportiva de Sordos',
       mandate: 'Directorio Oficial 2022–2026',
-      introHeadline: 'Confederación Sudamericana Deportiva de Sordos',
+      introHeadline: 'Directorio 2022–2026',
       groupPresidency: 'Presidencia',
       groupVicePresidency: 'Vicepresidencia',
       groupBoard: 'Directorio',
@@ -353,7 +355,7 @@ export const translations = {
       countries: { BR: 'Brasil', AR: 'Argentina', CO: 'Colombia', PY: 'Paraguay', UY: 'Uruguay' },
     },
     calendarPage: {
-      subtitle: 'Calendario oficial de eventos deportivos e institucionales de la CONSUDES',
+      subtitle: 'Campeonatos continentales, interclubes, asambleas y eventos del movimiento deportivo sordo sudamericano.',
       introHeadline: 'Competencias del deporte sordo sudamericano',
       all: 'Todos',
       eventsLabel: 'eventos',
@@ -374,7 +376,7 @@ export const translations = {
       },
     },
     transparencyPage: {
-      heroSubtitle: 'Documentos oficiales, informes y rendición de cuentas de la confederación.',
+      heroSubtitle: 'Estatutos, informes, actas de asamblea y documentos oficiales de la CONSUDES.',
       introLabel: 'Acceso a la información',
       introDesc: 'Documentos institucionales publicados por la CONSUDES en cumplimiento de los principios de transparencia y acceso público a la información.',
       searchPlaceholder: 'Buscar documento…',
@@ -414,10 +416,10 @@ export const translations = {
       countries: { BR: 'Brasil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile' },
     },
     championshipsPage: {
-      subtitle: 'Calendario oficial de campeonatos y competiciones sudamericanas.',
+      subtitle: 'Histórico y próximas ediciones de los campeonatos sudamericanos organizados por la CONSUDES.',
     },
     galleryPage: {
-      subtitle: 'Registros fotográficos de eventos, competiciones e historia de la confederación.',
+      subtitle: 'Imágenes de campeonatos, interclubes, asambleas y momentos del deporte sordo sudamericano.',
     },
     notFound: {
       title: 'Página no encontrada',
@@ -459,9 +461,9 @@ export const translations = {
       headline1: 'O esporte surdo',
       headline2: 'une a América do Sul',
       subtitle:
-        'A confederação oficial que representa e articula as entidades esportivas da comunidade surda em todo o continente sul-americano.',
+        'Desde 1985, a CONSUDES representa as dez federações nacionais da América do Sul e coordena a participação do continente nos Deaflympics e na PANAMDES.',
       cta1: 'Conheça a CONSUDES',
-      cta2: 'Entre em contato',
+      cta2: 'Calendário esportivo',
     },
     stats: [
       { value: '10',       label: 'Federações filiadas' },
@@ -471,15 +473,15 @@ export const translations = {
     about: {
       label: 'Quem somos',
       title: 'A confederação oficial do esporte surdo na América do Sul',
-      p1: 'A CONSUDES é o organismo gestor do esporte da comunidade surda na América do Sul. Reúne e representa as dez federações nacionais filiadas, coordena competições continentais e articula a participação sul-americana no movimento esportivo surdo mundial.',
-      p2: 'Fundada em 1985 no Chile, a CONSUDES integra o movimento global dos Deaflympics e o movimento pan-americano da PANAMDES, trabalhando para que cada surdoatleta do continente tenha os espaços e as oportunidades que merece.',
+      p1: 'A CONSUDES é o organismo gestor do esporte surdo na América do Sul. Agrupa as dez federações nacionais do continente, organiza campeonatos continentais e interclubes, e representa a América do Sul nos Deaflympics e na PANAMDES.',
+      p2: 'Fundada em 1985 em Santiago do Chile, há mais de quatro décadas impulsiona o esporte surdo da Argentina à Venezuela, com competições de alto nível que preparam os surdoatletas do continente para o cenário mundial.',
       link: 'Conheça nossa atividade',
     },
     programs: {
       label: 'O que fazemos',
       title: 'Nossa atividade esportiva',
       subtitle:
-        'Quatro eixos que definem a atuação da CONSUDES no continente sul-americano.',
+        'O que organiza, representa e fomenta a CONSUDES a cada ano na América do Sul.',
       items: [
         {
           title: 'Competições Continentais',
@@ -504,9 +506,9 @@ export const translations = {
       ],
     },
     news: {
-      label: 'Fique por dentro',
+      label: 'Últimas notícias',
       title: 'Notícias e eventos',
-      subtitle: 'Comunicados, eventos e novidades oficiais da CONSUDES.',
+      subtitle: 'Resultados, convocatórias e comunicados oficiais do esporte surdo sul-americano.',
       emptyState: 'Nenhuma notícia publicada ainda.',
       viewAll: 'Ver todas as notícias',
       loadError: 'Não foi possível carregar as notícias. Tente novamente mais tarde.',
@@ -523,13 +525,13 @@ export const translations = {
     contact: {
       title: 'Fale com a CONSUDES',
       subtitle:
-        'Escreva-nos para saber mais sobre filiação, competições e como sua federação pode participar do movimento esportivo surdo sul-americano.',
+        'Consultas sobre filiação, calendário de competições, sede de torneios ou representação nos Deaflympics e na PANAMDES.',
       phoneLabel: 'Telefone',
       phoneSoon: 'Em breve',
     },
     historyPage: {
       label: 'Nossa história',
-      heroSubtitle: 'Mais de quatro décadas construindo o esporte surdo sul-americano.',
+      heroSubtitle: 'Quatro décadas de história, desde a fundação em Santiago em 1985 até os campeonatos continentais de hoje.',
       foundingTitle: 'Fundação',
       foundingDate: '23 de agosto de 1985',
       foundingText:
@@ -542,12 +544,12 @@ export const translations = {
           text: 'A Confederação Sul-Americana Esportiva de Surdos é constituída no Chile, com os países fundadores do continente, consolidando o primeiro organismo oficial do esporte surdo sul-americano.',
         },
         {
-          year: '1990s',
+          year: 'Década de 1990',
           title: 'Expansão continental',
           text: 'Adesão progressiva de novas federações nacionais, consolidando a presença da CONSUDES em todos os países da América do Sul.',
         },
         {
-          year: '2000s',
+          year: 'Anos 2000',
           title: 'Integração internacional',
           text: 'Filiação formal com Deaflympics e PANAMDES, integrando a CONSUDES ao movimento esportivo surdo pan-americano e mundial.',
         },
@@ -557,27 +559,27 @@ export const translations = {
           text: 'Argentina, Bolívia, Brasil, Chile, Colômbia, Equador, Paraguai, Peru, Uruguai e Venezuela compõem uma confederação consolidada e reconhecida internacionalmente.',
         },
       ],
-      quoteText: 'O esporte é a linguagem universal que une a comunidade surda de todo um continente.',
+      quoteText: 'Quatro décadas de campeonatos continentais demonstram que o esporte surdo sul-americano tem identidade própria e presença no cenário mundial.',
       countriesLabel: 'Países filiados',
     },
     missionPage: {
       label: 'Identidade institucional',
-      heroSubtitle: 'A missão, visão e propósito que guiam cada ação da CONSUDES.',
+      heroSubtitle: 'O marco que define a atuação da CONSUDES perante as federações filiadas e o movimento esportivo surdo mundial.',
       missionTitle: 'Missão',
       missionText:
-        'A CONSUDES busca promover o desenvolvimento integral dos surdoatletas e gerar espaços e oportunidades para que a comunidade surda dos países sul-americanos compartilhe e interaja em todos os âmbitos do esporte, eliminando barreiras comunicativas e afirmando positivamente a identidade surda.',
+        'A CONSUDES existe para que o esporte surdo na América do Sul tenha organização, representação e visibilidade. Coordena campeonatos continentais, representa as federações filiadas nos Deaflympics e na PANAMDES, e trabalha para que cada surdoatleta do continente acesse a competição de alto nível.',
       visionTitle: 'Visão',
       visionText:
-        'Ser a principal referência do esporte surdo na América do Sul, promovendo uma confederação coesa, transparente e comprometida com a excelência esportiva e o desenvolvimento humano integral da comunidade surda continental.',
+        'Uma América do Sul onde o esporte surdo de alto rendimento seja uma realidade nos dez países filiados, com federações ativas, competições regulares e delegações preparadas para os Deaflympics.',
       purposeTitle: 'Propósito',
       purposeText:
-        'Articular, representar e fortalecer as federações filiadas, promovendo o esporte como ferramenta de inclusão, identidade e orgulho da comunidade surda sul-americana.',
+        'Ser o elo entre as dez federações nacionais e o movimento esportivo surdo mundial, organizando competições, representando o continente e promovendo o reconhecimento do esporte surdo sul-americano no âmbito internacional.',
     },
     valuesPage: {
       label: 'Nossos valores',
-      heroSubtitle: 'Os pilares que guiam nossa ação institucional e esportiva.',
+      heroSubtitle: 'Os princípios que orientam a gestão da CONSUDES e suas relações com as federações filiadas.',
       intro:
-        'Os valores da CONSUDES são os pilares sobre os quais funciona a entidade. São as forças que impulsionam as atividades esportivas e promovem o crescimento institucional no âmbito sul-americano.',
+        'Os valores da CONSUDES definem a maneira como a confederação conduz suas competições, se relaciona com as federações filiadas e representa o continente perante os organismos esportivos internacionais.',
       values: [
         { title: 'Excelência', text: 'Compromisso com os mais altos padrões esportivos e institucionais em cada ação que empreendemos.' },
         { title: 'Inclusão', text: 'Garantimos espaços onde cada surdoatleta, independentemente de sua origem, tenha igualdade de oportunidades.' },
@@ -751,11 +753,13 @@ export const translations = {
       subtitle: 'Federações filiadas à Confederação Sul-Americana Desportiva de Surdos',
       affiliatedCount: 'federações afiliadas',
       introHeadline: 'Representando o esporte surdo sul-americano',
+      viewCards: 'Cards',
+      viewList: 'Compacto',
     },
     teamPage: {
       subtitle: 'Diretoria oficial da Confederação Sul-Americana Desportiva de Surdos',
       mandate: 'Diretoria Oficial 2022–2026',
-      introHeadline: 'Confederação Sul-Americana Desportiva de Surdos',
+      introHeadline: 'Diretoria 2022–2026',
       groupPresidency: 'Presidência',
       groupVicePresidency: 'Vice-presidência',
       groupBoard: 'Diretoria',
@@ -793,7 +797,7 @@ export const translations = {
       back: 'Voltar ao início',
     },
     calendarPage: {
-      subtitle: 'Calendário oficial de eventos esportivos e institucionais da CONSUDES',
+      subtitle: 'Campeonatos continentais, interclubes, assembleias e eventos do movimento esportivo surdo sul-americano.',
       introHeadline: 'Competições do esporte surdo sul-americano',
       all: 'Todos',
       eventsLabel: 'eventos',
@@ -814,7 +818,7 @@ export const translations = {
       },
     },
     transparencyPage: {
-      heroSubtitle: 'Documentos oficiais, relatórios e prestação de contas da confederação.',
+      heroSubtitle: 'Estatutos, relatórios, atas de assembleia e documentos oficiais da CONSUDES.',
       introLabel: 'Acesso à informação',
       introDesc: 'Documentos institucionais disponibilizados pela CONSUDES em cumprimento aos princípios de transparência e acesso público à informação.',
       searchPlaceholder: 'Buscar documento…',
@@ -844,10 +848,10 @@ export const translations = {
       },
     },
     championshipsPage: {
-      subtitle: 'Calendário oficial de campeonatos e competições sul-americanas.',
+      subtitle: 'Histórico e próximas edições dos campeonatos sul-americanos organizados pela CONSUDES.',
     },
     galleryPage: {
-      subtitle: 'Registros fotográficos de eventos, competições e história da confederação.',
+      subtitle: 'Imagens de campeonatos, interclubes, assembleias e momentos do esporte surdo sul-americano.',
     },
   },
 
@@ -884,9 +888,9 @@ export const translations = {
       headline1: 'Deaf sport',
       headline2: 'unites South America',
       subtitle:
-        'The official confederation representing and connecting deaf sports organizations across South America.',
+        'Since 1985, CONSUDES has represented ten national federations across South America and coordinated the continent\'s participation in the Deaflympics and PANAMDES.',
       cta1: 'Discover CONSUDES',
-      cta2: 'Get in touch',
+      cta2: 'Sports calendar',
     },
     stats: [
       { value: '10',        label: 'Affiliated federations' },
@@ -896,15 +900,15 @@ export const translations = {
     about: {
       label: 'About us',
       title: 'The official confederation of South American deaf sport',
-      p1: 'CONSUDES is the governing body for deaf community sport across South America. It brings together and represents the ten affiliated national federations, coordinates continental competitions and connects South America\'s participation in the global deaf sports movement.',
-      p2: 'Founded in 1985 in Chile, CONSUDES is affiliated with the global Deaflympics movement and the Pan-American PANAMDES, working to ensure every deaf athlete on the continent has the spaces and opportunities they deserve.',
+      p1: 'CONSUDES is the governing body for deaf sport in South America. It brings together ten national federations, organises continental championships and interclub tournaments, and represents South America at the Deaflympics and PANAMDES.',
+      p2: 'Founded in 1985 in Santiago, Chile, it has spent more than four decades advancing deaf sport from Argentina to Venezuela, with high-level competitions that prepare the continent\'s deaf athletes for the world stage.',
       link: 'Discover our activities',
     },
     programs: {
       label: 'What we do',
       title: 'Our sporting mission',
       subtitle:
-        'Four pillars that define CONSUDES action across South America.',
+        'What CONSUDES organises, represents and promotes year after year across South America.',
       items: [
         {
           title: 'Continental Competitions',
@@ -929,9 +933,9 @@ export const translations = {
       ],
     },
     news: {
-      label: 'Stay informed',
+      label: 'Latest news',
       title: 'News and events',
-      subtitle: 'Official announcements, events and news from CONSUDES.',
+      subtitle: 'Results, competition calls and official announcements from South American deaf sport.',
       emptyState: 'No news published yet.',
       viewAll: 'View all news',
       loadError: 'News could not be loaded. Please try again later.',
@@ -948,13 +952,13 @@ export const translations = {
     contact: {
       title: 'Contact CONSUDES',
       subtitle:
-        'Write to us to learn more about membership, competitions and how your federation can participate in the South American deaf sports movement.',
+        'Enquiries about membership, competition schedules, tournament hosting or representation at the Deaflympics and PANAMDES.',
       phoneLabel: 'Phone',
       phoneSoon: 'Coming soon',
     },
     historyPage: {
       label: 'Our history',
-      heroSubtitle: 'More than four decades building South American deaf sport.',
+      heroSubtitle: 'Four decades of history, from the founding in Santiago in 1985 to today\'s continental championships.',
       foundingTitle: 'Founding',
       foundingDate: 'August 23, 1985',
       foundingText:
@@ -982,27 +986,27 @@ export const translations = {
           text: 'Argentina, Bolivia, Brazil, Chile, Colombia, Ecuador, Paraguay, Peru, Uruguay and Venezuela make up a consolidated and internationally recognised confederation.',
         },
       ],
-      quoteText: 'Sport is the universal language that unites the deaf community across an entire continent.',
+      quoteText: 'Four decades of continental championships show that South American deaf sport has its own identity and a recognised place on the world stage.',
       countriesLabel: 'Affiliated countries',
     },
     missionPage: {
       label: 'Institutional identity',
-      heroSubtitle: 'The mission, vision and purpose that guide every action of CONSUDES.',
+      heroSubtitle: 'The framework that defines CONSUDES action towards its affiliated federations and the global deaf sports movement.',
       missionTitle: 'Mission',
       missionText:
-        'CONSUDES seeks to promote the integral development of deaf athletes and create spaces and opportunities for the deaf community across South American countries to share and interact in all areas of sport, breaking down communication barriers and positively affirming deaf identity.',
+        'CONSUDES exists so that deaf sport in South America has structure, representation and visibility. It coordinates continental championships, represents affiliated federations at the Deaflympics and PANAMDES, and works to ensure every deaf athlete on the continent has access to high-level competition.',
       visionTitle: 'Vision',
       visionText:
-        'To be the leading reference for deaf sport in South America, promoting a cohesive, transparent confederation committed to sporting excellence and the holistic human development of the continental deaf community.',
+        'A South America where high-performance deaf sport is a reality in all ten affiliated countries, with active federations, regular competitions and well-prepared delegations at the Deaflympics.',
       purposeTitle: 'Purpose',
       purposeText:
-        'To articulate, represent and strengthen affiliated federations, promoting sport as a tool for inclusion, identity and pride of the South American deaf community.',
+        'To be the link between the ten national federations and the global deaf sports movement, organising competitions, representing the continent and promoting the recognition of South American deaf sport internationally.',
     },
     valuesPage: {
       label: 'Our values',
-      heroSubtitle: 'The pillars that guide our institutional and sporting action.',
+      heroSubtitle: 'The principles that guide CONSUDES management and its relations with affiliated federations.',
       intro:
-        'CONSUDES values are the pillars on which the entity operates. They are the driving forces behind sporting activities and promote institutional growth across South America.',
+        'CONSUDES values define how the confederation runs its competitions, relates to affiliated federations and represents the continent before international sports bodies.',
       values: [
         { title: 'Excellence', text: 'Commitment to the highest sporting and institutional standards in every action we undertake.' },
         { title: 'Inclusion', text: 'We guarantee spaces where every deaf athlete, regardless of origin, has equal opportunities.' },
@@ -1176,11 +1180,13 @@ export const translations = {
       subtitle: 'Federations affiliated with the South American Sports Confederation of the Deaf',
       affiliatedCount: 'affiliated federations',
       introHeadline: 'Representing deaf sport across South America',
+      viewCards: 'Cards',
+      viewList: 'Compact',
     },
     teamPage: {
       subtitle: 'Official board of the South American Sports Confederation of the Deaf',
       mandate: 'Official Board 2022–2026',
-      introHeadline: 'South American Sports Confederation of the Deaf',
+      introHeadline: 'Board 2022–2026',
       groupPresidency: 'Presidency',
       groupVicePresidency: 'Vice-Presidency',
       groupBoard: 'Board of Directors',
@@ -1218,7 +1224,7 @@ export const translations = {
       back: 'Back to home',
     },
     calendarPage: {
-      subtitle: 'Official calendar of sports and institutional events from CONSUDES',
+      subtitle: 'Continental championships, interclubs, assemblies and events of the South American deaf sports movement.',
       introHeadline: 'Competitions of South American deaf sport',
       all: 'All',
       eventsLabel: 'events',
@@ -1239,7 +1245,7 @@ export const translations = {
       },
     },
     transparencyPage: {
-      heroSubtitle: 'Official documents, reports and accounts of the confederation.',
+      heroSubtitle: 'Statutes, reports, assembly minutes and official documents of CONSUDES.',
       introLabel: 'Access to information',
       introDesc: 'Institutional documents published by CONSUDES in accordance with the principles of transparency and public access to information.',
       searchPlaceholder: 'Search document…',
@@ -1269,10 +1275,10 @@ export const translations = {
       },
     },
     championshipsPage: {
-      subtitle: 'Official calendar of South American championships and competitions.',
+      subtitle: 'Past and upcoming editions of the South American championships organised by CONSUDES.',
     },
     galleryPage: {
-      subtitle: 'Photo records of events, competitions and the history of the confederation.',
+      subtitle: 'Images from championships, interclubs, assemblies and moments of South American deaf sport.',
     },
   },
 } satisfies Record<Lang, unknown>;

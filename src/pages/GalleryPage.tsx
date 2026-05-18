@@ -5,7 +5,7 @@ export default function GalleryPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.gallery}
       subtitle={t.galleryPage.subtitle}
       breadcrumbs={[{ label: t.nav.gallery }]}

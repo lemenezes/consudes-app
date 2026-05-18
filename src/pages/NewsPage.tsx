@@ -16,7 +16,7 @@ export default function NewsPage() {
 
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.news.title}
       subtitle={t.news.subtitle}
       breadcrumbs={[{ label: t.news.title }]}

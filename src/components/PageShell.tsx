@@ -13,14 +13,16 @@ interface Stat {
 }
 
 interface PageShellProps {
-  /** Eyebrow/label acima do título (ex: "CONSUDES · Institucional") */
-  label: string;
+  /** Eyebrow/label acima do título (ex: "Institucional"). Omitir para suprimir o eyebrow. */
+  label?: string;
   title: string;
   subtitle?: string;
   /** Breadcrumbs exibidos acima do label. O "Início" é adicionado automaticamente. */
   breadcrumbs?: Breadcrumb[];
   /** Stats exibidas numa barra escura abaixo do hero. Quando presentes, substitui a wave. */
   stats?: Stat[];
+  /** Quando true, mantém alinhamento centrado. Padrão: false (editorial esquerdo). */
+  centered?: boolean;
   children: ReactNode;
 }
 
@@ -37,12 +39,13 @@ export default function PageShell({
   subtitle,
   breadcrumbs,
   stats,
+  centered = false,
   children,
 }: PageShellProps) {
   return (
     <>
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="relative bg-consudes-navy overflow-hidden">
+      <section className="relative bg-consudes-navy">
         {/* Fundo arquitetônico — profundo e editorial */}
         <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_80%_at_50%_-30%,#003B73,transparent)]" />
@@ -55,13 +58,13 @@ export default function PageShell({
           aria-hidden="true"
         />
 
-        <div className="relative max-w-4xl mx-auto px-6 sm:px-8 py-20 sm:py-28 lg:py-32 text-center">
+        <div className={`relative max-w-5xl mx-auto px-6 sm:px-8 py-12 sm:py-16 lg:py-20${centered ? ' text-center' : ''}`}>
 
           {/* Breadcrumb */}
           {breadcrumbs && breadcrumbs.length > 0 && (
             <nav
               aria-label="Localização atual"
-              className="flex items-center justify-center gap-1.5 flex-wrap text-xs text-white/35 mb-8"
+              className={`flex items-center gap-1.5 flex-wrap text-xs text-white/35 mb-6${centered ? ' justify-center' : ''}`}
             >
               <Link to="/" className="hover:text-white/60 transition-colors">
                 Início
@@ -82,22 +85,24 @@ export default function PageShell({
           )}
 
           {/* Label / eyebrow — estilo editorial */}
-          <div className="flex items-center justify-center gap-3 mb-5">
-            <span className="w-6 h-px bg-consudes-gold/50" aria-hidden="true" />
+          {label && (
+          <div className={`mb-4 ${centered ? 'flex items-center justify-center gap-3' : 'inline-flex items-center gap-2'}`}>
+            <span className="w-5 h-px bg-consudes-gold/60" aria-hidden="true" />
             <span className="text-consudes-gold text-[10px] font-bold tracking-[0.4em] uppercase">
               {label}
             </span>
-            <span className="w-6 h-px bg-consudes-gold/50" aria-hidden="true" />
+            {centered && <span className="w-5 h-px bg-consudes-gold/60" aria-hidden="true" />}
           </div>
+          )}
 
           {/* Título */}
-          <h1 className="font-['Cormorant_Garamond'] text-5xl sm:text-6xl lg:text-7xl font-semibold text-white leading-[1.05] tracking-tight mb-5">
+          <h1 className={`font-['Cormorant_Garamond'] text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.05] tracking-tight mb-4 max-w-3xl${centered ? ' mx-auto' : ''}`}>
             {title}
           </h1>
 
           {/* Subtítulo */}
           {subtitle && (
-            <p className="text-white/65 text-base sm:text-[17px] max-w-xl mx-auto font-light leading-relaxed text-balance">
+            <p className={`text-white/65 text-[15px] sm:text-base max-w-2xl font-light leading-relaxed${centered ? ' mx-auto' : ''}`}>
               {subtitle}
             </p>
           )}
@@ -110,7 +115,8 @@ export default function PageShell({
             aria-hidden="true"
           />
         )}
-      </section>
+        {/* Overlap anti-gap subpixel (Retina/Safari) */}
+        {!stats && <div className="absolute inset-x-0 -bottom-px h-1 bg-consudes-navy" aria-hidden="true" />}      </section>
 
       {/* ── Stats bar (opcional) ───────────────────────────────────────── */}
       {stats && (

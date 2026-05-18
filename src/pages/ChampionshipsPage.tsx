@@ -5,7 +5,7 @@ export default function ChampionshipsPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.championships}
       subtitle={t.championshipsPage.subtitle}
       breadcrumbs={[{ label: t.nav.championships }]}

@@ -3,7 +3,7 @@ import { Mail, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
-const CONTACT_EMAIL = 'contato@consudes.org.br';
+const CONTACT_EMAIL = 'contato@consudes.com';
 
 export default function Footer() {
   const { t } = useLanguage();

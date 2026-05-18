@@ -459,7 +459,7 @@ export default function CalendarPage() {
 
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.calendar}
       subtitle={cp.subtitle}
       breadcrumbs={[{ label: t.nav.calendar }]}

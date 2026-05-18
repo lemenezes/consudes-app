@@ -129,7 +129,7 @@ export default function TeamPage() {
 
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.nav.team}
       subtitle={tp.subtitle}
       breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.team }]}

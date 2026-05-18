@@ -2,13 +2,13 @@ import { Mail, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageShell from '../components/PageShell';
 
-const CONTACT_EMAIL = 'contato@consudes.org.br';
+const CONTACT_EMAIL = 'contato@consudes.com';
 
 export default function ContactPage() {
   const { t } = useLanguage();
   return (
     <PageShell
-      label="CONSUDES"
+     
       title={t.contact.title}
       subtitle={t.contact.subtitle}
       breadcrumbs={[{ label: t.contact.title }]}

@@ -217,7 +217,7 @@ export default function TransparencyPage() {
         />
       )}
       <PageShell
-        label="CONSUDES"
+       
         title={t.nav.transparency}
         subtitle={tp.heroSubtitle}
         breadcrumbs={[{ label: t.nav.transparency }]}

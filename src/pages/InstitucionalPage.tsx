@@ -18,7 +18,7 @@ export default function InstitucionalPage() {
 
   return (
     <>
-      <PageShell label="CONSUDES" title={t.nav.institutional} breadcrumbs={[{ label: t.nav.institutional }]}>
+      <PageShell title={t.nav.institutional} breadcrumbs={[{ label: t.nav.institutional }]}>
 
       <section className="bg-[#F5F7FA] dark:bg-[#080e1a] py-14 sm:py-20">
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
