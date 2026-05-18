@@ -32,8 +32,8 @@ export default function ContactPage() {
               <Phone size={18} />
             </span>
             <div>
-              <p className="text-xs text-[#1F2937]/40 dark:text-white/30 uppercase tracking-wider mb-0.5">Telefone</p>
-              <p className="text-[#1F2937]/40 dark:text-white/30 text-sm">Em breve</p>
+              <p className="text-xs text-[#1F2937]/40 dark:text-white/30 uppercase tracking-wider mb-0.5">{t.contact.phoneLabel}</p>
+              <p className="text-[#1F2937]/40 dark:text-white/30 text-sm">{t.contact.phoneSoon}</p>
             </div>
           </div>
         </div>

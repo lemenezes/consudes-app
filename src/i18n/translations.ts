@@ -45,36 +45,36 @@ export const translations = {
     ],
     about: {
       label: 'Quiénes somos',
-      title: 'Una red de entidades comprometidas con el bien común',
-      p1: 'CONSUDES — Consejo de Entidades — es una organización sin fines de lucro que reúne y representa entidades de la sociedad civil, promoviendo articulación, capacitación e incidencia política en defensa de los derechos sociales.',
-      p2: 'Fundada con el objetivo de fortalecer el tercer sector, actuamos en red para ampliar el impacto de las organizaciones afiliadas y garantizar su sostenibilidad y gobernanza.',
-      link: 'Ver nuestros programas',
+      title: 'La confederación oficial del deporte sordo en Sudamérica',
+      p1: 'CONSUDES es el organismo rector del deporte de la comunidad sorda en América del Sur. Reúne y representa a las diez federaciones nacionales afiliadas, coordina competiciones continentales y articula la participación sudamericana en el movimiento deportivo sordo mundial.',
+      p2: 'Fundada en 1985 en Chile, la CONSUDES integra el movimiento global de los Deaflympics y el movimiento panamericano de la PANAMDES, trabajando para que cada surdoatleta del continente tenga los espacios y las oportunidades que merece.',
+      link: 'Conoce nuestra actividad',
     },
     programs: {
       label: 'Lo que hacemos',
-      title: 'Nuestros programas',
+      title: 'Nuestra actividad deportiva',
       subtitle:
-        'Actuamos en cuatro ejes estratégicos para fortalecer las entidades afiliadas y ampliar su impacto social.',
+        'Cuatro ejes que definen la acción de la CONSUDES en el continente sudamericano.',
       items: [
         {
-          title: 'Fortalecimiento Institucional',
+          title: 'Competiciones Continentales',
           description:
-            'Apoyo a la gestión y gobernanza de las entidades afiliadas, promoviendo capacitación y buenas prácticas organizacionales.',
+            'Organización y supervisión de campeonatos y torneos interclubes que reúnen surdoatletas de toda Sudamérica.',
         },
         {
-          title: 'Formación y Capacitación',
+          title: 'Desarrollo Deportivo',
           description:
-            'Cursos, talleres y eventos de capacitación para líderes y colaboradores de las organizaciones de la sociedad civil.',
+            'Fomento del deporte sordo en todos los países afiliados, impulsando el crecimiento de atletas y disciplinas a nivel continental.',
         },
         {
-          title: 'Articulación en Red',
+          title: 'Representación Internacional',
           description:
-            'Conexión entre entidades para intercambio de experiencias, acciones conjuntas e incidencia en políticas públicas.',
+            'Articulación con Deaflympics y PANAMDES para garantizar la presencia sudamericana en el movimiento deportivo sordo mundial.',
         },
         {
-          title: 'Advocacy y Representación',
+          title: 'Apoyo a Federaciones',
           description:
-            'Representación de las entidades afiliadas en los espacios de diálogo con el poder público y organismos internacionales.',
+            'Asistencia técnica e institucional a las diez federaciones nacionales afiliadas para el fortalecimiento del deporte sordo en cada país.',
         },
       ],
     },
@@ -84,6 +84,7 @@ export const translations = {
       subtitle: 'Comunicados, eventos y novedades oficiales de la CONSUDES.',
       emptyState: 'Aún no hay noticias publicadas.',
       viewAll: 'Ver todas las noticias',
+      loadError: 'No se pudieron cargar las noticias. Inténtelo más tarde.',
     },
     newsDetail: {
       home: 'Inicio',
@@ -97,7 +98,9 @@ export const translations = {
     contact: {
       title: 'Habla con CONSUDES',
       subtitle:
-        'Contáctanos para saber más sobre afiliación, programas y cómo podemos apoyar a tu entidad.',
+        'Escríbenos para conocer más sobre afiliación, competiciones y cómo tu federación puede participar del movimiento deportivo sordo sudamericano.',
+      phoneLabel: 'Teléfono',
+      phoneSoon: 'Próximamente',
     },
     historyPage: {
       label: 'Nuestra historia',
@@ -187,6 +190,7 @@ export const translations = {
       colContent: 'Contenido',
       colContact: 'Contacto',
       colRecognized: 'Afiliada a',
+      adminArea: 'Área administrativa',
     },
     admin: {
       panelTitle: 'Panel Administrativo',
@@ -409,6 +413,12 @@ export const translations = {
       mandate: 'Presidencia',
       countries: { BR: 'Brasil', AR: 'Argentina', UY: 'Uruguay', PY: 'Paraguay', CL: 'Chile' },
     },
+    championshipsPage: {
+      subtitle: 'Calendario oficial de campeonatos y competiciones sudamericanas.',
+    },
+    galleryPage: {
+      subtitle: 'Registros fotográficos de eventos, competiciones e historia de la confederación.',
+    },
     notFound: {
       title: 'Página no encontrada',
       subtitle: 'La página que buscas no existe o fue eliminada.',
@@ -460,36 +470,36 @@ export const translations = {
     ],
     about: {
       label: 'Quem somos',
-      title: 'Uma rede de entidades comprometidas com o bem comum',
-      p1: 'A CONSUDES — Conselho de Entidades — é uma organização sem fins lucrativos que reúne e representa entidades da sociedade civil, promovendo articulação, capacitação e incidência política em defesa dos direitos sociais.',
-      p2: 'Fundada com o objetivo de fortalecer o terceiro setor, atuamos em rede para ampliar o impacto das organizações filiadas e garantir sua sustentabilidade e governança.',
-      link: 'Ver nossos programas',
+      title: 'A confederação oficial do esporte surdo na América do Sul',
+      p1: 'A CONSUDES é o organismo gestor do esporte da comunidade surda na América do Sul. Reúne e representa as dez federações nacionais filiadas, coordena competições continentais e articula a participação sul-americana no movimento esportivo surdo mundial.',
+      p2: 'Fundada em 1985 no Chile, a CONSUDES integra o movimento global dos Deaflympics e o movimento pan-americano da PANAMDES, trabalhando para que cada surdoatleta do continente tenha os espaços e as oportunidades que merece.',
+      link: 'Conheça nossa atividade',
     },
     programs: {
       label: 'O que fazemos',
-      title: 'Nossos programas',
+      title: 'Nossa atividade esportiva',
       subtitle:
-        'Atuamos em quatro eixos estratégicos para fortalecer as entidades filiadas e ampliar seu impacto social.',
+        'Quatro eixos que definem a atuação da CONSUDES no continente sul-americano.',
       items: [
         {
-          title: 'Fortalecimento Institucional',
+          title: 'Competições Continentais',
           description:
-            'Apoio à gestão e governança das entidades filiadas, promovendo capacitação e boas práticas organizacionais.',
+            'Organização e supervisão de campeonatos e torneios interclubes que reúnem surdoatletas de toda a América do Sul.',
         },
         {
-          title: 'Formação e Capacitação',
+          title: 'Desenvolvimento Esportivo',
           description:
-            'Cursos, oficinas e eventos de capacitação para lideranças e colaboradores das organizações da sociedade civil.',
+            'Fomento do esporte surdo em todos os países filiados, impulsionando o crescimento de atletas e modalidades no âmbito continental.',
         },
         {
-          title: 'Articulação em Rede',
+          title: 'Representação Internacional',
           description:
-            'Conexão entre entidades para troca de experiências, ações conjuntas e incidência em políticas públicas.',
+            'Articulação com Deaflympics e PANAMDES para garantir a presença sul-americana no movimento esportivo surdo mundial.',
         },
         {
-          title: 'Advocacy e Representação',
+          title: 'Apoio às Federações',
           description:
-            'Representação das entidades filiadas nos espaços de diálogo com o poder público e organismos internacionais.',
+            'Assistência técnica e institucional às dez federações nacionais filiadas para o fortalecimento do esporte surdo em cada país.',
         },
       ],
     },
@@ -499,6 +509,7 @@ export const translations = {
       subtitle: 'Comunicados, eventos e novidades oficiais da CONSUDES.',
       emptyState: 'Nenhuma notícia publicada ainda.',
       viewAll: 'Ver todas as notícias',
+      loadError: 'Não foi possível carregar as notícias. Tente novamente mais tarde.',
     },
     newsDetail: {
       home: 'Início',
@@ -512,7 +523,9 @@ export const translations = {
     contact: {
       title: 'Fale com a CONSUDES',
       subtitle:
-        'Entre em contato para saber mais sobre filiação, programas e como podemos apoiar sua entidade.',
+        'Escreva-nos para saber mais sobre filiação, competições e como sua federação pode participar do movimento esportivo surdo sul-americano.',
+      phoneLabel: 'Telefone',
+      phoneSoon: 'Em breve',
     },
     historyPage: {
       label: 'Nossa história',
@@ -602,6 +615,7 @@ export const translations = {
       colContent: 'Conteúdo',
       colContact: 'Contato',
       colRecognized: 'Filiada a',
+      adminArea: 'Área administrativa',
     },
     admin: {
       panelTitle: 'Painel Administrativo',
@@ -829,6 +843,12 @@ export const translations = {
         documento_oficial: 'Documento Oficial',
       },
     },
+    championshipsPage: {
+      subtitle: 'Calendário oficial de campeonatos e competições sul-americanas.',
+    },
+    galleryPage: {
+      subtitle: 'Registros fotográficos de eventos, competições e história da confederação.',
+    },
   },
 
   en: {
@@ -875,36 +895,36 @@ export const translations = {
     ],
     about: {
       label: 'About us',
-      title: 'A network of entities committed to the common good',
-      p1: 'CONSUDES — Council of Entities — is a non-profit organization that brings together and represents civil society entities, promoting coordination, capacity building, and policy advocacy in defense of social rights.',
-      p2: 'Founded to strengthen the nonprofit sector, we work as a network to amplify the impact of affiliated organizations and ensure their sustainability and governance.',
-      link: 'See our programs',
+      title: 'The official confederation of South American deaf sport',
+      p1: 'CONSUDES is the governing body for deaf community sport across South America. It brings together and represents the ten affiliated national federations, coordinates continental competitions and connects South America\'s participation in the global deaf sports movement.',
+      p2: 'Founded in 1985 in Chile, CONSUDES is affiliated with the global Deaflympics movement and the Pan-American PANAMDES, working to ensure every deaf athlete on the continent has the spaces and opportunities they deserve.',
+      link: 'Discover our activities',
     },
     programs: {
       label: 'What we do',
-      title: 'Our programs',
+      title: 'Our sporting mission',
       subtitle:
-        'We work across four strategic pillars to strengthen affiliated entities and expand their social impact.',
+        'Four pillars that define CONSUDES action across South America.',
       items: [
         {
-          title: 'Institutional Strengthening',
+          title: 'Continental Competitions',
           description:
-            'Support for the management and governance of affiliated entities, promoting capacity building and best organizational practices.',
+            'Organisation and oversight of championships and interclub tournaments bringing together deaf athletes from across South America.',
         },
         {
-          title: 'Training and Capacity Building',
+          title: 'Sports Development',
           description:
-            'Courses, workshops, and training events for leaders and staff of civil society organizations.',
+            'Promoting deaf sport in all affiliated countries, driving the growth of athletes and disciplines at continental level.',
         },
         {
-          title: 'Network Coordination',
+          title: 'International Representation',
           description:
-            'Connection between entities for experience sharing, joint actions, and advocacy in public policies.',
+            'Coordination with Deaflympics and PANAMDES to ensure South American participation in the global deaf sports movement.',
         },
         {
-          title: 'Advocacy and Representation',
+          title: 'Federation Support',
           description:
-            'Representation of affiliated entities in dialogue spaces with public authorities and international organizations.',
+            'Technical and institutional assistance to the ten affiliated national federations to strengthen deaf sport in each country.',
         },
       ],
     },
@@ -914,6 +934,7 @@ export const translations = {
       subtitle: 'Official announcements, events and news from CONSUDES.',
       emptyState: 'No news published yet.',
       viewAll: 'View all news',
+      loadError: 'News could not be loaded. Please try again later.',
     },
     newsDetail: {
       home: 'Home',
@@ -927,7 +948,9 @@ export const translations = {
     contact: {
       title: 'Contact CONSUDES',
       subtitle:
-        'Get in touch to learn more about membership, programs, and how we can support your organization.',
+        'Write to us to learn more about membership, competitions and how your federation can participate in the South American deaf sports movement.',
+      phoneLabel: 'Phone',
+      phoneSoon: 'Coming soon',
     },
     historyPage: {
       label: 'Our history',
@@ -1017,6 +1040,7 @@ export const translations = {
       colContent: 'Content',
       colContact: 'Contact',
       colRecognized: 'Member of',
+      adminArea: 'Admin area',
     },
     admin: {
       panelTitle: 'Admin Panel',
@@ -1243,6 +1267,12 @@ export const translations = {
         prestacao_contas: 'Financial Report',
         documento_oficial: 'Official Document',
       },
+    },
+    championshipsPage: {
+      subtitle: 'Official calendar of South American championships and competitions.',
+    },
+    galleryPage: {
+      subtitle: 'Photo records of events, competitions and the history of the confederation.',
     },
   },
 } satisfies Record<Lang, unknown>;

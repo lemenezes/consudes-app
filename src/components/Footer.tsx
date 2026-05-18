@@ -50,7 +50,7 @@ export default function Footer() {
     <footer className="bg-consudes-blue">
 
       {/* Faixa decorativa topo */}
-      <div className="h-[3px] bg-gradient-to-r from-transparent via-consudes-gold to-transparent opacity-60" />
+      <div className="h-[2px] bg-gradient-to-r from-transparent via-consudes-gold/70 to-transparent" />
 
       <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8">
 
@@ -230,7 +230,7 @@ export default function Footer() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
             </svg>
-            Área administrativa
+            {t.footer.adminArea}
           </a>
         </div>
 

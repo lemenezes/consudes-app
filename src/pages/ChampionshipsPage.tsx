@@ -7,7 +7,7 @@ export default function ChampionshipsPage() {
     <PageShell
       label="CONSUDES"
       title={t.nav.championships}
-      subtitle="Calendário oficial de campeonatos e competições sul-americanas."
+      subtitle={t.championshipsPage.subtitle}
       breadcrumbs={[{ label: t.nav.championships }]}
     >
       <section className="bg-white dark:bg-consudes-dark-body py-20">

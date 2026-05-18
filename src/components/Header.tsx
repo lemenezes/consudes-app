@@ -281,7 +281,7 @@ export default function Header() {
             <div className="flex items-center gap-3">
               <NavLink
                 to="/contato"
-                className="hidden lg:inline-flex items-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-5 py-2 text-[13px] rounded-sm tracking-wide transition-colors duration-150"
+                className="hidden lg:inline-flex items-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-5 py-2 text-[13px] rounded tracking-wide transition-colors duration-150"
               >
                 {t.nav.cta}
               </NavLink>
@@ -412,7 +412,7 @@ export default function Header() {
             <NavLink
               to="/contato"
               onClick={close}
-              className="flex items-center justify-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-4 py-3.5 rounded-sm text-[13px] tracking-wide transition-colors duration-150"
+              className="flex items-center justify-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-4 py-3.5 rounded text-[13px] tracking-wide transition-colors duration-150"
             >
               {t.nav.cta}
             </NavLink>

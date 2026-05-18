@@ -7,7 +7,7 @@ export default function GalleryPage() {
     <PageShell
       label="CONSUDES"
       title={t.nav.gallery}
-      subtitle="Registros fotográficos de eventos, competições e a história da confederação."
+      subtitle={t.galleryPage.subtitle}
       breadcrumbs={[{ label: t.nav.gallery }]}
     >
       <section className="bg-white dark:bg-consudes-dark-body py-20">

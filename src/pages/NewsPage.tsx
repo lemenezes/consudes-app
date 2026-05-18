@@ -44,7 +44,7 @@ export default function NewsPage() {
           {/* Erro */}
           {!loading && error && (
             <div className="text-center py-16">
-              <p className="text-red-500 text-sm">No se pudieron cargar las noticias. Inténtelo más tarde.</p>
+              <p className="text-red-500 text-sm">{t.news.loadError}</p>
             </div>
           )}
 
