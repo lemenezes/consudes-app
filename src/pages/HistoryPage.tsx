@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
 
 const COUNTRIES = [
@@ -13,11 +13,10 @@ export default function HistoryPage() {
   useSEO({ title: t.nav.history, url: '/historia' });
 
   return (
-    <>
-      <PageHero label={h.label} title={t.nav.history} subtitle={h.heroSubtitle} />
+    <PageShell label={h.label} title={t.nav.history} subtitle={h.heroSubtitle} breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.history }]}>
 
       {/* ── Fundação ── */}
-      <section className="bg-white dark:bg-[#0d1624] py-16 sm:py-24">
+      <section className="bg-white dark:bg-consudes-dark-body py-16 sm:py-24">
         <div className="max-w-5xl mx-auto px-6 sm:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <div>
@@ -85,7 +84,7 @@ export default function HistoryPage() {
       </section>
 
       {/* ── Países afiliados ── */}
-      <section className="bg-white dark:bg-[#0d1624] py-16 sm:py-20">
+      <section className="bg-white dark:bg-consudes-dark-body py-16 sm:py-20">
         <div className="max-w-5xl mx-auto px-6 sm:px-8 text-center">
           <span className="text-[#D9A441] text-[10px] font-bold tracking-[0.3em] uppercase block mb-8">
             {h.countriesLabel}
@@ -102,7 +101,7 @@ export default function HistoryPage() {
           </div>
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }
 

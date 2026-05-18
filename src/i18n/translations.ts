@@ -253,6 +253,9 @@ export const translations = {
         featuredLabel: 'Evento destacado',
         sortOrderLabel: 'Orden',
         noEvents: 'Ningún evento registrado.',
+        filterAll: 'Todos',
+        clearFilters: 'Limpiar filtros',
+        noEventsFiltered: 'Ningún evento para los filtros aplicados.',
         confirmDelete: '¿Eliminar este evento? Esta acción no se puede deshacer.',
       },
       reports: {
@@ -665,6 +668,9 @@ export const translations = {
         featuredLabel: 'Evento em destaque',
         sortOrderLabel: 'Ordem',
         noEvents: 'Nenhum evento cadastrado.',
+        filterAll: 'Todos',
+        clearFilters: 'Limpar filtros',
+        noEventsFiltered: 'Nenhum evento para os filtros aplicados.',
         confirmDelete: 'Apagar este evento? Esta ação não pode ser desfeita.',
       },
       reports: {
@@ -1088,6 +1094,9 @@ export const translations = {
         featuredLabel: 'Featured event',
         sortOrderLabel: 'Sort order',
         noEvents: 'No events registered.',
+        filterAll: 'All',
+        clearFilters: 'Clear filters',
+        noEventsFiltered: 'No events match the applied filters.',
         confirmDelete: 'Delete this event? This action cannot be undone.',
       },
       reports: {

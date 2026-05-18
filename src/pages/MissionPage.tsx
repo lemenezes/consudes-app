@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
 
 export default function MissionPage() {
@@ -26,10 +26,13 @@ export default function MissionPage() {
   ];
 
   return (
-    <>
-      <PageHero label={m.label} title={t.nav.mission} subtitle={m.heroSubtitle} />
-
-      <section className="bg-white dark:bg-[#0d1624] py-16 sm:py-24">
+    <PageShell
+      label={m.label}
+      title={t.nav.mission}
+      subtitle={m.heroSubtitle}
+      breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.mission }]}
+    >
+      <section className="bg-white dark:bg-consudes-dark-body py-16 sm:py-24">
         <div className="max-w-4xl mx-auto px-6 sm:px-8 flex flex-col gap-6">
           {blocks.map((block) => (
             <div
@@ -51,7 +54,7 @@ export default function MissionPage() {
           ))}
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }
 

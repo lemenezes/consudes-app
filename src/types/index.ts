@@ -2,7 +2,6 @@ export type Category = 'venda' | 'servicos' | 'indicacoes' | 'doacao' | 'imoveis
 
 export type ProfileRole = 'resident' | 'admin' | 'user';
 export type ProfileStatus = 'approved' | 'suspended';
-export type RequestStatus = 'pending' | 'approved' | 'rejected';
 
 export interface Profile {
   id: string;
@@ -13,19 +12,6 @@ export interface Profile {
   role: ProfileRole;
   status: ProfileStatus;
   created_at: string;
-}
-
-export interface AccessRequest {
-  id: string;
-  full_name: string;
-  email: string;
-  block: string;
-  apartment: string;
-  message: string | null;
-  status: RequestStatus;
-  rejection_reason: string | null;
-  created_at: string;
-  reviewed_at: string | null;
 }
 
 export interface Listing {

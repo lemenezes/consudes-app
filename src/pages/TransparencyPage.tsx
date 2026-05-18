@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSEO } from '../hooks/useSEO';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { listPublishedReports } from '../services/reportsPublicService';
 import { REPORT_CATEGORIES } from '../services/reportsService';
 import type { ReportPublicItem } from '../services/reportsPublicService';
@@ -59,10 +59,10 @@ function EmptyState() {
       <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#003B73]/6 dark:bg-white/5 mb-5">
         <IconFile />
       </div>
-      <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-[#1F2937] dark:text-white mb-2">
+      <p className="font-['Cormorant_Garamond'] text-2xl font-semibold text-consudes-blue-text dark:text-white mb-2">
         {tp.emptyTitle}
       </p>
-      <p className="text-[#1F2937]/55 dark:text-white/40 text-sm">
+      <p className="text-consudes-blue-text/55 dark:text-white/40 text-sm">
         {tp.emptyDesc}
       </p>
     </div>
@@ -216,24 +216,24 @@ export default function TransparencyPage() {
           onClose={() => setPreviewDoc(null)}
         />
       )}
-      <PageHero
+      <PageShell
         label="CONSUDES"
         title={t.nav.transparency}
         subtitle={tp.heroSubtitle}
-      />
-
-      <section className="bg-white dark:bg-[#0d1624] py-20">
+        breadcrumbs={[{ label: t.nav.transparency }]}
+      >
+      <section className="bg-white dark:bg-consudes-dark-body py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Intro ────────────────────────────────────────────── */}
           <div className="mb-10">
-            <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-3" aria-hidden="true">
+            <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-consudes-gold mb-3" aria-hidden="true">
               CONSUDES
             </p>
-            <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3">
+            <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-consudes-blue-text dark:text-white leading-tight tracking-tight mb-3">
               {tp.introLabel}
             </h2>
-            <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55 max-w-xl">
+            <p className="text-sm sm:text-[15px] text-consudes-blue-text/70 dark:text-white/55 max-w-xl">
               {tp.introDesc}
             </p>
           </div>
@@ -365,6 +365,7 @@ export default function TransparencyPage() {
 
         </div>
       </section>
+      </PageShell>
     </>
   );
 }

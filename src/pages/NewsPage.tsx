@@ -1,5 +1,5 @@
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import NewsCard from '../components/NewsCard';
 import { usePublicNews } from '../hooks/usePublicNews';
 import { useSEO } from '../hooks/useSEO';
@@ -15,13 +15,13 @@ export default function NewsPage() {
   });
 
   return (
-    <>
-      <PageHero
-        label="CONSUDES"
-        title={t.news.title}
-        subtitle={t.news.subtitle}
-      />
-      <section className="bg-white dark:bg-[#0d1624] py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.news.title}
+      subtitle={t.news.subtitle}
+      breadcrumbs={[{ label: t.news.title }]}
+    >
+      <section className="bg-white dark:bg-consudes-dark-body py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Skeletons */}
@@ -63,7 +63,7 @@ export default function NewsPage() {
               <svg className="w-12 h-12 text-gray-200 dark:text-white/10 mx-auto mb-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
               </svg>
-              <p className="text-[#1F2937]/40 dark:text-white/30 text-sm">
+              <p className="text-consudes-blue-text/40 dark:text-white/30 text-sm">
                 {t.news.emptyState}
               </p>
             </div>
@@ -71,6 +71,6 @@ export default function NewsPage() {
 
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }

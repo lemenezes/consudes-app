@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSEO } from '../hooks/useSEO';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import EmptyState from '../components/EmptyState';
 import { listPublishedCalendarEvents } from '../services/calendarService';
 import { calendarEvents as mockEvents } from '../data/calendarData';
@@ -458,22 +458,21 @@ export default function CalendarPage() {
   }
 
   return (
-    <>
-      <PageHero
-        label="CONSUDES"
-        title={t.nav.calendar}
-        subtitle={cp.subtitle}
-      />
-
-      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-[#0d1624] dark:bg-none py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.nav.calendar}
+      subtitle={cp.subtitle}
+      breadcrumbs={[{ label: t.nav.calendar }]}
+    >
+      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-consudes-dark-body dark:bg-none py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Intro */}
           <div className="mb-10">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#D9A441] mb-2">
+            <p className="text-xs font-medium tracking-widest uppercase text-consudes-gold mb-2">
               {dataLoading ? '\u2026' : `${events.length} ${cp.eventsLabel} \u00B7 2025\u20132027`}
             </p>
-            <p className="text-lg sm:text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug whitespace-nowrap">
+            <p className="text-lg sm:text-2xl font-['Cormorant_Garamond'] font-semibold text-consudes-blue-text dark:text-white leading-snug whitespace-nowrap">
               {cp.introHeadline}
             </p>
           </div>
@@ -586,6 +585,6 @@ export default function CalendarPage() {
 
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }

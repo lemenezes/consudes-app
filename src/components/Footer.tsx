@@ -47,10 +47,10 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#002D5E]">
+    <footer className="bg-consudes-blue">
 
       {/* Faixa decorativa topo */}
-      <div className="h-[3px] bg-gradient-to-r from-transparent via-[#D9A441] to-transparent opacity-60" />
+      <div className="h-[3px] bg-gradient-to-r from-transparent via-consudes-gold to-transparent opacity-60" />
 
       <div className="max-w-6xl mx-auto px-6 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8">
 
@@ -75,14 +75,14 @@ export default function Footer() {
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-2 text-[12px] text-white/65 hover:text-[#D9A441] transition-colors duration-150 group w-fit"
+              className="inline-flex items-center gap-2 text-[12px] text-white/65 hover:text-consudes-gold transition-colors duration-150 group w-fit"
             >
               <Mail size={13} className="opacity-60 group-hover:opacity-100 transition-opacity" />
               {CONTACT_EMAIL}
             </a>
             {/* Filiada a — alinhada com a logo CONSUDES */}
             <div className="pt-1">
-              <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-3">
+              <p className="text-consudes-gold text-[9px] font-bold tracking-[0.2em] uppercase mb-3">
                 {t.footer.colRecognized}
               </p>
               <div className="flex items-center gap-2.5">
@@ -90,7 +90,7 @@ export default function Footer() {
                   href="https://www.deaflympics.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
+                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-consudes-gold/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
                   aria-label="Deaflympics"
                 >
                   <img
@@ -103,7 +103,7 @@ export default function Footer() {
                   href="https://panamdes.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-[#D9A441]/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
+                  className="flex items-center justify-center bg-white/95 hover:bg-white rounded-lg px-3 py-1.5 border border-white/10 hover:border-consudes-gold/40 shadow-[0_1px_6px_rgba(0,0,0,0.25)] hover:shadow-[0_2px_10px_rgba(0,0,0,0.35)] transition-all duration-200"
                   aria-label="PANAMDES"
                 >
                   <img
@@ -129,7 +129,7 @@ export default function Footer() {
                     aria-controls={`footer-col-${i}`}
                     className="w-full flex items-center justify-between py-3.5 text-left"
                   >
-                    <span className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase">
+                    <span className="text-consudes-gold text-[9px] font-bold tracking-[0.2em] uppercase">
                       {heading}
                     </span>
                     <ChevronDown
@@ -173,7 +173,7 @@ export default function Footer() {
             <div className="hidden sm:grid sm:grid-cols-4 gap-8">
               {cols.map(({ heading, links }) => (
                 <div key={heading}>
-                  <p className="text-[#D9A441] text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
+                  <p className="text-consudes-gold text-[9px] font-bold tracking-[0.2em] uppercase mb-4">
                     {heading}
                   </p>
                   <ul className="flex flex-col gap-2.5">

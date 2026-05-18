@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Target, HeartHandshake, Users, Award, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
 
 export default function InstitucionalPage() {
@@ -18,7 +18,7 @@ export default function InstitucionalPage() {
 
   return (
     <>
-      <PageHero label="CONSUDES" title={t.nav.institutional} />
+      <PageShell label="CONSUDES" title={t.nav.institutional} breadcrumbs={[{ label: t.nav.institutional }]}>
 
       <section className="bg-[#F5F7FA] dark:bg-[#080e1a] py-14 sm:py-20">
         <div className="max-w-4xl mx-auto px-6 sm:px-8">
@@ -44,6 +44,7 @@ export default function InstitucionalPage() {
           </div>
         </div>
       </section>
+      </PageShell>
     </>
   );
 }

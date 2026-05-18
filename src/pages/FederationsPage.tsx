@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import FederationCard from '../components/FederationCard';
 import { federationsData } from '../data/federationsData';
 import { listFederations } from '../services/federationsService';
@@ -57,22 +57,21 @@ export default function FederationsPage() {
   }, []);
 
   return (
-    <>
-      <PageHero
-        label="CONSUDES"
-        title={t.nav.federations}
-        subtitle={t.federationsPage.subtitle}
-      />
-
-      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-[#0d1624] dark:bg-none py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.nav.federations}
+      subtitle={t.federationsPage.subtitle}
+      breadcrumbs={[{ label: t.nav.federations }]}
+    >
+      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-consudes-dark-body dark:bg-none py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Intro institucional */}
           <div className="mb-10">
-            <p className="text-xs font-medium tracking-widest uppercase text-[#D9A441] mb-2">
+            <p className="text-xs font-medium tracking-widest uppercase text-consudes-gold mb-2">
               {loading ? '…' : `${federations.length} ${t.federationsPage.affiliatedCount}`}
             </p>
-            <p className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937] dark:text-white leading-snug max-w-lg">
+            <p className="text-2xl font-['Cormorant_Garamond'] font-semibold text-consudes-blue-text dark:text-white leading-snug max-w-lg">
               {t.federationsPage.introHeadline}
             </p>
           </div>
@@ -92,6 +91,6 @@ export default function FederationsPage() {
 
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }

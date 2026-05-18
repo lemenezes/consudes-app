@@ -1,20 +1,110 @@
 @import "tailwindcss";
 
-/* Class-based dark mode for Tailwind v4 */
-@custom-variant dark (&:where(.dark, .dark *));
+/* ── Dark mode via classe .dark no <html> ── */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ─── Paleta CONSUDES ─── */
+
+  /* Azul principal — topbar, footer, seções escuras */
+  --color-consudes-blue:       #002D5E;
+  /* Azul médio — borders, PageHero bg, fundos internos */
+  --color-consudes-navy:       #003B73;
+  /* Azul ativo — links, estados ativos, CTAs secundários */
+  --color-consudes-blue-mid:   #0057A8;
+  /* Azul claro — gradientes decorativos */
+  --color-consudes-blue-light: #0076C8;
+  /* Azul texto — nav desktop e dropdown (fundo branco) */
+  --color-consudes-blue-text:  #1a3a5c;
+
+  /* Dourado — acento principal, hover indicators, CTAs */
+  --color-consudes-gold:       #D9A441;
+  --color-consudes-gold-dark:  #c99030;
+
+  /* Dark mode backgrounds */
+  --color-consudes-dark:       #0a1220;   /* nav bg no dark */
+  --color-consudes-dark-deep:  #001630;   /* topbar bg no dark */
+  --color-consudes-dark-body:  #0d1624;   /* body bg no dark */
+
+  /* Neutros — mantidos iguais ao FMDS para consistência entre projetos */
+  --color-consudes-body:       #374151;
+  --color-consudes-muted:      #5E6773;
+  --color-consudes-border:     #E5E7EB;
+  --color-consudes-surface:    #F5F5F5;
+  --color-consudes-white:      #FFFFFF;
+
+  /* ─── Tipografia ─── */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ─── Sombras ─── */
+  --shadow-card:  0 1px 3px 0 rgb(0 0 0 / 0.06), 0 4px 16px 0 rgb(0 0 0 / 0.08);
+  --shadow-raise: 0 4px 24px 0 rgb(0 45 94 / 0.18);
+}
+
+/* ─── Reset & Globals ─── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
 
 body {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  background-color: #ffffff;
-  color: #1F2937;
+  font-family: var(--font-sans);
+  background-color: var(--color-consudes-white);
+  color: var(--color-consudes-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.65;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-html.dark body {
-  background-color: #0d1624;
+.dark body {
+  background-color: var(--color-consudes-dark-body);
   color: #f1f5f9;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1.25rem;
+  background: var(--color-consudes-blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  text-decoration: none;
+  transition: top 0.2s;
+  border: 2px solid white;
+}
+.skip-link:focus { top: 0; }
+
+/* Foco global */
+:focus-visible {
+  outline: 3px solid var(--color-consudes-gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-consudes-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-consudes-blue-mid); border-radius: 3px; }
+
+/* Seção label padrão */
+.section-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-consudes-gold);
+  border-left: 3px solid var(--color-consudes-gold);
+  padding-left: 0.625rem;
+  margin-bottom: 1rem;
 }
 
 /* Modal animations */
@@ -44,10 +134,12 @@ html.dark body {
 }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
-/* Respect prefers-reduced-motion */
+/* Acessibilidade — respeitar preferência de movimento reduzido */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

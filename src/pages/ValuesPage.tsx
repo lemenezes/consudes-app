@@ -1,6 +1,6 @@
 import { Trophy, Users, Shield, Globe, HeartHandshake, Lightbulb } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
 
 const ICONS = [Trophy, Users, Shield, Globe, HeartHandshake, Lightbulb];
@@ -11,11 +11,15 @@ export default function ValuesPage() {
   useSEO({ title: t.nav.values, url: '/valores' });
 
   return (
-    <>
-      <PageHero label={v.label} title={t.nav.values} subtitle={v.heroSubtitle} />
+    <PageShell
+      label={v.label}
+      title={t.nav.values}
+      subtitle={v.heroSubtitle}
+      breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.values }]}
+    >
 
       {/* Intro */}
-      <section className="bg-white dark:bg-[#0d1624] pt-16 sm:pt-20 pb-4">
+      <section className="bg-white dark:bg-consudes-dark-body pt-16 sm:pt-20 pb-4">
         <div className="max-w-3xl mx-auto px-6 sm:px-8 text-center">
           <p className="text-[#1F2937]/65 dark:text-white/55 text-base sm:text-lg leading-relaxed">
             {v.intro}
@@ -24,7 +28,7 @@ export default function ValuesPage() {
       </section>
 
       {/* Grid de valores */}
-      <section className="bg-white dark:bg-[#0d1624] py-12 sm:py-16">
+      <section className="bg-white dark:bg-consudes-dark-body py-12 sm:py-16">
         <div className="max-w-5xl mx-auto px-6 sm:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {v.values.map((value, i) => {
@@ -54,7 +58,7 @@ export default function ValuesPage() {
           </div>
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }
 

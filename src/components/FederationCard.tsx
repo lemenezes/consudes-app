@@ -78,10 +78,10 @@ export default function FederationCard({ federation: f }: Props) {
   const socials = buildSocials(f.socials);
 
   return (
-    <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-[#D9A441]/50 transition-all duration-300 overflow-hidden flex flex-col min-h-[210px]">
+    <article className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:border-consudes-gold/50 transition-all duration-300 overflow-hidden flex flex-col min-h-[210px]">
 
       {/* ── Stripe de cor no topo ── */}
-      <div className="h-1 w-full bg-gradient-to-r from-[#003B73] via-[#0057A8] to-[#D9A441]" />
+      <div className="h-1 w-full bg-gradient-to-r from-consudes-navy via-consudes-blue-mid to-consudes-gold" />
 
       <div className="p-5 flex flex-col gap-4 flex-1">
 
@@ -142,7 +142,7 @@ export default function FederationCard({ federation: f }: Props) {
                 rel="noopener noreferrer"
                 aria-label={link.label}
                 title={link.label}
-                className="p-2 rounded-lg text-gray-400 hover:text-[#0057A8] hover:bg-[#0057A8]/8 hover:scale-110 transition-all duration-150"
+                className="p-2 rounded-lg text-gray-400 hover:text-consudes-blue-mid hover:bg-consudes-blue-mid/8 hover:scale-110 transition-all duration-150"
               >
                 {link.icon}
               </a>

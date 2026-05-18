@@ -106,7 +106,7 @@ export default function Header() {
     <header ref={navRef} className="sticky top-0 z-50">
 
       {/* ── Topbar institucional ─────────────────────────────────────────── */}
-      <div className="bg-[#002D5E] dark:bg-[#001630]">
+      <div className="bg-consudes-blue dark:bg-consudes-dark-deep">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-8">
           <p className="text-white/80 text-[10px] font-medium tracking-[0.18em] uppercase hidden sm:block select-none">
             {t.topbar}
@@ -116,7 +116,7 @@ export default function Header() {
               href="https://webmail.hostinger.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-white/80 hover:text-[#D9A441] text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
+              className="text-white/80 hover:text-consudes-gold text-[10px] font-medium tracking-widest transition-colors duration-150 pr-2.5 border-r border-white/10"
             >
               Webmail
             </a>
@@ -125,7 +125,7 @@ export default function Header() {
                 key={code}
                 onClick={() => setLang(code)}
                 className={`px-2.5 py-1 text-[10px] font-bold tracking-widest transition-colors duration-150 ${
-                  lang === code ? 'text-[#D9A441]' : 'text-white/80 hover:text-[#D9A441]'
+                  lang === code ? 'text-consudes-gold' : 'text-white/80 hover:text-consudes-gold'
                 } ${i < LANGS.length - 1 ? 'border-r border-white/10' : ''}`}
               >
                 {label}
@@ -136,7 +136,7 @@ export default function Header() {
               data-testid="theme-toggle"
               onClick={toggle}
               aria-label={theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'}
-              className="w-7 h-7 flex items-center justify-center text-white/80 hover:text-[#D9A441] transition-colors"
+              className="w-7 h-7 flex items-center justify-center text-white/80 hover:text-consudes-gold transition-colors"
             >
               {theme === 'dark' ? <Sun size={12} /> : <Moon size={12} />}
             </button>
@@ -146,10 +146,10 @@ export default function Header() {
 
       {/* ── Navbar principal ─────────────────────────────────────────────── */}
       <div
-        className={`bg-white dark:bg-[#0a1220] transition-all duration-300 ${
+        className={`bg-white dark:bg-consudes-dark transition-all duration-300 ${
           scrolled
             ? 'shadow-[0_2px_20px_rgba(0,45,94,0.10)] dark:shadow-[0_2px_20px_rgba(0,0,0,0.40)] border-b border-transparent'
-            : 'border-b border-[#003B73]/8 dark:border-white/5'
+            : 'border-b border-consudes-navy/8 dark:border-white/5'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -184,11 +184,11 @@ export default function Header() {
                       const showIndicator = isOpen || hasActiveChild;
                       const cls = `relative flex items-center gap-1 px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
                         isOpen || hasActiveChild
-                          ? 'text-[#0057A8] dark:text-white'
-                          : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
+                          ? 'text-consudes-blue-mid dark:text-white'
+                          : 'text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/70 dark:hover:text-white'
                       }`;
                       const indicator = showIndicator && (
-                        <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
+                        <span className="absolute bottom-0 inset-x-3 h-[2px] bg-consudes-gold rounded-t-full" />
                       );
                       const chevron = (
                         <ChevronDown
@@ -217,7 +217,7 @@ export default function Header() {
                       );
                     })()}
                     {openDropdowns.has(item.key) && (
-                      <div className="absolute top-full left-0 mt-0 min-w-[200px] bg-white dark:bg-[#0d1624] border border-[#003B73]/10 dark:border-white/8 rounded-b-xl rounded-tr-xl shadow-[0_8px_32px_rgba(0,45,94,0.13)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.40)] py-2 z-50">
+                      <div className="absolute top-full left-0 mt-0 min-w-[200px] bg-white dark:bg-consudes-dark-body border border-consudes-navy/10 dark:border-white/8 rounded-b-xl rounded-tr-xl shadow-[0_8px_32px_rgba(0,45,94,0.13)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.40)] py-2 z-50">
                         {item.links.map((link) =>
                           link.href ? (
                             <a
@@ -226,7 +226,7 @@ export default function Header() {
                               target="_blank"
                               rel="noopener noreferrer"
                               onClick={() => setOpenDropdowns(new Set())}
-                              className="block px-5 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap text-[#1a3a5c] hover:text-[#0057A8] hover:bg-[#0057A8]/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5"
+                              className="block px-5 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap text-consudes-blue-text hover:text-consudes-blue-mid hover:bg-consudes-blue-mid/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5"
                             >
                               {link.label}
                             </a>
@@ -238,8 +238,8 @@ export default function Header() {
                               className={({ isActive }) =>
                                 `block px-5 py-2.5 text-[13px] font-medium transition-colors whitespace-nowrap ${
                                   isActive
-                                    ? 'text-[#0057A8] bg-[#0057A8]/6 border-l-2 border-[#D9A441] dark:text-white dark:bg-white/8'
-                                    : 'text-[#1a3a5c] hover:text-[#0057A8] hover:bg-[#0057A8]/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5'
+                                    ? 'text-consudes-blue-mid bg-consudes-blue-mid/6 border-l-2 border-consudes-gold dark:text-white dark:bg-white/8'
+                                    : 'text-consudes-blue-text hover:text-consudes-blue-mid hover:bg-consudes-blue-mid/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5'
                                 }`
                               }
                             >
@@ -259,15 +259,15 @@ export default function Header() {
                     className={({ isActive }) =>
                       `relative flex items-center px-3.5 text-[13px] font-semibold tracking-wide transition-colors duration-150 ${
                         isActive
-                          ? 'text-[#0057A8] dark:text-white'
-                          : 'text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/70 dark:hover:text-white'
+                          ? 'text-consudes-blue-mid dark:text-white'
+                          : 'text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/70 dark:hover:text-white'
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
                         {isActive && (
-                          <span className="absolute bottom-0 inset-x-3 h-[2px] bg-[#D9A441] rounded-t-full" />
+                          <span className="absolute bottom-0 inset-x-3 h-[2px] bg-consudes-gold rounded-t-full" />
                         )}
                         {item.label}
                       </>
@@ -281,13 +281,13 @@ export default function Header() {
             <div className="flex items-center gap-3">
               <NavLink
                 to="/contato"
-                className="hidden lg:inline-flex items-center bg-[#D9A441] hover:bg-[#c99030] text-[#002D5E] font-bold px-5 py-2 text-[13px] rounded-sm tracking-wide transition-colors duration-150"
+                className="hidden lg:inline-flex items-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-5 py-2 text-[13px] rounded-sm tracking-wide transition-colors duration-150"
               >
                 {t.nav.cta}
               </NavLink>
 
               <button
-                className="lg:hidden w-10 h-10 flex items-center justify-center text-[#003B73] hover:bg-[#003B73]/6 rounded transition-colors dark:text-white/80 dark:hover:bg-white/8"
+                className="lg:hidden w-10 h-10 flex items-center justify-center text-consudes-navy hover:bg-consudes-navy/6 rounded transition-colors dark:text-white/80 dark:hover:bg-white/8"
                 onClick={() => setIsOpen((v) => !v)}
                 aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
               >
@@ -300,11 +300,11 @@ export default function Header() {
 
       {/* ── Mobile Menu ───────────────────────────────────────────────────── */}
       {isOpen && (
-        <div className="lg:hidden bg-white dark:bg-[#0a1220] border-t border-[#003B73]/8 dark:border-white/5 overflow-y-auto max-h-[calc(100svh-104px)] shadow-[0_8px_32px_rgba(0,45,94,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
+        <div className="lg:hidden bg-white dark:bg-consudes-dark border-t border-consudes-navy/8 dark:border-white/5 overflow-y-auto max-h-[calc(100svh-104px)] shadow-[0_8px_32px_rgba(0,45,94,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.45)]">
           <div className="py-1">
             {navItems.map((item) =>
               item.type === 'dropdown' ? (
-                <div key={item.key} className="border-b border-[#003B73]/5 dark:border-white/5 last:border-0">
+                <div key={item.key} className="border-b border-consudes-navy/5 dark:border-white/5 last:border-0">
                   {item.to ? (
                     <div className="flex items-stretch">
                       <Link
@@ -313,8 +313,8 @@ export default function Header() {
                         className={`flex-1 px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
                           openDropdowns.has(item.key) ||
                           item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
-                            ? 'text-[#D9A441]'
-                            : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
+                            ? 'text-consudes-gold'
+                            : 'text-consudes-navy/75 dark:text-white/40 hover:text-consudes-gold dark:hover:text-consudes-gold'
                         }`}
                       >
                         {item.label}
@@ -323,7 +323,7 @@ export default function Header() {
                         onClick={() => toggleDropdown(item.key)}
                         aria-expanded={openDropdowns.has(item.key)}
                         aria-label="Expandir submenu"
-                        className="px-4 py-3.5 text-[#003B73]/50 dark:text-white/30 hover:text-[#D9A441] dark:hover:text-[#D9A441] transition-colors"
+                        className="px-4 py-3.5 text-consudes-navy/50 dark:text-white/30 hover:text-consudes-gold dark:hover:text-consudes-gold transition-colors"
                       >
                         <ChevronDown
                           size={13}
@@ -337,8 +337,8 @@ export default function Header() {
                       className={`w-full flex items-center justify-between px-5 py-3.5 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors duration-150 ${
                         openDropdowns.has(item.key) ||
                         item.links.some((l) => l.to && (pathname === l.to || pathname.startsWith(l.to + '/')))
-                          ? 'text-[#D9A441]'
-                          : 'text-[#003B73]/75 dark:text-white/40 hover:text-[#D9A441] dark:hover:text-[#D9A441]'
+                          ? 'text-consudes-gold'
+                          : 'text-consudes-navy/75 dark:text-white/40 hover:text-consudes-gold dark:hover:text-consudes-gold'
                       }`}
                     >
                       {item.label}
@@ -349,7 +349,7 @@ export default function Header() {
                     </button>
                   )}
                   {openDropdowns.has(item.key) && (
-                    <div className="bg-[#003B73]/3 dark:bg-white/3 pb-2">
+                    <div className="bg-consudes-navy/3 dark:bg-white/3 pb-2">
                       {item.links.map((link) =>
                         link.href ? (
                           <a
@@ -358,9 +358,9 @@ export default function Header() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={close}
-                            className="flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] font-medium text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/60 dark:hover:text-white transition-colors"
+                              className="flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] font-medium text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/60 dark:hover:text-white transition-colors"
                           >
-                            <span className="w-1 h-1 rounded-full bg-[#D9A441]/50 flex-shrink-0" />
+                              <span className="w-1 h-1 rounded-full bg-consudes-gold/50 flex-shrink-0" />
                             {link.label}
                           </a>
                         ) : (
@@ -371,14 +371,14 @@ export default function Header() {
                             className={({ isActive }) =>
                               `flex items-center gap-2.5 pl-8 pr-5 py-3 text-[13px] transition-colors ${
                                 isActive
-                                  ? 'font-semibold text-[#003B73] bg-[#003B73]/10 border-l-2 border-l-[#D9A441] dark:text-white dark:bg-white/8'
-                                  : 'font-medium text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/60 dark:hover:text-white'
+                                  ? 'font-semibold text-consudes-navy bg-consudes-navy/10 border-l-2 border-l-consudes-gold dark:text-white dark:bg-white/8'
+                                  : 'font-medium text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/60 dark:hover:text-white'
                               }`
                             }
                           >
                             {({ isActive }) => (
                               <>
-                                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isActive ? 'bg-[#D9A441]' : 'bg-[#D9A441]/40'}`} />
+                                <span className={`w-1 h-1 rounded-full flex-shrink-0 ${isActive ? 'bg-consudes-gold' : 'bg-consudes-gold/40'}`} />
                                 {link.label}
                               </>
                             )}
@@ -396,10 +396,10 @@ export default function Header() {
                   end={item.to === '/'}
                   aria-label={item.to === '/' ? 'Navegar para a página inicial' : undefined}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-5 py-3.5 text-[13px] border-b border-[#003B73]/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
+                    `flex items-center gap-3 px-5 py-3.5 text-[13px] border-b border-consudes-navy/5 dark:border-white/5 last:border-0 transition-colors duration-150 ${
                       isActive
-                        ? 'font-bold text-[#003B73] bg-[#003B73]/10 border-l-2 border-l-[#D9A441] dark:text-white dark:bg-white/8'
-                        : 'font-semibold text-[#1a3a5c] hover:text-[#0057A8] dark:text-white/65 dark:hover:text-white'
+                        ? 'font-bold text-consudes-navy bg-consudes-navy/10 border-l-2 border-l-consudes-gold dark:text-white dark:bg-white/8'
+                        : 'font-semibold text-consudes-blue-text hover:text-consudes-blue-mid dark:text-white/65 dark:hover:text-white'
                     }`
                   }
                 >
@@ -408,11 +408,11 @@ export default function Header() {
               )
             )}
           </div>
-          <div className="px-5 py-4 border-t border-[#003B73]/8 dark:border-white/5">
+          <div className="px-5 py-4 border-t border-consudes-navy/8 dark:border-white/5">
             <NavLink
               to="/contato"
               onClick={close}
-              className="flex items-center justify-center bg-[#D9A441] hover:bg-[#c99030] text-[#002D5E] font-bold px-4 py-3.5 rounded-sm text-[13px] tracking-wide transition-colors duration-150"
+              className="flex items-center justify-center bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-blue font-bold px-4 py-3.5 rounded-sm text-[13px] tracking-wide transition-colors duration-150"
             >
               {t.nav.cta}
             </NavLink>

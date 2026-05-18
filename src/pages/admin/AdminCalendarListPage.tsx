@@ -277,7 +277,7 @@ export default function AdminCalendarListPage() {
                     : 'border-gray-200 text-gray-600 bg-white'
                 }`}
               >
-                <option value="all">Todos</option>
+                <option value="all">{ac.filterAll}</option>
                 <option value="draft">{t.admin.status.draft}</option>
                 <option value="published">{t.admin.status.published}</option>
                 <option value="archived">{t.admin.status.archived}</option>
@@ -296,7 +296,7 @@ export default function AdminCalendarListPage() {
                     : 'border-gray-200 text-gray-600 bg-white'
                 }`}
               >
-                <option value="all">Todas</option>
+                <option value="all">{ac.filterAll}</option>
                 {(['interclubes','sub21','adulto','institucional','outro'] as CalendarEventCategory[]).map((c) => (
                   <option key={c} value={c}>{ac.categories[c]}</option>
                 ))}
@@ -309,7 +309,7 @@ export default function AdminCalendarListPage() {
                 className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors"
               >
                 <X size={11} />
-                Limpar filtros
+                {ac.clearFilters}
               </button>
             )}
           </div>
@@ -331,13 +331,13 @@ export default function AdminCalendarListPage() {
           {hasActiveFilters ? (
             <div className="flex flex-col items-center gap-3">
               <Search size={28} className="text-gray-200" />
-              <p>Nenhum evento encontrado para os filtros aplicados.</p>
+              <p>{ac.noEventsFiltered}</p>
               <button
                 type="button"
                 onClick={clearFilters}
                 className="text-xs font-semibold text-[#0057A8] hover:underline"
               >
-                Limpar filtros
+                {ac.clearFilters}
               </button>
             </div>
           ) : (
