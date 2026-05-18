@@ -1,16 +1,15 @@
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 
 export default function RankingsPage() {
   const { t } = useLanguage();
   return (
-    <>
-      <PageHero label="CONSUDES" title={t.nav.rankings} />
-      <section className="bg-white dark:bg-[#0d1624] py-20">
-        <p className="text-center text-[#1F2937]/40 dark:text-white/30 text-sm">
+    <PageShell label="CONSUDES" title={t.nav.rankings} breadcrumbs={[{ label: t.nav.rankings }]}>
+      <section className="bg-white dark:bg-consudes-dark-body py-20">
+        <p className="text-center text-consudes-blue-text/40 dark:text-white/30 text-sm">
           {t.common.contentUnderConstruction}
         </p>
       </section>
-    </>
+    </PageShell>
   );
 }

@@ -1,19 +1,19 @@
 import { Mail, Phone } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 
 const CONTACT_EMAIL = 'contato@consudes.org.br';
 
 export default function ContactPage() {
   const { t } = useLanguage();
   return (
-    <>
-      <PageHero
-        label="CONSUDES"
-        title={t.contact.title}
-        subtitle={t.contact.subtitle}
-      />
-      <section className="bg-white dark:bg-[#0d1624] py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.contact.title}
+      subtitle={t.contact.subtitle}
+      breadcrumbs={[{ label: t.contact.title }]}
+    >
+      <section className="bg-white dark:bg-consudes-dark-body py-20">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-4">
           <a
             href={`mailto:${CONTACT_EMAIL}`}
@@ -38,6 +38,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }

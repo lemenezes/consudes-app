@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { FileText, Trophy, Users } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
 import { editions, championsM, championsF } from '../data/interclubsData';
 
@@ -25,8 +25,12 @@ export default function InterclubsPage() {
   const edition = editions.find((e) => String(e.year) === active);
 
   return (
-    <>
-      <PageHero label={p.label} title={t.nav.interclubs} subtitle={p.heroSubtitle} />
+    <PageShell
+      label={p.label}
+      title={t.nav.interclubs}
+      subtitle={p.heroSubtitle}
+      breadcrumbs={[{ label: t.nav.sports, href: '/esportes' }, { label: t.nav.interclubs }]}
+    >
 
       {/* Tab navigation */}
       <div className="sticky top-[60px] z-30 bg-[#0057A8] dark:bg-[#002D5E] shadow-sm">
@@ -55,7 +59,7 @@ export default function InterclubsPage() {
 
       {/* Edition content */}
       {edition && active !== 'champions' && (
-        <section className="bg-white dark:bg-[#0d1624] py-14">
+        <section className="bg-white dark:bg-consudes-dark-body py-14">
           <div className="max-w-4xl mx-auto px-6 sm:px-8">
 
             {/* Edition header */}
@@ -216,7 +220,7 @@ export default function InterclubsPage() {
 
       {/* Champions tab */}
       {active === 'champions' && (
-        <section className="bg-white dark:bg-[#0d1624] py-14">
+        <section className="bg-white dark:bg-consudes-dark-body py-14">
           <div className="max-w-5xl mx-auto px-6 sm:px-8">
 
             {/* Section header */}
@@ -247,7 +251,7 @@ export default function InterclubsPage() {
           </div>
         </section>
       )}
-    </>
+    </PageShell>
   );
 }
 

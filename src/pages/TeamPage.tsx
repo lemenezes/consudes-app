@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSEO } from '../hooks/useSEO';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { teamMembers, teamByGroup, FLAG } from '../data/teamData';
 import type { TeamMember } from '../data/teamData';
 
@@ -128,19 +128,22 @@ export default function TeamPage() {
   const countriesCount = [...new Set(teamMembers.map((m) => m.countryCode))].length;
 
   return (
-    <>
-      <PageHero label="CONSUDES" title={t.nav.team} subtitle={tp.subtitle} />
-
-      <section className="bg-gradient-to-b from-slate-50/60 to-white dark:bg-[#0d1624] dark:bg-none py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.nav.team}
+      subtitle={tp.subtitle}
+      breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.team }]}
+    >
+      <section className="bg-gradient-to-b from-slate-50/60 to-white dark:bg-consudes-dark-body dark:bg-none py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Intro institucional ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
             <div className="flex-1">
-              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-4" aria-hidden="true">
+              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-consudes-gold mb-4" aria-hidden="true">
                 CONSUDES
               </p>
-              <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3">
+              <h2 className="font-['Cormorant_Garamond'] text-4xl sm:text-5xl font-semibold text-consudes-blue-text dark:text-white leading-tight tracking-tight mb-3">
                 {tp.mandate}
               </h2>
               <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55 max-w-lg">
@@ -212,6 +215,6 @@ export default function TeamPage() {
 
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }

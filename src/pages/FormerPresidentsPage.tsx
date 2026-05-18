@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useSEO } from '../hooks/useSEO';
-import PageHero from '../components/PageHero';
+import PageShell from '../components/PageShell';
 import { formerPresidents, FLAG } from '../data/formerPresidentsData';
 import type { FormerPresident } from '../data/formerPresidentsData';
 
@@ -48,19 +48,22 @@ export default function FormerPresidentsPage() {
   const yearsOfHistory = new Date().getFullYear() - 1985;
 
   return (
-    <>
-      <PageHero label="CONSUDES" title={t.nav.formerPresidents} subtitle={fp.subtitle} />
-
-      <section className="bg-white dark:bg-[#0d1624] py-20">
+    <PageShell
+      label="CONSUDES"
+      title={t.nav.formerPresidents}
+      subtitle={fp.subtitle}
+      breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.formerPresidents }]}
+    >
+      <section className="bg-white dark:bg-consudes-dark-body py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Intro ─────────────────────────────────────────── */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16">
             <div className="flex-1">
-              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-[#D9A441] mb-4" aria-hidden="true">
+              <p className="text-[11px] font-bold tracking-[0.5em] uppercase text-consudes-gold mb-4" aria-hidden="true">
                 CONSUDES
               </p>
-              <h2 className="font-['Cormorant_Garamond'] text-[1.85rem] sm:text-5xl font-semibold text-[#1F2937] dark:text-white leading-tight tracking-tight mb-3 whitespace-nowrap">
+              <h2 className="font-['Cormorant_Garamond'] text-[1.85rem] sm:text-5xl font-semibold text-consudes-blue-text dark:text-white leading-tight tracking-tight mb-3 whitespace-nowrap">
                 {fp.historyTitle}
               </h2>
               <p className="text-sm sm:text-[15px] text-[#1F2937]/70 dark:text-white/55">
@@ -186,7 +189,7 @@ export default function FormerPresidentsPage() {
           </ol>
         </div>
       </section>
-    </>
+    </PageShell>
   );
 }
 
