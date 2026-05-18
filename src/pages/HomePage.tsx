@@ -34,15 +34,15 @@ export default function HomePage() {
         {/* Linha dourada no topo */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-consudes-gold/60 to-transparent" aria-hidden="true" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-20">
+        <div className="relative max-w-6xl mx-auto px-6 sm:px-8 py-14 sm:py-24">
 
           {/* Nome completo centralizado */}
-          <div className="flex items-center justify-center gap-4 mb-5 sm:mb-10">
-            <span className="w-10 h-px bg-[#D9A441]/60 shrink-0" />
-            <span className="font-['Cormorant_Garamond'] text-white/95 text-sm sm:text-lg font-light tracking-[0.08em] uppercase italic text-center">
+          <div className="flex items-center justify-center gap-4 mb-6 sm:mb-10">
+            <span className="w-10 h-px bg-consudes-gold/50 shrink-0" />
+            <span className="font-['Cormorant_Garamond'] text-white/90 text-sm sm:text-lg font-light tracking-[0.08em] uppercase italic text-center">
               {t.hero.fullName}
             </span>
-            <span className="w-10 h-px bg-[#D9A441]/60 shrink-0" />
+            <span className="w-10 h-px bg-consudes-gold/50 shrink-0" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-14 items-center">
@@ -54,7 +54,7 @@ export default function HomePage() {
                 <span className="text-consudes-gold italic">{t.hero.headline2}</span>
               </h1>
 
-              <p className="text-white/70 text-base sm:text-lg mb-10 max-w-xl font-light tracking-wide">
+              <p className="text-white/70 text-base sm:text-lg mb-10 max-w-xl font-light leading-relaxed">
                 {t.hero.subtitle}
               </p>
 
@@ -171,7 +171,7 @@ export default function HomePage() {
 
           {/* ── Stats institucionais centradas ── */}
           <div
-            className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center gap-3 sm:gap-16 mt-5 sm:mt-10 pt-5 sm:pt-8 border-t border-white/[0.12]"
+            className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center gap-4 sm:gap-16 mt-10 sm:mt-14 pt-8 sm:pt-10 border-t border-white/[0.12]"
             aria-label={t.stats.map((s) => `${s.value} ${s.label}`).join(', ')}
           >
             {t.stats.map(({ label, value }, i) => (
@@ -189,21 +189,20 @@ export default function HomePage() {
       </section>
 
       {/* ─── Sobre ────────────────────────────────────────────────────────── */}
-      <section id="sobre" className="bg-consudes-surface dark:bg-consudes-dark-body py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <section id="sobre" className="bg-consudes-surface dark:bg-consudes-dark-body py-20 sm:py-28">
+        <div className="max-w-5xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           <div>
             <span className="inline-flex items-center gap-2 text-consudes-blue-mid dark:text-white/60 text-xs font-bold tracking-widest uppercase mb-4">
               <span className="w-5 h-0.5 bg-consudes-gold inline-block" />
               {t.about.label}
             </span>
-            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-consudes-blue-text dark:text-white mb-6 leading-tight">
+            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-consudes-blue-text dark:text-white mb-6 leading-snug">
               {t.about.title}
             </h2>
-            <p className="text-consudes-blue-text/70 dark:text-white/55 text-base leading-relaxed mb-4">
+            <p className="text-consudes-blue-text/75 dark:text-white/65 text-base leading-relaxed mb-4">
               {t.about.p1}
             </p>
-            <p className="text-consudes-blue-text/70 dark:text-white/55 text-base leading-relaxed mb-8">
+            <p className="text-consudes-blue-text/75 dark:text-white/65 text-base leading-relaxed mb-8">
               {t.about.p2}
             </p>
             <a
@@ -239,27 +238,26 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        </div>
       </section>
 
       {/* ─── Programas ────────────────────────────────────────────────────── */}
-      <section id="programas" className="bg-consudes-navy dark:bg-consudes-dark-deep py-12 sm:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="programas" className="bg-consudes-navy dark:bg-consudes-dark-deep py-20 sm:py-28">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">
               <span className="w-8 h-px bg-consudes-gold/70" />
               <span className="text-consudes-gold text-xs font-bold tracking-widest uppercase">{t.programs.label}</span>
               <span className="w-8 h-px bg-consudes-gold/70" />
             </div>
-            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-semibold text-white mb-3">
+            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-3">
               {t.programs.title}
             </h2>
-            <p className="text-white/65 text-sm max-w-md mx-auto">
+            <p className="text-white/70 text-sm max-w-lg mx-auto">
               {t.programs.subtitle}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {t.programs.items.map((item, i) => (
               <div
                 key={i}
@@ -268,10 +266,10 @@ export default function HomePage() {
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-consudes-gold/20 text-consudes-gold flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-consudes-gold group-hover:text-consudes-navy transition-colors duration-200">
                   {PROGRAM_ICONS[i]}
                 </div>
-                <h3 className="font-bold text-white text-sm mb-2 leading-snug">
+                <h3 className="font-semibold text-white text-[15px] mb-2 leading-snug">
                   {item.title}
                 </h3>
-                <p className="text-white/55 text-xs leading-relaxed">
+                <p className="text-white/65 text-[13px] leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -281,25 +279,25 @@ export default function HomePage() {
       </section>
 
       {/* ─── Notícias ─────────────────────────────────────────────────── */}
-      <section id="noticias" className="bg-consudes-surface dark:bg-consudes-dark-body py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="noticias" className="bg-consudes-surface dark:bg-consudes-dark-body py-20 sm:py-28">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-3">
               <span className="w-8 h-px bg-consudes-gold/70" />
               <span className="text-consudes-blue-mid dark:text-white/60 text-xs font-bold tracking-widest uppercase">{t.news.label}</span>
               <span className="w-8 h-px bg-consudes-gold/70" />
             </div>
-            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-semibold text-consudes-blue-text dark:text-white mb-3">
+            <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-consudes-blue-text dark:text-white mb-3">
               {t.news.title}
             </h2>
-            <p className="text-consudes-blue-text/60 dark:text-white/40 text-sm">
+            <p className="text-consudes-blue-text/65 dark:text-white/50 text-sm">
               {t.news.subtitle}
             </p>
           </div>
 
           {/* Skeletons durante carregamento */}
           {newsLoading && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="bg-white dark:bg-consudes-dark rounded-2xl overflow-hidden border border-consudes-border dark:border-white/8 shadow-card animate-pulse">
                   <div className="h-40 bg-consudes-surface dark:bg-consudes-dark-body" />
@@ -315,7 +313,7 @@ export default function HomePage() {
 
           {/* Lista de notícias reais */}
           {!newsLoading && news.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {news.map((item) => (
                 <NewsCard key={item.id} news={item} compact />
               ))}
@@ -345,26 +343,26 @@ export default function HomePage() {
       </section>
 
       {/* ─── Contato ──────────────────────────────────────────────────────── */}
-      <section id="contato" className="bg-consudes-blue-mid py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-12 h-[2px] bg-consudes-gold/80 mx-auto mb-8" />
-          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl font-semibold text-white mb-4">
+      <section id="contato" className="bg-consudes-blue-mid py-16 sm:py-24">
+        <div className="max-w-2xl mx-auto px-6 sm:px-8 text-center">
+          <div className="w-16 h-[2px] bg-consudes-gold/70 mx-auto mb-10" />
+          <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-5xl font-semibold text-white mb-4">
             {t.contact.title}
           </h2>
-          <p className="text-white/70 mb-10 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+          <p className="text-white/75 mb-10 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
             {t.contact.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="mailto:contato@consudes.org.br"
-              className="inline-flex items-center gap-2 bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-navy font-bold px-7 py-3 rounded text-sm transition-colors"
+              className="inline-flex items-center gap-2 bg-consudes-gold hover:bg-consudes-gold-dark text-consudes-navy font-bold px-7 py-3.5 rounded-lg text-sm transition-colors"
             >
               <Mail size={16} />
               contato@consudes.org.br
             </a>
             <Link
               to="/contato"
-              className="inline-flex items-center gap-2 border-2 border-white/40 hover:border-white hover:bg-white/10 text-white font-semibold px-7 py-3 rounded transition-colors text-sm"
+              className="inline-flex items-center gap-2 border border-white/35 hover:border-white/70 hover:bg-white/8 text-white font-semibold px-7 py-3.5 rounded-lg transition-colors text-sm"
             >
               {t.nav.cta}
             </Link>

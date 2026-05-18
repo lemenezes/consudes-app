@@ -1,3 +1,14 @@
+/**
+ * @legacy ORPHAN — não está no roteador (App.tsx)
+ *
+ * Conceito "Programas" foi descartado para a CONSUDES.
+ * Futura rota planejada: /atividade-esportiva
+ * Futuro arquivo: ActivitiesPage.tsx ou SportsActivityPage.tsx
+ *
+ * Conteúdo atual: repete os 4 cards de t.programs.items
+ * já exibidos na seção #programas da HomePage.
+ * Não deletar antes de revisar e criar a substituta.
+ */
 import { useLanguage } from '../context/LanguageContext';
 import PageShell from '../components/PageShell';
 
