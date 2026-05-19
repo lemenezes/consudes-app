@@ -21,7 +21,7 @@ export default function NewsPage() {
       subtitle={t.news.subtitle}
       breadcrumbs={[{ label: t.news.title }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body py-20">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Skeletons */}

@@ -137,7 +137,7 @@ export default function GalleryAlbumPage() {
         title={t.galleryPage.albumNotFound}
         breadcrumbs={[{ label: t.nav.gallery, href: '/galeria' }, { label: '404' }]}
       >
-        <section className="bg-white dark:bg-consudes-dark-body py-20">
+        <section className="bg-slate-50 dark:bg-consudes-dark-body py-20">
           <div className="max-w-lg mx-auto px-4 text-center">
             <p className="text-consudes-blue-text/50 dark:text-white/40 text-base mb-6">
               {t.galleryPage.albumNotFound}
@@ -174,7 +174,7 @@ export default function GalleryAlbumPage() {
         { label: album.title },
       ]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body pb-20">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Hero ── */}

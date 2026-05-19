@@ -13,7 +13,7 @@ function ScrollToTop() {
 
 export default function Layout() {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0d1624] transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0d1624] transition-colors duration-200">
       <ScrollToTop />
       <Header />
       <main className="flex-1">

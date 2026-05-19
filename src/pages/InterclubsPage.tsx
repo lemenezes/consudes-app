@@ -59,7 +59,7 @@ export default function InterclubsPage() {
 
       {/* Edition content */}
       {edition && active !== 'champions' && (
-        <section className="bg-white dark:bg-consudes-dark-body py-14">
+        <section className="bg-slate-50 dark:bg-consudes-dark-body py-14">
           <div className="max-w-4xl mx-auto px-6 sm:px-8">
 
             {/* Edition header */}
@@ -220,7 +220,7 @@ export default function InterclubsPage() {
 
       {/* Champions tab */}
       {active === 'champions' && (
-        <section className="bg-white dark:bg-consudes-dark-body py-14">
+        <section className="bg-slate-50 dark:bg-consudes-dark-body py-14">
           <div className="max-w-5xl mx-auto px-6 sm:px-8">
 
             {/* Section header */}

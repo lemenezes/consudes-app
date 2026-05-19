@@ -185,7 +185,7 @@ export default function GalleryPage() {
       subtitle={t.galleryPage.subtitle}
       breadcrumbs={[{ label: t.nav.gallery }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body pt-8 sm:pt-12">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body pt-8 sm:pt-12">
 
         {/* ── Filtros ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

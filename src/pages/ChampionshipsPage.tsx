@@ -10,7 +10,7 @@ export default function ChampionshipsPage() {
       subtitle={t.championshipsPage.subtitle}
       breadcrumbs={[{ label: t.nav.championships }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body py-20">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex gap-6 border border-gray-200 dark:border-white/10 rounded-xl p-5 animate-pulse">

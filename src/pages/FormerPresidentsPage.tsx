@@ -54,7 +54,7 @@ export default function FormerPresidentsPage() {
       subtitle={fp.subtitle}
       breadcrumbs={[{ label: t.nav.institutional, href: '/institucional' }, { label: t.nav.formerPresidents }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body py-20">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* ── Intro ─────────────────────────────────────────── */}

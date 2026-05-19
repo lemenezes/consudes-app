@@ -21,7 +21,7 @@ export default function ProgramsPage() {
       subtitle={t.programs.subtitle}
       breadcrumbs={[{ label: t.programs.title }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body py-20">
+      <section className="bg-slate-50 dark:bg-consudes-dark-body py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 gap-8">
           {t.programs.items.map((item, i) => (
             <div key={i} className="border border-gray-200 dark:border-white/10 rounded-xl p-8">
