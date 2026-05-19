@@ -31,6 +31,7 @@ function categoryLabel(cat: GalleryCategory, t: ReturnType<typeof useLanguage>['
 
 function AlbumCover({ album, className = '', t }: { album: GalleryAlbum; className?: string; t: ReturnType<typeof useLanguage>['t'] }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const src = album.coverFile ? getPhotoUrl(album.slug, album.coverFile) : '';
 
   if (!src || failed) {
@@ -50,8 +51,10 @@ function AlbumCover({ album, className = '', t }: { album: GalleryAlbum; classNa
     <img
       src={src}
       alt={album.title}
-      className={`w-full h-full object-cover ${className}`}
+      className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+      style={{ objectPosition: album.coverPosition ?? 'center' }}
       loading="lazy"
+      onLoad={() => setLoaded(true)}
       onError={() => setFailed(true)}
     />
   );

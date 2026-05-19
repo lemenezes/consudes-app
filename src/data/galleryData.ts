@@ -52,6 +52,7 @@ export interface GalleryAlbum {
   category: GalleryCategory;
   tier: GalleryTier;
   coverFile: string | null;
+  coverPosition?: string;  // CSS object-position (default: 'center')
   photoCount: number;     // total incluindo curadoria futura
   photos: GalleryPhoto[]; // fotos já curadas (subset do photoCount)
   featured?: boolean;     // destaque principal da página
@@ -234,7 +235,7 @@ export const galleryAlbums: GalleryAlbum[] = [
     },
     category: 'interclubes',
     tier: 'T2',
-    coverFile: 'cover.webp',
+    coverFile: '02.webp',
     photoCount: 28,
     photos: [
       { filename: '01.webp', isHero: true },
@@ -305,7 +306,7 @@ export const galleryAlbums: GalleryAlbum[] = [
     },
     category: 'assembleias',
     tier: 'T2',
-    coverFile: 'cover.webp',
+    coverFile: '05.webp',
     photoCount: 13,
     photos: [
       { filename: '01.webp', isHero: true },
@@ -390,7 +391,7 @@ export const galleryAlbums: GalleryAlbum[] = [
     },
     category: 'interclubes',
     tier: 'T2',
-    coverFile: 'cover.webp',
+    coverFile: '08.webp',
     photoCount: 12,
     photos: [
       { filename: '01.webp', isHero: true, caption: 'Foto general — IC 2017' },
@@ -633,7 +634,8 @@ export const galleryAlbums: GalleryAlbum[] = [
     },
     category: 'historico',
     tier: 'T3',
-    coverFile: 'cover.webp',
+    coverFile: '03.webp',
+    coverPosition: 'center top',
     photoCount: 6,
     photos: [
       { filename: '01.webp', isHero: true },

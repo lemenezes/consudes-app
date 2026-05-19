@@ -15,6 +15,7 @@ import { galleryAlbums, getPhotoUrl, getDescription, type GalleryAlbum } from '.
 
 function AlbumHero({ album, t }: { album: GalleryAlbum; t: ReturnType<typeof useLanguage>['t'] }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const src = album.coverFile ? getPhotoUrl(album.slug, album.coverFile) : '';
 
   return (
@@ -23,7 +24,9 @@ function AlbumHero({ album, t }: { album: GalleryAlbum; t: ReturnType<typeof use
         <img
           src={src}
           alt={album.title}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{ objectPosition: album.coverPosition ?? 'center' }}
+          onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
       ) : (
@@ -66,6 +69,7 @@ function PhotoThumb({
   t: ReturnType<typeof useLanguage>['t'];
 }) {
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const src = getPhotoUrl(album.slug, filename);
 
   return (
@@ -79,7 +83,8 @@ function PhotoThumb({
           src={src}
           alt={filename}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
       ) : (
