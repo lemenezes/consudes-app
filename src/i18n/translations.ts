@@ -443,6 +443,7 @@ export const translations = {
       catCapacitacion: 'Capacitación',
       catFutsal: 'Futsal Femenino',
       catHistorico: 'Histórico',
+      noAlbumsFound: 'Ningún álbum encontrado para los filtros seleccionados.',
     },
     notFound: {
       title: 'Página no encontrada',
@@ -898,6 +899,7 @@ export const translations = {
       catCapacitacion: 'Capacitação',
       catFutsal: 'Futsal Feminino',
       catHistorico: 'Histórico',
+      noAlbumsFound: 'Nenhum álbum encontrado para os filtros selecionados.',
     },
   },
 
@@ -1348,6 +1350,7 @@ export const translations = {
       catCapacitacion: 'Training',
       catFutsal: "Women's Futsal",
       catHistorico: 'Historical',
+      noAlbumsFound: 'No albums found for the selected filters.',
     },
   },
 } satisfies Record<Lang, unknown>;

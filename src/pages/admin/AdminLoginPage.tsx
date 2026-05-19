@@ -47,8 +47,8 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-[100dvh] bg-[#F5F7FA] flex items-center justify-center p-0 overflow-x-hidden">
+      <div className="w-full max-w-md mx-auto px-4">
         {/* Logo + título */}
         <div className="text-center mb-6">
           <img
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-10 py-10">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-7 sm:px-8 sm:py-10">
           <h1 className="text-lg font-['Cormorant_Garamond'] font-semibold text-[#1F2937] mb-1">
             {t.admin.login.restricted}
           </h1>
@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
                 placeholder="seu@email.com"
               />
             </div>
@@ -122,7 +122,7 @@ export default function AdminLoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
                 placeholder="••••••••"
               />
             </div>
@@ -130,7 +130,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-lg bg-[#D9A441] text-[#1F2937] text-sm font-semibold tracking-wide hover:bg-[#c8942e] active:bg-[#b88326] disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-1"
+              className="w-full py-3 rounded-lg bg-[#D9A441] text-[#1F2937] text-sm font-semibold tracking-wide hover:bg-[#c8942e] active:bg-[#b88326] disabled:opacity-60 disabled:cursor-not-allowed transition-colors mt-1"
             >
               {loading ? t.admin.login.signingIn : t.admin.login.signIn}
             </button>

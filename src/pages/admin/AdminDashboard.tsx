@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const latest = news[0];
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-hidden">
       {/* Cabeçalho */}
       <div className="mb-8">
         <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">

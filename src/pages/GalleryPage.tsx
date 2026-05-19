@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { SegmentedToggleGroup } from '../components/SegmentedToggleGroup';
 import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -34,7 +35,7 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide border transition-all whitespace-nowrap ${
+      className={`px-2.5 py-0.5 text-[10px] md:px-3 md:py-1 md:text-[11px] rounded-full font-semibold tracking-wide border transition-all whitespace-nowrap ${
         active
           ? 'bg-consudes-blue text-white border-consudes-blue shadow-sm'
           : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:border-consudes-blue/40 hover:text-consudes-blue dark:hover:text-blue-300'
@@ -161,6 +162,8 @@ export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState<GalleryCategory | null>(null);
   const [activeYear, setActiveYear] = useState<number | null>(null);
   const [activeCountry, setActiveCountry] = useState<string | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersButtonRef = useRef<HTMLButtonElement>(null);
 
   useSEO({ title: t.nav.gallery, description: t.galleryPage.subtitle, url: '/galeria' });
 
@@ -168,6 +171,7 @@ export default function GalleryPage() {
   const availableCountries = [...new Set(galleryAlbums.map((a) => a.country).filter(Boolean))].sort() as string[];
 
   const isFiltered = activeCategory !== null || activeYear !== null || activeCountry !== null;
+  const activeCount = [activeCategory, activeYear, activeCountry].filter(Boolean).length;
   const gridAlbums = galleryAlbums.filter((a) => {
     if (activeCategory && a.category !== activeCategory) return false;
     if (activeYear && a.year !== activeYear) return false;
@@ -185,15 +189,96 @@ export default function GalleryPage() {
 
         {/* ── Filtros ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-2xl mb-6 shadow-sm">
-            <div className="flex flex-col gap-3 px-4 py-3">
-
-              {/* Categoria */}
-              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
+          {/* MOBILE: Botão Filtros */}
+          <div className="md:hidden flex justify-end mb-2">
+            <button
+              ref={filtersButtonRef}
+              type="button"
+              onClick={() => setFiltersOpen((v) => !v)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-semibold text-consudes-blue hover:bg-consudes-blue/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold/80 focus-visible:ring-offset-2 transition-all"
+              aria-label={t.galleryPage.filters}
+              aria-expanded={filtersOpen}
+              aria-controls="gallery-mobile-filters"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M6 12h12M9 18h6" /></svg>
+              {t.galleryPage.filters}
+              {activeCount > 0 && <span className="ml-1 text-xs font-bold text-consudes-gold">({activeCount})</span>}
+            </button>
+          </div>
+          {/* MOBILE: Painel expansível de filtros */}
+          <div
+            id="gallery-mobile-filters"
+            className={`md:hidden overflow-hidden transition-all duration-300 ${filtersOpen ? 'max-h-[900px] opacity-100 mt-2 mb-3' : 'max-h-0 opacity-0 pointer-events-none'}`}
+            aria-hidden={!filtersOpen}
+          >
+            <div className="flex flex-col gap-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm p-4">
+              <div>
+                <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
                   {t.galleryPage.filterCategory}
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <SegmentedToggleGroup
+                  options={[
+                    { value: null, label: t.galleryPage.allAlbums },
+                    ...GALLERY_CATEGORIES.map((cat) => ({ value: cat, label: categoryLabel(cat, t) })),
+                  ]}
+                  value={activeCategory}
+                  onChange={setActiveCategory}
+                  ariaLabel={t.galleryPage.filterCategory}
+                />
+              </div>
+              <div>
+                <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                  {t.galleryPage.filterYear}
+                </span>
+                <SegmentedToggleGroup
+                  options={[
+                    { value: null, label: t.galleryPage.allYears },
+                    ...availableYears.map((year) => ({ value: year, label: year })),
+                  ]}
+                  value={activeYear}
+                  onChange={setActiveYear}
+                  ariaLabel={t.galleryPage.filterYear}
+                />
+              </div>
+              <div>
+                <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
+                  {t.galleryPage.filterCountry}
+                </span>
+                <SegmentedToggleGroup
+                  options={[
+                    { value: null, label: t.galleryPage.allCountries },
+                    ...availableCountries.map((country) => ({ value: country, label: country })),
+                  ]}
+                  value={activeCountry}
+                  onChange={setActiveCountry}
+                  ariaLabel={t.galleryPage.filterCountry}
+                />
+              </div>
+              <div className="flex items-center mt-2 gap-2">
+                {isFiltered && (
+                  <button
+                    type="button"
+                    onClick={() => { setActiveCategory(null); setActiveYear(null); setActiveCountry(null); }}
+                    className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-consudes-blue bg-consudes-gold/10 hover:bg-consudes-gold/20 transition-all"
+                  >
+                    <X className="w-3 h-3" aria-hidden="true" />
+                    {t.galleryPage.clearFilters}
+                  </button>
+                )}
+                <div className="flex-1" />
+                {/* Botão Aplicar removido: filtragem é automática ao selecionar */}
+              </div>
+            </div>
+          </div>
+          {/* DESKTOP: Toolbar editorial */}
+          <div className="hidden md:block bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-2xl mb-3 md:mb-6 shadow-sm">
+            <div className="flex flex-col gap-2 md:gap-3 px-2 py-2 md:px-4 md:py-3">
+              {/* Categoria */}
+              <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
+                <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 md:text-[10px] md:font-bold md:tracking-[0.2em] md:shrink-0 md:w-[5.5rem]">
+                  {t.galleryPage.filterCategory}
+                </span>
+                <div className="flex flex-wrap gap-2">
                   <FilterPill active={activeCategory === null} onClick={() => setActiveCategory(null)}>
                     {t.galleryPage.allAlbums}
                   </FilterPill>
@@ -204,13 +289,12 @@ export default function GalleryPage() {
                   ))}
                 </div>
               </div>
-
               {/* Ano */}
-              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
+              <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
+                <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 md:text-[10px] md:font-bold md:tracking-[0.2em] md:shrink-0 md:w-[5.5rem]">
                   {t.galleryPage.filterYear}
                 </span>
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-2">
                   <FilterPill active={activeYear === null} onClick={() => setActiveYear(null)}>
                     {t.galleryPage.allYears}
                   </FilterPill>
@@ -221,13 +305,12 @@ export default function GalleryPage() {
                   ))}
                 </div>
               </div>
-
               {/* País */}
-              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
+              <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
+                <span className="text-[9px] font-medium tracking-[0.15em] uppercase text-slate-400 dark:text-slate-500 md:text-[10px] md:font-bold md:tracking-[0.2em] md:shrink-0 md:w-[5.5rem]">
                   {t.galleryPage.filterCountry}
                 </span>
-                <div className="flex flex-wrap gap-1.5 md:flex-1">
+                <div className="flex flex-wrap gap-2 md:flex-1">
                   <FilterPill active={activeCountry === null} onClick={() => setActiveCountry(null)}>
                     {t.galleryPage.allCountries}
                   </FilterPill>
@@ -254,23 +337,6 @@ export default function GalleryPage() {
                   </div>
                 )}
               </div>
-
-              {/* Count + Limpar: bloco separado — apenas mobile */}
-              {isFiltered && (
-                <div className="md:hidden flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-2.5">
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500">
-                    {gridAlbums.length} {gridAlbums.length === 1 ? t.galleryPage.albumSingular : t.galleryPage.albumPlural}
-                  </span>
-                  <button
-                    onClick={() => { setActiveCategory(null); setActiveYear(null); setActiveCountry(null); }}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#003B73] dark:text-blue-400 hover:underline transition-all"
-                  >
-                    <X className="w-3 h-3" aria-hidden="true" />
-                    {t.galleryPage.clearFilters}
-                  </button>
-                </div>
-              )}
-
             </div>
           </div>
         </div>
@@ -284,10 +350,11 @@ export default function GalleryPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-consudes-blue-text/40 dark:text-white/30 text-sm">
-                {t.common.contentUnderConstruction}
-              </p>
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-consudes-gold/10 border border-consudes-gold/30 text-consudes-gold text-base font-semibold shadow-sm">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.462 2.063-2.92A17.944 17.944 0 0012 4a17.944 17.944 0 00-7.98 12.08c-.439 1.458.523 2.92 2.062 2.92z" /></svg>
+                {t.galleryPage.noAlbumsFound}
+              </div>
             </div>
           )}
         </div>

@@ -157,7 +157,7 @@ export default function AdminNewsFormPage() {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div className="w-full max-w-6xl mx-auto px-2 sm:px-4 overflow-x-hidden">
       {/* Cabeçalho */}
       <div className="flex items-center gap-3 mb-8">
         <Link
@@ -189,13 +189,13 @@ export default function AdminNewsFormPage() {
         {/* Slug — oculto */}
         <input type="hidden" name="slug" value={form.slug} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4 sm:gap-6 items-start">
 
           {/* ── COLUNA PRINCIPAL ─────────────────────────────────────── */}
           <div className="space-y-5">
 
             {/* TÍTULO — input editorial grande */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-6 py-5">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm px-3 py-4 sm:px-6 sm:py-5">
               <label htmlFor="title" className="block text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-3">
                 {t.admin.titleLabel} <span className="text-red-400">*</span>
               </label>
@@ -213,10 +213,10 @@ export default function AdminNewsFormPage() {
 
             {/* IMAGEM DE CAPA */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-3 border-b border-gray-50 bg-gray-50/60">
+              <div className="px-3 py-2 border-b border-gray-50 bg-gray-50/60 sm:px-6 sm:py-3">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t.admin.coverLabel}</span>
               </div>
-              <div className="p-6">
+              <div className="p-3 sm:p-6">
                 <CoverImageUpload
                   value={form.cover_url}
                   onChange={(url) => setForm((prev) => ({ ...prev, cover_url: url }))}
@@ -226,11 +226,11 @@ export default function AdminNewsFormPage() {
 
             {/* CONTEÚDO EDITORIAL — protagonista */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_24px_rgba(0,0,0,0.07)] overflow-hidden">
-              <div className="px-6 py-3.5 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+              <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between sm:px-6 sm:py-3.5">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-gray-400">{t.admin.contentLabel}</span>
                 <span className="text-[10px] text-gray-300 font-medium">Rich Text</span>
               </div>
-              <div className="p-4">
+              <div className="p-2 sm:p-4">
                 <RichTextEditor
                   value={form.content}
                   onChange={(html) => setForm((prev) => ({ ...prev, content: html }))}
@@ -240,7 +240,7 @@ export default function AdminNewsFormPage() {
             </div>
 
             {/* AÇÕES + STATUS — ao final do fluxo editorial */}
-            <div className="pt-2 pb-8 space-y-3">
+            <div className="pt-2 pb-8 space-y-3 px-1 sm:px-0">
               {/* Status — acima das ações */}
               <div className="flex items-center gap-2">
                 <span className="text-xs font-medium text-gray-400">{t.admin.statusLabel}:</span>
@@ -257,18 +257,18 @@ export default function AdminNewsFormPage() {
                 </select>
               </div>
               {/* Botões */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-[#1F2937] hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all"
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-[#1F2937] hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all w-full sm:w-auto"
                 >
                   {t.admin.cancel}
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-8 py-3 rounded-xl text-sm font-semibold bg-[#0057A8] text-white hover:bg-[#004a8f] shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+                  className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-[#0057A8] text-white hover:bg-[#004a8f] shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed transition-all w-full sm:w-auto"
                 >
                   {saving ? t.admin.saving : isEditing ? t.admin.saveChanges : t.admin.publish}
                 </button>
