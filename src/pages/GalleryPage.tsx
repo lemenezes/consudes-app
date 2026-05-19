@@ -48,15 +48,20 @@ function AlbumCover({ album, className = '', t }: { album: GalleryAlbum; classNa
   }
 
   return (
-    <img
-      src={src}
-      alt={album.title}
-      className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
-      style={{ objectPosition: album.coverPosition ?? 'center' }}
-      loading="lazy"
-      onLoad={() => setLoaded(true)}
-      onError={() => setFailed(true)}
-    />
+    <>
+      {!loaded && (
+        <div className="absolute inset-0 img-shimmer" aria-hidden="true" />
+      )}
+      <img
+        src={src}
+        alt={album.title}
+        className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+        style={{ objectPosition: album.coverPosition ?? 'center' }}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
+      />
+    </>
   );
 }
 

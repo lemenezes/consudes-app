@@ -21,14 +21,19 @@ function AlbumHero({ album, t }: { album: GalleryAlbum; t: ReturnType<typeof use
   return (
     <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden rounded-2xl bg-consudes-navy">
       {src && !failed ? (
-        <img
-          src={src}
-          alt={album.title}
-          className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          style={{ objectPosition: album.coverPosition ?? 'center' }}
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
-        />
+        <>
+          {!loaded && (
+            <div className="absolute inset-0 img-shimmer" aria-hidden="true" />
+          )}
+          <img
+            src={src}
+            alt={album.title}
+            className={`w-full h-full object-cover transition-opacity duration-700 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            style={{ objectPosition: album.coverPosition ?? 'center' }}
+            onLoad={() => setLoaded(true)}
+            onError={() => setFailed(true)}
+          />
+        </>
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-consudes-blue/30 to-consudes-navy/60" />
       )}
@@ -79,14 +84,19 @@ function PhotoThumb({
       aria-label={`${t.galleryPage.openPhoto} ${index + 1}`}
     >
       {!failed ? (
-        <img
-          src={src}
-          alt={filename}
-          loading="lazy"
-          className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
-        />
+        <>
+          {!loaded && (
+            <div className="absolute inset-0 img-shimmer" aria-hidden="true" />
+          )}
+          <img
+            src={src}
+            alt={filename}
+            loading="lazy"
+            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={() => setLoaded(true)}
+            onError={() => setFailed(true)}
+          />
+        </>
       ) : (
         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-consudes-blue/10 to-consudes-navy/20">
           <svg className="w-6 h-6 text-white/20" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
