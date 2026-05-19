@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
@@ -25,6 +26,23 @@ function categoryLabel(cat: GalleryCategory, t: ReturnType<typeof useLanguage>['
     'historico':            t.galleryPage.catHistorico,
   };
   return map[cat];
+}
+
+// ── Filter pill ─────────────────────────────────────────────────────────
+
+function FilterPill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide border transition-all whitespace-nowrap ${
+        active
+          ? 'bg-consudes-blue text-white border-consudes-blue shadow-sm'
+          : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:border-consudes-blue/40 hover:text-consudes-blue dark:hover:text-blue-300'
+      }`}
+    >
+      {children}
+    </button>
+  );
 }
 
 // ── Album cover ───────────────────────────────────────────────────────────
@@ -82,7 +100,7 @@ function AlbumCard({ album, featured = false, t, lang }: {
   return (
     <Link
       to={`/galeria/${album.slug}`}
-      className={`group relative rounded-2xl overflow-hidden block bg-gray-100 dark:bg-white/5 shadow-card hover:shadow-raise transition-shadow duration-300 ${
+      className={`group relative rounded-2xl overflow-hidden block bg-gray-100 dark:bg-white/5 shadow-card hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ${
         featured ? 'col-span-full lg:col-span-2 row-span-2' : ''
       }`}
     >
@@ -94,7 +112,7 @@ function AlbumCard({ album, featured = false, t, lang }: {
           t={t}
         />
         {/* Gradient overlay always */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
         {/* Badges top-left */}
         <div className="absolute top-3 left-3 flex gap-1.5">
@@ -117,11 +135,11 @@ function AlbumCard({ album, featured = false, t, lang }: {
 
         {/* Title overlay at bottom */}
         <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className={`font-bold text-white leading-tight ${featured ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base'}`}>
+          <h3 className={`text-white leading-tight tracking-tight font-['Cormorant_Garamond'] ${featured ? 'text-xl sm:text-3xl font-bold' : 'text-base sm:text-xl font-semibold'}`}>
             {album.title}
           </h3>
           {(album.year || album.city || album.country) && (
-            <p className="text-white/70 text-xs mt-0.5 flex items-center gap-1">
+            <p className="text-white/70 text-sm mt-1 flex items-center gap-1">
               {album.year && <span>{album.year}</span>}
               {(album.year && (album.city || album.country)) && <span>·</span>}
               {album.city ? `${album.city}, ${album.country}` : album.country}
@@ -141,14 +159,21 @@ function AlbumCard({ album, featured = false, t, lang }: {
 export default function GalleryPage() {
   const { t, lang } = useLanguage();
   const [activeCategory, setActiveCategory] = useState<GalleryCategory | null>(null);
+  const [activeYear, setActiveYear] = useState<number | null>(null);
+  const [activeCountry, setActiveCountry] = useState<string | null>(null);
 
   useSEO({ title: t.nav.gallery, description: t.galleryPage.subtitle, url: '/galeria' });
 
-  const featured = galleryAlbums.find((a) => a.featured);
-  const filtered = activeCategory
-    ? galleryAlbums.filter((a) => a.category === activeCategory)
-    : galleryAlbums;
-  const gridAlbums = filtered.filter((a) => !a.featured || activeCategory !== null);
+  const availableYears = [...new Set(galleryAlbums.map((a) => a.year).filter(Boolean))].sort() as number[];
+  const availableCountries = [...new Set(galleryAlbums.map((a) => a.country).filter(Boolean))].sort() as string[];
+
+  const isFiltered = activeCategory !== null || activeYear !== null || activeCountry !== null;
+  const gridAlbums = galleryAlbums.filter((a) => {
+    if (activeCategory && a.category !== activeCategory) return false;
+    if (activeYear && a.year !== activeYear) return false;
+    if (activeCountry && a.country !== activeCountry) return false;
+    return true;
+  });
 
   return (
     <PageShell
@@ -156,46 +181,87 @@ export default function GalleryPage() {
       subtitle={t.galleryPage.subtitle}
       breadcrumbs={[{ label: t.nav.gallery }]}
     >
-      <section className="bg-white dark:bg-consudes-dark-body py-12 sm:py-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-white dark:bg-consudes-dark-body pt-8 sm:pt-12">
 
-          {/* ── Category filter ── */}
-          <div className="flex flex-wrap gap-2 mb-10">
-            <button
-              onClick={() => setActiveCategory(null)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                activeCategory === null
-                  ? 'bg-consudes-blue text-white'
-                  : 'bg-gray-100 dark:bg-white/10 text-consudes-blue-text dark:text-white/70 hover:bg-gray-200 dark:hover:bg-white/15'
-              }`}
-            >
-              {t.galleryPage.allAlbums}
-            </button>
-            {GALLERY_CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  activeCategory === cat
-                    ? 'bg-consudes-blue text-white'
-                    : 'bg-gray-100 dark:bg-white/10 text-consudes-blue-text dark:text-white/70 hover:bg-gray-200 dark:hover:bg-white/15'
-                }`}
-              >
-                {categoryLabel(cat, t)}
-              </button>
-            ))}
-          </div>
+        {/* ── Filtros ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-2xl mb-6 shadow-sm">
+            <div className="flex flex-col gap-2.5 px-4 py-3">
 
-          {/* ── Featured album (only when no filter active) ── */}
-          {!activeCategory && featured && (
-            <div className="mb-6">
-              <AlbumCard album={featured} featured t={t} lang={lang} />
+              {/* Categoria */}
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+                  {t.galleryPage.filterCategory}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  <FilterPill active={activeCategory === null} onClick={() => setActiveCategory(null)}>
+                    {t.galleryPage.allAlbums}
+                  </FilterPill>
+                  {GALLERY_CATEGORIES.map((cat) => (
+                    <FilterPill key={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)}>
+                      {categoryLabel(cat, t)}
+                    </FilterPill>
+                  ))}
+                </div>
+              </div>
+
+              {/* Ano */}
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+                  {t.galleryPage.filterYear}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  <FilterPill active={activeYear === null} onClick={() => setActiveYear(null)}>
+                    {t.galleryPage.allYears}
+                  </FilterPill>
+                  {availableYears.map((year) => (
+                    <FilterPill key={year} active={activeYear === year} onClick={() => setActiveYear(year)}>
+                      {year}
+                    </FilterPill>
+                  ))}
+                </div>
+              </div>
+
+              {/* País + count/limpar inline */}
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+                  {t.galleryPage.filterCountry}
+                </span>
+                <div className="flex flex-wrap gap-1.5 flex-1">
+                  <FilterPill active={activeCountry === null} onClick={() => setActiveCountry(null)}>
+                    {t.galleryPage.allCountries}
+                  </FilterPill>
+                  {availableCountries.map((country) => (
+                    <FilterPill key={country} active={activeCountry === country} onClick={() => setActiveCountry(country)}>
+                      {country}
+                    </FilterPill>
+                  ))}
+                </div>
+                {isFiltered && (
+                  <div className="shrink-0 flex items-center gap-2">
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                      {gridAlbums.length} {gridAlbums.length === 1 ? t.galleryPage.albumSingular : t.galleryPage.albumPlural}
+                    </span>
+                    <span className="text-slate-300 dark:text-white/15" aria-hidden="true">•</span>
+                    <button
+                      onClick={() => { setActiveCategory(null); setActiveYear(null); setActiveCountry(null); }}
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#003B73] dark:text-blue-400 hover:underline transition-all whitespace-nowrap"
+                    >
+                      <X className="w-3 h-3" aria-hidden="true" />
+                      {t.galleryPage.clearFilters}
+                    </button>
+                  </div>
+                )}
+              </div>
+
             </div>
-          )}
+          </div>
+        </div>
 
-          {/* ── Albums grid ── */}
+        {/* ── Grid de álbuns ── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {gridAlbums.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {gridAlbums.map((album) => (
                 <AlbumCard key={album.slug} album={album} t={t} lang={lang} />
               ))}
@@ -207,8 +273,8 @@ export default function GalleryPage() {
               </p>
             </div>
           )}
-
         </div>
+
       </section>
     </PageShell>
   );
