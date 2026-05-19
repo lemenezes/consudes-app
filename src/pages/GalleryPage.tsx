@@ -186,11 +186,11 @@ export default function GalleryPage() {
         {/* ── Filtros ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-2xl mb-6 shadow-sm">
-            <div className="flex flex-col gap-2.5 px-4 py-3">
+            <div className="flex flex-col gap-3 px-4 py-3">
 
               {/* Categoria */}
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
                   {t.galleryPage.filterCategory}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -206,8 +206,8 @@ export default function GalleryPage() {
               </div>
 
               {/* Ano */}
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
                   {t.galleryPage.filterYear}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -222,12 +222,12 @@ export default function GalleryPage() {
                 </div>
               </div>
 
-              {/* País + count/limpar inline */}
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 shrink-0 w-[5.5rem]">
+              {/* País */}
+              <div className="flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3">
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 dark:text-slate-500 md:shrink-0 md:w-[5.5rem]">
                   {t.galleryPage.filterCountry}
                 </span>
-                <div className="flex flex-wrap gap-1.5 flex-1">
+                <div className="flex flex-wrap gap-1.5 md:flex-1">
                   <FilterPill active={activeCountry === null} onClick={() => setActiveCountry(null)}>
                     {t.galleryPage.allCountries}
                   </FilterPill>
@@ -237,8 +237,9 @@ export default function GalleryPage() {
                     </FilterPill>
                   ))}
                 </div>
+                {/* Count + Limpar: inline à direita do País — apenas desktop */}
                 {isFiltered && (
-                  <div className="shrink-0 flex items-center gap-2">
+                  <div className="hidden md:flex shrink-0 items-center gap-2">
                     <span className="text-[11px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
                       {gridAlbums.length} {gridAlbums.length === 1 ? t.galleryPage.albumSingular : t.galleryPage.albumPlural}
                     </span>
@@ -254,12 +255,28 @@ export default function GalleryPage() {
                 )}
               </div>
 
+              {/* Count + Limpar: bloco separado — apenas mobile */}
+              {isFiltered && (
+                <div className="md:hidden flex items-center justify-between border-t border-slate-100 dark:border-white/5 pt-2.5">
+                  <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                    {gridAlbums.length} {gridAlbums.length === 1 ? t.galleryPage.albumSingular : t.galleryPage.albumPlural}
+                  </span>
+                  <button
+                    onClick={() => { setActiveCategory(null); setActiveYear(null); setActiveCountry(null); }}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#003B73] dark:text-blue-400 hover:underline transition-all"
+                  >
+                    <X className="w-3 h-3" aria-hidden="true" />
+                    {t.galleryPage.clearFilters}
+                  </button>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
 
         {/* ── Grid de álbuns ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-12">
           {gridAlbums.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {gridAlbums.map((album) => (

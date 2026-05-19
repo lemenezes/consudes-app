@@ -58,7 +58,7 @@ export default function PageShell({
           aria-hidden="true"
         />
 
-        <div className={`relative max-w-5xl mx-auto px-6 sm:px-8 py-12 sm:py-16 lg:py-20${centered ? ' text-center' : ''}`}>
+        <div className={`relative max-w-5xl mx-auto px-6 sm:px-8 py-8 sm:py-16 lg:py-20${centered ? ' text-center' : ''}`}>
 
           {/* Breadcrumb */}
           {breadcrumbs && breadcrumbs.length > 0 && (
