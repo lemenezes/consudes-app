@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Lightbox from 'yet-another-react-lightbox';
-import Captions from 'yet-another-react-lightbox/plugins/captions';
+import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+import Counter from 'yet-another-react-lightbox/plugins/counter';
+import Fullscreen from 'yet-another-react-lightbox/plugins/fullscreen';
 import 'yet-another-react-lightbox/styles.css';
-import 'yet-another-react-lightbox/plugins/captions.css';
+import 'yet-another-react-lightbox/plugins/counter.css';
 import { useLanguage } from '../context/LanguageContext';
 import PageShell from '../components/PageShell';
 import { useSEO } from '../hooks/useSEO';
-import { galleryAlbums, getPhotoUrl, type GalleryAlbum } from '../data/galleryData';
+import { galleryAlbums, getPhotoUrl, getDescription, type GalleryAlbum } from '../data/galleryData';
 
 // ── helpers ───────────────────────────────────────────────────────────────
 
-function AlbumHero({ album }: { album: GalleryAlbum }) {
+function AlbumHero({ album, t }: { album: GalleryAlbum; t: ReturnType<typeof useLanguage>['t'] }) {
   const [failed, setFailed] = useState(false);
   const src = album.coverFile ? getPhotoUrl(album.slug, album.coverFile) : '';
 
@@ -32,7 +34,7 @@ function AlbumHero({ album }: { album: GalleryAlbum }) {
 
       {/* Text on image */}
       <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-        <p className="text-white/60 text-xs uppercase tracking-widest mb-1">CONSUDES · Galeria</p>
+        <p className="text-white/60 text-xs uppercase tracking-widest mb-1">CONSUDES · {t.nav.gallery}</p>
         <h1 className="text-2xl sm:text-4xl font-bold text-white leading-tight">{album.title}</h1>
         <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-white/70">
           {album.year && <span>{album.year}</span>}
@@ -43,7 +45,7 @@ function AlbumHero({ album }: { album: GalleryAlbum }) {
             <span>{album.country}</span>
           ) : null}
           <span aria-hidden="true">·</span>
-          <span>{album.photoCount} fotos</span>
+          <span>{album.photoCount} {t.galleryPage.photos}</span>
         </div>
       </div>
     </div>
@@ -55,11 +57,13 @@ function PhotoThumb({
   filename,
   index,
   onOpen,
+  t,
 }: {
   album: GalleryAlbum;
   filename: string;
   index: number;
   onOpen: (i: number) => void;
+  t: ReturnType<typeof useLanguage>['t'];
 }) {
   const [failed, setFailed] = useState(false);
   const src = getPhotoUrl(album.slug, filename);
@@ -68,7 +72,7 @@ function PhotoThumb({
     <button
       onClick={() => onOpen(index)}
       className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100 dark:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-consudes-blue-mid"
-      aria-label={`Abrir foto ${index + 1}`}
+      aria-label={`${t.galleryPage.openPhoto} ${index + 1}`}
     >
       {!failed ? (
         <img
@@ -99,7 +103,7 @@ function PhotoThumb({
 
 export default function GalleryAlbumPage() {
   const { '*': rawSlug } = useParams();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -107,7 +111,7 @@ export default function GalleryAlbumPage() {
 
   useSEO({
     title: album ? `${album.title} · ${t.nav.gallery}` : t.galleryPage.albumNotFound,
-    description: album?.description ?? '',
+    description: album ? getDescription(album, lang) : '',
     url: `/galeria/${rawSlug}`,
   });
 
@@ -140,7 +144,6 @@ export default function GalleryAlbumPage() {
 
   const slides = album.photos.map((p) => ({
     src: getPhotoUrl(album.slug, p.filename),
-    description: p.caption,
   }));
 
   const handleOpen = (index: number) => {
@@ -161,13 +164,13 @@ export default function GalleryAlbumPage() {
 
           {/* ── Hero ── */}
           <div className="pt-8">
-            <AlbumHero album={album} />
+            <AlbumHero album={album} t={t} />
           </div>
 
           {/* ── Description ── */}
-          {album.description && (
+          {getDescription(album, lang) && (
             <p className="mt-6 text-consudes-body dark:text-white/70 text-base max-w-2xl">
-              {album.description}
+              {getDescription(album, lang)}
             </p>
           )}
 
@@ -194,6 +197,7 @@ export default function GalleryAlbumPage() {
                   filename={photo.filename}
                   index={i}
                   onOpen={handleOpen}
+                  t={t}
                 />
               ))}
             </div>
@@ -227,7 +231,28 @@ export default function GalleryAlbumPage() {
         close={() => setLightboxOpen(false)}
         index={photoIndex}
         slides={slides}
-        plugins={[Captions]}
+        plugins={[Zoom, Counter, Fullscreen]}
+        zoom={{
+          maxZoomPixelRatio: 4,
+          zoomInMultiplier: 2,
+          doubleTapDelay: 300,
+          doubleClickDelay: 300,
+          doubleClickMaxStops: 2,
+          wheelZoomDistanceFactor: 100,
+          pinchZoomDistanceFactor: 100,
+          scrollToZoom: true,
+        }}
+        carousel={{ preload: 2 }}
+        animation={{ fade: 200, swipe: 250 }}
+        controller={{ closeOnBackdropClick: true }}
+        styles={{
+          container: {
+            backgroundColor: 'rgba(0, 0, 0, 0.97)',
+          },
+          slide: {
+            padding: '0 56px',
+          },
+        }}
       />
     </PageShell>
   );

@@ -4,6 +4,8 @@
 // Estrutura R2: gallery/{albumSlug}/cover.webp | 01.webp | 02.webp …
 // Configurar VITE_MEDIA_BASE_URL em .env.production
 
+import type { Lang } from '../i18n/translations';
+
 export const MEDIA_BASE =
   (import.meta.env as Record<string, string>).VITE_MEDIA_BASE_URL ?? '';
 
@@ -46,13 +48,17 @@ export interface GalleryAlbum {
   year: number | null;
   city: string | null;
   country: string | null;
-  description: string;    // institucional (ES)
+  description: Record<Lang, string>;
   category: GalleryCategory;
   tier: GalleryTier;
   coverFile: string | null;
   photoCount: number;     // total incluindo curadoria futura
   photos: GalleryPhoto[]; // fotos já curadas (subset do photoCount)
   featured?: boolean;     // destaque principal da página
+}
+
+export function getDescription(album: GalleryAlbum, lang: Lang): string {
+  return album.description[lang];
 }
 
 // ─── Álbuns ───────────────────────────────────────────────────────────────
@@ -67,8 +73,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2019,
     city: null,
     country: 'Ecuador',
-    description:
-      'Segunda edición de los Juegos Sudamericanos de Sordos. Participaron delegaciones de toda Sudamérica en el mayor evento del deporte sordo continental.',
+    description: {
+      es: 'Segunda edición de los Juegos Sudamericanos de Sordos. Participaron delegaciones de toda Sudamérica en el mayor evento del deporte sordo continental.',
+      pt: 'Segunda edição dos Jogos Sul-Americanos de Surdos. Participaram delegações de toda a América do Sul no maior evento do esporte surdo continental.',
+      en: 'Second edition of the South American Deaf Games. Delegations from across South America participated in the largest continental deaf sports event.',
+    },
     category: 'juegos-sudamericanos',
     tier: 'T1',
     featured: true,
@@ -90,8 +99,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2016,
     city: null,
     country: null,
-    description:
-      'Juegos Panamericanos de Sordos 2016. El álbum con el mejor registro fotográfico del acervo CONSUDES.',
+    description: {
+      es: 'Juegos Panamericanos de Sordos 2016. El álbum con el mejor registro fotográfico del acervo CONSUDES.',
+      pt: 'Jogos Pan-Americanos de Surdos 2016. O álbum com o melhor registro fotográfico do acervo CONSUDES.',
+      en: '2016 Pan American Deaf Games. The album with the finest photographic record in the CONSUDES collection.',
+    },
     category: 'panamdes',
     tier: 'T1',
     coverFile: 'cover.webp',
@@ -113,8 +125,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Registro fotográfico profesional de un campeonato de ajedrez sordo. Las fotos de mayor resolución de todo el acervo histórico.',
+    description: {
+      es: 'Registro fotográfico profesional de un campeonato de ajedrez sordo. Las fotos de mayor resolución de todo el acervo histórico.',
+      pt: 'Registro fotográfico profissional de um campeonato de xadrez surdo. As fotos de maior resolução de todo o acervo histórico.',
+      en: 'Professional photographic record of a deaf chess championship. The highest-resolution photos in the entire historical archive.',
+    },
     category: 'historico',
     tier: 'T1',
     coverFile: 'cover.webp',
@@ -140,8 +155,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2015,
     city: 'Goiânia',
     country: 'Brasil',
-    description:
-      'Primera edición de los Juegos Sudamericanos de Sordos, realizada en Goiânia, Brasil. Un hito fundacional para el deporte sordo sudamericano.',
+    description: {
+      es: 'Primera edición de los Juegos Sudamericanos de Sordos, realizada en Goiânia, Brasil. Un hito fundacional para el deporte sordo sudamericano.',
+      pt: 'Primeira edição dos Jogos Sul-Americanos de Surdos, realizada em Goiânia, Brasil. Um marco fundacional para o esporte surdo sul-americano.',
+      en: 'First edition of the South American Deaf Games, held in Goiânia, Brazil. A founding milestone for South American deaf sport.',
+    },
     category: 'juegos-sudamericanos',
     tier: 'T1',
     coverFile: 'cover.webp',
@@ -168,8 +186,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2018,
     city: null,
     country: null,
-    description:
-      'Edición 2018 de los Interclubes CONSUDES. El registro fotográfico más completo de la historia de los interclubes.',
+    description: {
+      es: 'Edición 2018 de los Interclubes CONSUDES. El registro fotográfico más completo de la historia de los interclubes.',
+      pt: 'Edição 2018 dos Interclubes CONSUDES. O registro fotográfico mais completo da história dos interclubes.',
+      en: '2018 edition of the CONSUDES Interclubs. The most complete photographic record in the history of the interclubs.',
+    },
     category: 'interclubes',
     tier: 'T1',
     coverFile: 'cover.webp',
@@ -206,8 +227,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: 'Chile',
-    description:
-      'Interclubes realizados en Chile. El álbum más extenso de la serie, con fotos de equipos, árbitros, pódios masculino y femenino.',
+    description: {
+      es: 'Interclubes realizados en Chile. El álbum más extenso de la serie, con fotos de equipos, árbitros, pódios masculino y femenino.',
+      pt: 'Interclubes realizados no Chile. O álbum mais extenso da série, com fotos de equipes, árbitros e pódios masculino e feminino.',
+      en: 'Interclubs held in Chile. The most extensive album in the series, featuring team photos, referees, and men\'s and women\'s podiums.',
+    },
     category: 'interclubes',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -249,8 +273,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2016,
     city: null,
     country: 'Ecuador',
-    description:
-      'Primera edición de los Interclubes en Ecuador. Fotos de alta resolución del evento y afiche oficial.',
+    description: {
+      es: 'Primera edición de los Interclubes en Ecuador. Fotos de alta resolución del evento y afiche oficial.',
+      pt: 'Primeira edição dos Interclubes no Equador. Fotos em alta resolução do evento e cartaz oficial.',
+      en: 'First edition of the Interclubs in Ecuador. High-resolution photos of the event and official poster.',
+    },
     category: 'interclubes',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -271,8 +298,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Reunión de los miembros y directivos de la CONSUDES.',
+    description: {
+      es: 'Reunión de los miembros y directivos de la CONSUDES.',
+      pt: 'Reunião dos membros e diretores da CONSUDES.',
+      en: 'Meeting of CONSUDES members and board of directors.',
+    },
     category: 'assembleias',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -299,8 +329,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2016,
     city: 'Quito',
     country: 'Ecuador',
-    description:
-      'Capacitación en Deporte Sordolímpico conducida por Gustavo Perazzolo en Quito, Ecuador.',
+    description: {
+      es: 'Capacitación en Deporte Sordolímpico conducida por Gustavo Perazzolo en Quito, Ecuador.',
+      pt: 'Capacitação em Esporte Surdolímpico conduzida por Gustavo Perazzolo em Quito, Equador.',
+      en: 'Deaflympic Sport training conducted by Gustavo Perazzolo in Quito, Ecuador.',
+    },
     category: 'capacitacao',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -324,8 +357,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Primera edición del Campeonato de Futsal Femenino organizado por CONSUDES. Un hito histórico para el deporte femenino sordo.',
+    description: {
+      es: 'Primera edición del Campeonato de Futsal Femenino organizado por CONSUDES. Un hito histórico para el deporte femenino sordo.',
+      pt: 'Primeira edição do Campeonato de Futsal Feminino organizado pela CONSUDES. Um marco histórico para o esporte feminino surdo.',
+      en: "First edition of the Women's Futsal Championship organized by CONSUDES. A historic milestone for women's deaf sport.",
+    },
     category: 'futsal-feminino',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -347,8 +383,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2017,
     city: null,
     country: null,
-    description:
-      'Edición 2017 de los Interclubes CONSUDES con equipos masculinos y femeninos.',
+    description: {
+      es: 'Edición 2017 de los Interclubes CONSUDES con equipos masculinos y femeninos.',
+      pt: 'Edição 2017 dos Interclubes CONSUDES com equipes masculinas e femininas.',
+      en: '2017 edition of the CONSUDES Interclubs featuring men\'s and women\'s teams.',
+    },
     category: 'interclubes',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -374,8 +413,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2017,
     city: null,
     country: 'Ecuador',
-    description:
-      'Tercera edición de los Interclubes en Ecuador. Fotos de cámara digital del evento.',
+    description: {
+      es: 'Tercera edición de los Interclubes en Ecuador. Fotos de cámara digital del evento.',
+      pt: 'Terceira edição dos Interclubes no Equador. Fotos de câmera digital do evento.',
+      en: 'Third edition of the Interclubs in Ecuador. Digital camera photos from the event.',
+    },
     category: 'interclubes',
     tier: 'T2',
     coverFile: 'cover.webp',
@@ -401,8 +443,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2005,
     city: 'Asunción',
     country: 'Paraguay',
-    description:
-      'Primera edición documentada de los Interclubes CONSUDES, realizada en Asunción, Paraguay. Incluye cobertura de la prensa local.',
+    description: {
+      es: 'Primera edición documentada de los Interclubes CONSUDES, realizada en Asunción, Paraguay. Incluye cobertura de la prensa local.',
+      pt: 'Primeira edição documentada dos Interclubes CONSUDES, realizada em Assunção, Paraguai. Inclui cobertura da imprensa local.',
+      en: 'First documented edition of the CONSUDES Interclubs, held in Asunción, Paraguay. Includes local press coverage.',
+    },
     category: 'interclubes',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -430,8 +475,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2012,
     city: null,
     country: null,
-    description:
-      'Edición 2012 de los Interclubes CONSUDES. Registro fotográfico de los equipos participantes.',
+    description: {
+      es: 'Edición 2012 de los Interclubes CONSUDES. Registro fotográfico de los equipos participantes.',
+      pt: 'Edição 2012 dos Interclubes CONSUDES. Registro fotográfico das equipes participantes.',
+      en: '2012 edition of the CONSUDES Interclubs. Photographic record of the participating teams.',
+    },
     category: 'interclubes',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -451,8 +499,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2017,
     city: null,
     country: 'Brasil',
-    description:
-      'XLVIII Asamblea Ordinaria de la CONSUDES, realizada en Brasil.',
+    description: {
+      es: 'XLVIII Asamblea Ordinaria de la CONSUDES, realizada en Brasil.',
+      pt: 'XLVIII Assembleia Ordinária da CONSUDES, realizada no Brasil.',
+      en: 'XLVIII Ordinary General Assembly of CONSUDES, held in Brazil.',
+    },
     category: 'assembleias',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -469,8 +520,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Fotografías históricas de la CONSUDES: directivos, delegaciones y eventos (2000–2013).',
+    description: {
+      es: 'Fotografías históricas de la CONSUDES: directivos, delegaciones y eventos (2000–2013).',
+      pt: 'Fotografias históricas da CONSUDES: diretores, delegações e eventos (2000–2013).',
+      en: 'Historical photographs of CONSUDES: board members, delegations, and events (2000–2013).',
+    },
     category: 'historico',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -493,8 +547,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Afiches oficiales de eventos históricos de la CONSUDES.',
+    description: {
+      es: 'Afiches oficiales de eventos históricos de la CONSUDES.',
+      pt: 'Cartazes oficiais de eventos históricos da CONSUDES.',
+      en: 'Official posters from historic CONSUDES events.',
+    },
     category: 'historico',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -513,8 +570,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Galería fotográfica de los ex presidentes de la CONSUDES.',
+    description: {
+      es: 'Galería fotográfica de los ex presidentes de la CONSUDES.',
+      pt: 'Galeria fotográfica dos ex-presidentes da CONSUDES.',
+      en: 'Photo gallery of former CONSUDES presidents.',
+    },
     category: 'historico',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -536,8 +596,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Catálogo fotográfico de los equipos afiliados participantes en los Interclubes CONSUDES.',
+    description: {
+      es: 'Catálogo fotográfico de los equipos afiliados participantes en los Interclubes CONSUDES.',
+      pt: 'Catálogo fotográfico das equipes filiadas participantes nos Interclubes CONSUDES.',
+      en: 'Photographic catalogue of affiliated teams participating in the CONSUDES Interclubs.',
+    },
     category: 'interclubes',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -563,8 +626,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: null,
     city: null,
     country: null,
-    description:
-      'Retratos de los miembros de la directiva de la CONSUDES.',
+    description: {
+      es: 'Retratos de los miembros de la directiva de la CONSUDES.',
+      pt: 'Retratos dos membros da diretoria da CONSUDES.',
+      en: 'Portraits of the CONSUDES board of directors members.',
+    },
     category: 'historico',
     tier: 'T3',
     coverFile: 'cover.webp',
@@ -584,8 +650,11 @@ export const galleryAlbums: GalleryAlbum[] = [
     year: 2019,
     city: null,
     country: 'Ecuador',
-    description:
-      'Interclubes en Ecuador, 2019.',
+    description: {
+      es: 'Interclubes en Ecuador, 2019.',
+      pt: 'Interclubes no Equador, 2019.',
+      en: 'Interclubs in Ecuador, 2019.',
+    },
     category: 'interclubes',
     tier: 'T3',
     coverFile: 'cover.webp',
