@@ -4,8 +4,6 @@ import {
   HelpCircle,
   ExternalLink,
   CalendarDays,
-  Trophy,
-  Users,
   Filter,
   Search,
   X,
@@ -17,155 +15,26 @@ import PageShell from '../components/PageShell';
 import EmptyState from '../components/EmptyState';
 import { listPublishedCalendarEvents } from '../services/calendarService';
 import { calendarEvents as mockEvents } from '../data/calendarData';
-import type { CalendarEventRow, CalendarEventType, CalendarEventStatus, CalendarEventCategory } from '../lib/database.types';
+import { mockToRow } from '../utils/calendarMockAdapter';
+import {
+  getDateBlock,
+  formatDateRange,
+  getGroupKey,
+  getGroupLabel
+} from '../utils/calendarDateUtils';
+import type { CalendarEventRow, CalendarEventStatus, CalendarEventCategory } from '../lib/database.types';
+import {
+  typeBorderColor,
+  typeIcon,
+  categoryBadgeStyle,
+  statusBadgeStyle
+} from '../constants/calendarStyles';
 
-/* ── Conversão: dado mock → CalendarEventRow ─────────────────────── */
-function mockToRow(m: (typeof mockEvents)[number]): CalendarEventRow {
-  const statusMap: Record<string, CalendarEventStatus> = {
-    upcoming: 'upcoming',
-    registrationsOpen: 'registrations_open',
-    confirmed: 'confirmed',
-    finished: 'finished',
-  };
-  const catMap: Record<string, CalendarEventCategory> = {
-    Interclubes: 'interclubes',
-    'Sub-21': 'sub21',
-    Adulto: 'adulto',
-    Institucional: 'institucional',
-  };
-  return {
-    id: m.id,
-    title: m.title,
-    slug: m.id,
-    description: m.description ?? null,
-    full_description: null,
-    start_date: m.startDate,
-    end_date: m.endDate !== m.startDate ? m.endDate : null,
-    date_precision: m.datePrecision,
-    country: m.country,
-    city: m.city ?? null,
-    venue: null,
-    location_open: m.locationOpen ?? false,
-    sport: m.sport,
-    category: (m.category ? (catMap[m.category] ?? 'outro') : 'outro') as CalendarEventCategory,
-    event_type: m.type as CalendarEventType,
-    event_status: statusMap[m.status] ?? 'upcoming',
-    federation: m.federation ?? null,
-    link: m.link ?? null,
-    cover_url: null,
-    status: 'published',
-    featured: false,
-    sort_order: 0,
-    created_at: '',
-    updated_at: '',
-  };
-}
+// mockToRow foi movido para src/utils/calendarMockAdapter.ts
 
-/* ── Helpers de locale ───────────────────────────────────────────── */
-function getLocale(lang: string) {
-  return lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en-US' : 'es-AR';
-}
+// Helpers de data movidos para src/utils/calendarDateUtils.ts
 
-/* ── Bloco de data lateral ───────────────────────────────────────── */
-function getDateBlock(
-  startDate: string,
-  endDate: string | null,
-  precision: string,
-  lang: string,
-) {
-  const locale = getLocale(lang);
-  const s = new Date(startDate + 'T12:00:00');
-  const e = endDate ? new Date(endDate + 'T12:00:00') : null;
-
-  if (precision === 'full' && e) {
-    const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
-    const dayPrimary = sameMonth ? `${s.getDate()}\u2013${e.getDate()}` : String(s.getDate());
-    return {
-      primary: dayPrimary,
-      secondary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
-    };
-  }
-  if (precision === 'full') {
-    return {
-      primary: String(s.getDate()),
-      secondary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
-    };
-  }
-  if (precision === 'month') {
-    return {
-      primary: s.toLocaleDateString(locale, { month: 'short' }).toUpperCase().replace('.', ''),
-      secondary: String(s.getFullYear()),
-    };
-  }
-  return { primary: String(s.getFullYear()), secondary: null };
-}
-
-function formatDateRange(
-  startDate: string,
-  endDate: string | null,
-  precision: string,
-  lang: string,
-): string {
-  const locale = getLocale(lang);
-  const s = new Date(startDate + 'T12:00:00');
-  const e = endDate ? new Date(endDate + 'T12:00:00') : null;
-
-  if (precision === 'year') return String(s.getFullYear());
-  if (precision === 'month') return s.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
-  if (!e || startDate === endDate)
-    return s.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' });
-
-  const sameMonth = s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear();
-  return sameMonth
-    ? `${s.getDate()}\u2013${e.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })}`
-    : `${s.toLocaleDateString(locale, { day: 'numeric', month: 'short' })} \u2013 ${e.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}`;
-}
-
-/* ── Agrupamento por período ─────────────────────────────────────── */
-function getGroupKey(ev: CalendarEventRow) {
-  const d = new Date(ev.start_date + 'T12:00:00');
-  if (ev.date_precision === 'year') return `year:${d.getFullYear()}`;
-  return `month:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-}
-
-function getGroupLabel(key: string, lang: string): string {
-  const locale = getLocale(lang);
-  if (key.startsWith('year:')) return key.replace('year:', '');
-  const [year, month] = key.replace('month:', '').split('-');
-  return new Date(Number(year), Number(month) - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
-}
-
-/* ── Configurações visuais ───────────────────────────────────────── */
-const typeBorderColor: Record<CalendarEventType, string> = {
-  championship:  'border-l-[#003B73]',
-  interclubs:    'border-l-[#D9A441]',
-  congress:      'border-l-indigo-600',
-  assembly:      'border-l-cyan-600',
-  institutional: 'border-l-emerald-600',
-};
-
-const typeIcon: Record<CalendarEventType, React.ReactNode> = {
-  championship:  <Trophy className="w-3.5 h-3.5" />,
-  interclubs:    <Users  className="w-3.5 h-3.5" />,
-  congress:      <Trophy className="w-3.5 h-3.5" />,
-  assembly:      <Trophy className="w-3.5 h-3.5" />,
-  institutional: <Trophy className="w-3.5 h-3.5" />,
-};
-
-const categoryBadgeStyle: Record<CalendarEventCategory, string> = {
-  interclubes:   'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
-  sub21:         'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
-  adulto:        'bg-blue-50 text-[#003B73] border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800',
-  institucional: 'bg-indigo-50 text-indigo-700 border border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800',
-  outro:         'bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
-};
-
-const statusBadgeStyle: Record<CalendarEventStatus, string> = {
-  upcoming:           'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-  registrations_open: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  confirmed:          'bg-blue-100 text-[#003B73] dark:bg-blue-900/30 dark:text-blue-400',
-  finished:           'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-};
+// Configurações visuais movidas para src/constants/calendarStyles.ts
 
 /* ── Pill de filtro ──────────────────────────────────────────────── */
 function FilterPill({
