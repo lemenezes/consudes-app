@@ -33,6 +33,7 @@ const NewsDetailPage        = lazy(() => import('./pages/NewsDetailPage'))
 const TransparencyPage      = lazy(() => import('./pages/TransparencyPage'))
 const ReportsPage           = lazy(() => import('./pages/ReportsPage'))
 const GalleryPage           = lazy(() => import('./pages/GalleryPage'))
+const GalleryAlbumPage      = lazy(() => import('./pages/GalleryAlbumPage'))
 const ContactPage           = lazy(() => import('./pages/ContactPage'))
 
 const router = createBrowserRouter([
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
       { path: 'transparencia', element: <TransparencyPage /> },
       { path: 'relatorios', element: <ReportsPage /> },
       { path: 'galeria', element: <GalleryPage /> },
+      { path: 'galeria/*', element: <GalleryAlbumPage /> },
       { path: 'contato', element: <ContactPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
