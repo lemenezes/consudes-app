@@ -459,13 +459,12 @@ export default function CalendarPage() {
 
   return (
     <PageShell
-     
       title={t.nav.calendar}
       subtitle={cp.subtitle}
       breadcrumbs={[{ label: t.nav.calendar }]}
     >
-      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-consudes-dark-body dark:bg-none py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-consudes-dark-body dark:bg-none py-10">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[60vh]">
 
           {/* Intro */}
           <div className="mb-10">
