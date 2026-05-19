@@ -35,25 +35,36 @@ export default function HistoryPage() {
                 {h.timelineLabel}
               </span>
             </div>
-            <div className="border-t border-consudes-border/40 dark:border-white/8">
-              {h.timeline.map((item) => (
-                <div
-                  key={item.year}
-                  className="grid sm:grid-cols-[8rem_1fr] gap-3 sm:gap-8 py-5 border-b border-consudes-border/40 dark:border-white/8"
-                >
-                  <div className="pt-0.5 shrink-0">
-                    <span className="text-[11px] font-black text-consudes-gold tracking-wider uppercase">{item.year}</span>
-                  </div>
-                  <div>
+            <div className="relative">
+              {/* Linha vertical guia */}
+              <div
+                className="absolute left-[7px] top-[10px] bottom-0 w-[2px] bg-gradient-to-b from-consudes-gold/60 via-consudes-gold/40 to-transparent"
+                aria-hidden="true"
+              />
+              <ol className="space-y-10" aria-label={h.timelineLabel}>
+                {h.timeline.map((item, index) => (
+                  <li key={item.year} className="relative pl-9 sm:pl-10">
+                    {/* Marcador */}
+                    <div
+                      className={`absolute left-0 top-[3px] w-3.5 h-3.5 rounded-full z-10 ${
+                        index === 0
+                          ? 'bg-consudes-gold ring-[3px] ring-consudes-gold/25'
+                          : 'bg-white dark:bg-consudes-dark-body border-2 border-consudes-gold/70'
+                      }`}
+                      aria-hidden="true"
+                    />
+                    <span className="text-[11px] font-black text-consudes-gold tracking-[0.2em] uppercase block mb-1.5 leading-none">
+                      {item.year}
+                    </span>
                     <h3 className="font-['Cormorant_Garamond'] text-xl sm:text-2xl font-semibold text-consudes-navy dark:text-white mb-1.5 leading-snug">
                       {item.title}
                     </h3>
                     <p className="text-[14px] text-consudes-muted dark:text-white/55 leading-relaxed">
                       {item.text}
                     </p>
-                  </div>
-                </div>
-              ))}
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
 
