@@ -444,6 +444,7 @@ export const translations = {
       catFutsal: 'Futsal Femenino',
       catHistorico: 'Histórico',
       noAlbumsFound: 'Ningún álbum encontrado para los filtros seleccionados.',
+      filters: 'Filtros',
     },
     notFound: {
       title: 'Página no encontrada',
@@ -900,6 +901,7 @@ export const translations = {
       catFutsal: 'Futsal Feminino',
       catHistorico: 'Histórico',
       noAlbumsFound: 'Nenhum álbum encontrado para os filtros selecionados.',
+      filters: 'Filtros',
     },
   },
 
@@ -1351,6 +1353,7 @@ export const translations = {
       catFutsal: "Women's Futsal",
       catHistorico: 'Historical',
       noAlbumsFound: 'No albums found for the selected filters.',
+      filters: 'Filters',
     },
   },
 } satisfies Record<Lang, unknown>;

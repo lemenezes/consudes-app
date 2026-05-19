@@ -13,7 +13,7 @@ interface SegmentedToggleGroupProps<T> {
   ariaLabel?: string;
 }
 
-export function SegmentedToggleGroup<T extends string | number>({
+export function SegmentedToggleGroup<T extends string | number | null>({
   options,
   value,
   onChange,
@@ -26,7 +26,7 @@ export function SegmentedToggleGroup<T extends string | number>({
       role="group"
       aria-label={ariaLabel}
     >
-      {options.map((opt, i) => (
+      {options.map((opt) => (
         <button
           key={String(opt.value)}
           type="button"
