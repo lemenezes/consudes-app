@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   MapPin,
   HelpCircle,
@@ -7,28 +7,32 @@ import {
   Filter,
   Search,
   X,
-  ChevronDown,
-} from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
-import { useSEO } from '../hooks/useSEO';
-import PageShell from '../components/PageShell';
-import EmptyState from '../components/EmptyState';
-import { listPublishedCalendarEvents } from '../services/calendarService';
-import { calendarEvents as mockEvents } from '../data/calendarData';
-import { mockToRow } from '../utils/calendarMockAdapter';
+  ChevronDown
+} from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
+import { useSEO } from "../hooks/useSEO";
+import PageShell from "../components/PageShell";
+import EmptyState from "../components/EmptyState";
+import { listPublishedCalendarEvents } from "../services/calendarService";
+import { calendarEvents as mockEvents } from "../data/calendarData";
+import { mockToRow } from "../utils/calendarMockAdapter";
 import {
   getDateBlock,
   formatDateRange,
   getGroupKey,
   getGroupLabel
-} from '../utils/calendarDateUtils';
-import type { CalendarEventRow, CalendarEventStatus, CalendarEventCategory } from '../lib/database.types';
+} from "../utils/calendarDateUtils";
+import type {
+  CalendarEventRow,
+  CalendarEventStatus,
+  CalendarEventCategory
+} from "../lib/database.types";
 import {
   typeBorderColor,
   typeIcon,
   categoryBadgeStyle,
   statusBadgeStyle
-} from '../constants/calendarStyles';
+} from "../constants/calendarStyles";
 
 // mockToRow foi movido para src/utils/calendarMockAdapter.ts
 
@@ -38,17 +42,22 @@ import {
 
 /* ── Pill de filtro ──────────────────────────────────────────────── */
 function FilterPill({
-  active, onClick, children,
-}: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  active,
+  onClick,
+  children
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
       className={`px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-all whitespace-nowrap ${
         active
-          ? 'bg-[#003B73] text-white border-[#003B73] shadow-sm'
-          : 'bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:border-[#003B73]/40 hover:text-[#003B73] dark:hover:text-blue-300'
-      }`}
-    >
+          ? "bg-[#003B73] text-white border-[#003B73] shadow-sm"
+          : "bg-white dark:bg-white/5 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-white/10 hover:border-[#003B73]/40 hover:text-[#003B73] dark:hover:text-blue-300"
+      }`}>
       {children}
     </button>
   );
@@ -60,9 +69,19 @@ function EventCard({ event }: { event: CalendarEventRow }) {
   const cp = t.calendarPage;
   const ac = t.admin.calendar;
 
-  const dateBlock   = getDateBlock(event.start_date, event.end_date, event.date_precision, lang);
-  const dateRange   = formatDateRange(event.start_date, event.end_date, event.date_precision, lang);
-  const catLabel    = ac.categories[event.category];
+  const dateBlock = getDateBlock(
+    event.start_date,
+    event.end_date,
+    event.date_precision,
+    lang
+  );
+  const dateRange = formatDateRange(
+    event.start_date,
+    event.end_date,
+    event.date_precision,
+    lang
+  );
+  const catLabel = ac.categories[event.category];
   const statusLabel = ac.eventStatuses[event.event_status];
 
   return (
@@ -73,16 +92,17 @@ function EventCard({ event }: { event: CalendarEventRow }) {
         border-l-4 ${typeBorderColor[event.event_type]}
         shadow-sm hover:shadow-md dark:hover:bg-white/[0.06]
         transition-all duration-200 overflow-hidden
-      `}
-    >
+      `}>
       {/* Bloco de data */}
       <div className="hidden sm:flex flex-col items-center justify-center min-w-[80px] px-4 py-5 bg-slate-50 dark:bg-white/[0.03] border-r border-slate-100 dark:border-white/5 select-none">
         <span
           className={`font-bold text-[#003B73] dark:text-white leading-none ${
-            event.date_precision === 'full'  ? 'text-2xl' :
-            event.date_precision === 'month' ? 'text-lg'  : 'text-xl'
-          }`}
-        >
+            event.date_precision === "full"
+              ? "text-2xl"
+              : event.date_precision === "month"
+                ? "text-lg"
+                : "text-xl"
+          }`}>
           {dateBlock.primary}
         </span>
         {dateBlock.secondary && (
@@ -96,11 +116,13 @@ function EventCard({ event }: { event: CalendarEventRow }) {
       <div className="flex-1 p-5 min-w-0">
         {/* Badges */}
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase ${categoryBadgeStyle[event.category]}`}>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-widest uppercase ${categoryBadgeStyle[event.category]}`}>
             {typeIcon[event.event_type]}
             {catLabel}
           </span>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${statusBadgeStyle[event.event_status]}`}>
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide ${statusBadgeStyle[event.event_status]}`}>
             {statusLabel}
           </span>
           {event.sport && (
@@ -116,19 +138,25 @@ function EventCard({ event }: { event: CalendarEventRow }) {
         </h3>
 
         {/* Data (mobile) */}
-        <p className="sm:hidden text-xs font-medium text-[#D9A441] mb-2">{dateRange}</p>
+        <p className="sm:hidden text-xs font-medium text-[#D9A441] mb-2">
+          {dateRange}
+        </p>
 
         {/* Localização */}
         <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-xs mb-3">
           {event.location_open ? (
             <>
               <HelpCircle className="w-3 h-3 shrink-0 text-amber-400" />
-              <span className="text-amber-600 dark:text-amber-400 font-medium">{cp.locationOpen}</span>
+              <span className="text-amber-600 dark:text-amber-400 font-medium">
+                {cp.locationOpen}
+              </span>
             </>
           ) : (
             <>
               <MapPin className="w-3 h-3 shrink-0" />
-              <span>{[event.city, event.country].filter(Boolean).join(', ')}</span>
+              <span>
+                {[event.city, event.country].filter(Boolean).join(", ")}
+              </span>
             </>
           )}
           {event.federation && (
@@ -157,8 +185,7 @@ function EventCard({ event }: { event: CalendarEventRow }) {
               href={event.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#003B73] dark:text-blue-400 hover:underline"
-            >
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#003B73] dark:text-blue-400 hover:underline">
               <ExternalLink className="w-3 h-3" />
               <span>Ver más</span>
             </a>
@@ -187,23 +214,27 @@ function MesSection({
   events?: Array<{ event_status: string }>; // opcional para retrocompatibilidade
 }) {
   // Verifica se todos eventos do grupo estão finalizados
-  const allFinished = events && events.length > 0 && events.every(ev => ev.event_status === 'finished');
+  const allFinished =
+    events &&
+    events.length > 0 &&
+    events.every(ev => ev.event_status === "finished");
 
   return (
     <div
       className={
         open
-          ? ''
-          : 'bg-slate-50/70 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl'
-      }
-    >
+          ? ""
+          : "bg-slate-50/70 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl"
+      }>
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={open}
-        className="w-full flex items-center gap-3 py-2 group/mes cursor-pointer select-none"
-      >
-        <CalendarDays className="w-3.5 h-3.5 text-[#D9A441] shrink-0" aria-hidden="true" />
+        className="w-full flex items-center gap-3 py-2 group/mes cursor-pointer select-none">
+        <CalendarDays
+          className="w-3.5 h-3.5 text-[#D9A441] shrink-0"
+          aria-hidden="true"
+        />
         <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-slate-500 dark:text-slate-400 shrink-0">
           {label}
         </span>
@@ -212,21 +243,21 @@ function MesSection({
             Finalizado
           </span>
         )}
-        <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+        <div
+          className="flex-1 h-px bg-slate-200 dark:bg-white/10"
+          aria-hidden="true"
+        />
         <span className="shrink-0 text-[10px] tabular-nums text-slate-400 dark:text-slate-500">
           {count}
         </span>
         <ChevronDown
-          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${open ? 'rotate-180 text-slate-400 dark:text-slate-500' : 'text-[#003B73] dark:text-blue-300 drop-shadow'}`}
+          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180 text-slate-400 dark:text-slate-500" : "text-[#003B73] dark:text-blue-300 drop-shadow"}`}
           aria-hidden="true"
         />
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-[9999px] opacity-100' : 'max-h-0 opacity-0'}`}
-      >
-        <div className="space-y-3 pb-4">
-          {children}
-        </div>
+        className={`overflow-hidden transition-all duration-300 ${open ? "max-h-[9999px] opacity-100" : "max-h-0 opacity-0"}`}>
+        <div className="space-y-3 pb-4">{children}</div>
       </div>
     </div>
   );
@@ -241,15 +272,19 @@ export default function CalendarPage() {
   useSEO({
     title: t.nav.calendar,
     description: t.calendarPage.subtitle,
-    url: '/calendario',
+    url: "/calendario"
   });
 
-  const [events, setEvents]           = useState<CalendarEventRow[]>([]);
+  const [events, setEvents] = useState<CalendarEventRow[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
-  const [search, setSearch]           = useState('');
-  const [activeCategory, setActiveCategory] = useState<CalendarEventCategory | 'all'>('all');
-  const [activeStatus, setActiveStatus]     = useState<CalendarEventStatus | 'all'>('all');
-  const [openMonths, setOpenMonths]   = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState("");
+  const [activeCategory, setActiveCategory] = useState<
+    CalendarEventCategory | "all"
+  >("all");
+  const [activeStatus, setActiveStatus] = useState<CalendarEventStatus | "all">(
+    "all"
+  );
+  const [openMonths, setOpenMonths] = useState<Set<string>>(new Set());
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -264,41 +299,49 @@ export default function CalendarPage() {
     if (events.length === 0) return;
     const now = new Date();
     const initialOpen = new Set<string>();
-    events.forEach((ev) => {
+    events.forEach(ev => {
       const key = getGroupKey(ev);
-      const d = new Date(ev.start_date + 'T12:00:00');
+      const d = new Date(ev.start_date + "T12:00:00");
       if (d >= new Date(now.getFullYear(), now.getMonth(), 1)) {
         initialOpen.add(key);
       }
     });
     // Se nenhum aberto (todos no passado), abre todos
     if (initialOpen.size === 0) {
-      events.forEach((ev) => initialOpen.add(getGroupKey(ev)));
+      events.forEach(ev => initialOpen.add(getGroupKey(ev)));
     }
     setOpenMonths(initialOpen);
   }, [events]);
 
   const allCategories = useMemo(() => {
     const seen = new Set<CalendarEventCategory>();
-    events.forEach((ev) => seen.add(ev.category));
+    events.forEach(ev => seen.add(ev.category));
     return Array.from(seen);
   }, [events]);
 
-  const allStatuses: CalendarEventStatus[] = ['finished', 'confirmed', 'upcoming', 'registrations_open'];
+  const allStatuses: CalendarEventStatus[] = [
+    "finished",
+    "confirmed",
+    "upcoming",
+    "registrations_open"
+  ];
 
-  const hasActiveFilters = search.trim() !== '' || activeCategory !== 'all' || activeStatus !== 'all';
+  const hasActiveFilters =
+    search.trim() !== "" || activeCategory !== "all" || activeStatus !== "all";
 
   function clearFilters() {
-    setSearch('');
-    setActiveCategory('all');
-    setActiveStatus('all');
+    setSearch("");
+    setActiveCategory("all");
+    setActiveStatus("all");
   }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return events.filter((ev) => {
-      const matchCat    = activeCategory === 'all' || ev.category     === activeCategory;
-      const matchStatus = activeStatus   === 'all' || ev.event_status === activeStatus;
+    return events.filter(ev => {
+      const matchCat =
+        activeCategory === "all" || ev.category === activeCategory;
+      const matchStatus =
+        activeStatus === "all" || ev.event_status === activeStatus;
       if (!matchCat || !matchStatus) return false;
       if (!q) return true;
       const haystack = [
@@ -307,8 +350,11 @@ export default function CalendarPage() {
         ev.country,
         ev.sport,
         ev.federation,
-        ev.description,
-      ].filter(Boolean).join(' ').toLowerCase();
+        ev.description
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       return haystack.includes(q);
     });
   }, [events, activeCategory, activeStatus, search]);
@@ -316,17 +362,20 @@ export default function CalendarPage() {
   /* Ao aplicar filtro, expande todos os grupos visíveis */
   useEffect(() => {
     if (!hasActiveFilters) return;
-    setOpenMonths((prev) => {
+    setOpenMonths(prev => {
       const next = new Set(prev);
-      filtered.forEach((ev) => next.add(getGroupKey(ev)));
+      filtered.forEach(ev => next.add(getGroupKey(ev)));
       return next;
     });
   }, [filtered, hasActiveFilters]);
 
   const grouped = useMemo(() => {
-    const map = new Map<string, { label: string; events: CalendarEventRow[] }>();
-    filtered.forEach((ev) => {
-      const key   = getGroupKey(ev);
+    const map = new Map<
+      string,
+      { label: string; events: CalendarEventRow[] }
+    >();
+    filtered.forEach(ev => {
+      const key = getGroupKey(ev);
       const label = getGroupLabel(key, lang);
       if (!map.has(key)) map.set(key, { label, events: [] });
       map.get(key)!.events.push(ev);
@@ -335,7 +384,7 @@ export default function CalendarPage() {
   }, [filtered, lang]);
 
   function toggleMonth(key: string) {
-    setOpenMonths((prev) => {
+    setOpenMonths(prev => {
       const next = new Set(prev);
       if (next.has(key)) next.delete(key);
       else next.add(key);
@@ -347,15 +396,15 @@ export default function CalendarPage() {
     <PageShell
       title={t.nav.calendar}
       subtitle={cp.subtitle}
-      breadcrumbs={[{ label: t.nav.calendar }]}
-    >
+      breadcrumbs={[{ label: t.nav.calendar }]}>
       <section className="bg-gradient-to-b from-slate-50 to-blue-50/30 dark:bg-consudes-dark-body dark:bg-none py-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[60vh]">
-
           {/* Intro */}
           <div className="mb-10">
             <p className="text-xs font-medium tracking-widest uppercase text-consudes-gold mb-2">
-              {dataLoading ? '\u2026' : `${events.length} ${cp.eventsLabel} \u00B7 2025\u20132027`}
+              {dataLoading
+                ? "\u2026"
+                : `${events.length} ${cp.eventsLabel} \u00B7 2025\u20132027`}
             </p>
             <p className="text-lg sm:text-2xl font-['Cormorant_Garamond'] font-semibold text-consudes-blue-text dark:text-white leading-snug whitespace-nowrap">
               {cp.introHeadline}
@@ -366,12 +415,15 @@ export default function CalendarPage() {
           <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl mb-8 shadow-sm overflow-hidden">
             {/* Busca */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-white/5">
-              <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" aria-hidden="true" />
+              <Search
+                className="w-3.5 h-3.5 text-slate-400 shrink-0"
+                aria-hidden="true"
+              />
               <input
                 ref={searchRef}
                 type="search"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={e => setSearch(e.target.value)}
                 placeholder={cp.searchPlaceholder}
                 aria-label={cp.searchPlaceholder}
                 className="flex-1 bg-transparent text-sm text-[#1F2937] dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
@@ -379,10 +431,12 @@ export default function CalendarPage() {
               {search && (
                 <button
                   type="button"
-                  onClick={() => { setSearch(''); searchRef.current?.focus(); }}
+                  onClick={() => {
+                    setSearch("");
+                    searchRef.current?.focus();
+                  }}
                   className="shrink-0 p-0.5 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                  aria-label="Limpar busca"
-                >
+                  aria-label="Limpar busca">
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -396,11 +450,16 @@ export default function CalendarPage() {
                   {cp.filterCategory}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <FilterPill active={activeCategory === 'all'} onClick={() => setActiveCategory('all')}>
+                  <FilterPill
+                    active={activeCategory === "all"}
+                    onClick={() => setActiveCategory("all")}>
                     {cp.all}
                   </FilterPill>
-                  {allCategories.map((cat) => (
-                    <FilterPill key={cat} active={activeCategory === cat} onClick={() => setActiveCategory(cat)}>
+                  {allCategories.map(cat => (
+                    <FilterPill
+                      key={cat}
+                      active={activeCategory === cat}
+                      onClick={() => setActiveCategory(cat)}>
                       {ac.categories[cat]}
                     </FilterPill>
                   ))}
@@ -411,11 +470,16 @@ export default function CalendarPage() {
                   {cp.filterStatus}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <FilterPill active={activeStatus === 'all'} onClick={() => setActiveStatus('all')}>
+                  <FilterPill
+                    active={activeStatus === "all"}
+                    onClick={() => setActiveStatus("all")}>
                     {cp.all}
                   </FilterPill>
-                  {allStatuses.map((s) => (
-                    <FilterPill key={s} active={activeStatus === s} onClick={() => setActiveStatus(s)}>
+                  {allStatuses.map(s => (
+                    <FilterPill
+                      key={s}
+                      active={activeStatus === s}
+                      onClick={() => setActiveStatus(s)}>
                       {ac.eventStatuses[s]}
                     </FilterPill>
                   ))}
@@ -424,13 +488,15 @@ export default function CalendarPage() {
               {hasActiveFilters && (
                 <div className="border-t border-slate-100 dark:border-white/5 pt-3 flex items-center justify-between">
                   <span className="text-xs text-slate-400 dark:text-slate-500">
-                    {filtered.length} {filtered.length === 1 ? cp.monthEvents : cp.monthEventsPlural}
+                    {filtered.length}{" "}
+                    {filtered.length === 1
+                      ? cp.monthEvents
+                      : cp.monthEventsPlural}
                   </span>
                   <button
                     type="button"
                     onClick={clearFilters}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#003B73]/8 text-[#003B73] dark:bg-blue-500/10 dark:text-blue-400 border border-[#003B73]/15 dark:border-blue-500/20 hover:bg-[#003B73]/15 dark:hover:bg-blue-500/20 transition-all"
-                  >
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#003B73]/8 text-[#003B73] dark:bg-blue-500/10 dark:text-blue-400 border border-[#003B73]/15 dark:border-blue-500/20 hover:bg-[#003B73]/15 dark:hover:bg-blue-500/20 transition-all">
                     <X className="w-3 h-3" />
                     {cp.clearFilters}
                   </button>
@@ -442,33 +508,40 @@ export default function CalendarPage() {
           {/* Lista */}
           {dataLoading ? (
             <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 bg-white dark:bg-white/[0.03] rounded-xl border border-slate-200 dark:border-white/10 animate-pulse" />
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  className="h-28 bg-white dark:bg-white/[0.03] rounded-xl border border-slate-200 dark:border-white/10 animate-pulse"
+                />
               ))}
             </div>
           ) : filtered.length === 0 ? (
             <EmptyState
-              icon={<CalendarDays className="w-7 h-7 text-slate-300 dark:text-slate-600" />}
+              icon={
+                <CalendarDays className="w-7 h-7 text-slate-300 dark:text-slate-600" />
+              }
               title={cp.noEvents}
               description={cp.noEventsDesc}
             />
           ) : (
             <div className="space-y-1">
-              {Array.from(grouped.entries()).map(([key, { label, events: evs }]) => (
-                <MesSection
-                  key={key}
-                  label={label}
-                  count={evs.length}
-                  open={openMonths.has(key)}
-                  onToggle={() => toggleMonth(key)}
-                  events={evs}
-                >
-                  {evs.map((ev) => <EventCard key={ev.id} event={ev} />)}
-                </MesSection>
-              ))}
+              {Array.from(grouped.entries()).map(
+                ([key, { label, events: evs }]) => (
+                  <MesSection
+                    key={key}
+                    label={label}
+                    count={evs.length}
+                    open={openMonths.has(key)}
+                    onToggle={() => toggleMonth(key)}
+                    events={evs}>
+                    {evs.map(ev => (
+                      <EventCard key={ev.id} event={ev} />
+                    ))}
+                  </MesSection>
+                )
+              )}
             </div>
           )}
-
         </div>
       </section>
     </PageShell>
