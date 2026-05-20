@@ -170,21 +170,33 @@ function EventCard({ event }: { event: CalendarEventRow }) {
 }
 
 /* ── Seção de mês com accordion ──────────────────────────────────── */
+
 function MesSection({
   label,
   count,
   open,
   onToggle,
   children,
+  events
 }: {
   label: string;
   count: number;
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  events?: Array<{ event_status: string }>; // opcional para retrocompatibilidade
 }) {
+  // Verifica se todos eventos do grupo estão finalizados
+  const allFinished = events && events.length > 0 && events.every(ev => ev.event_status === 'finished');
+
   return (
-    <div>
+    <div
+      className={
+        open
+          ? ''
+          : 'bg-slate-50/70 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-xl'
+      }
+    >
       <button
         type="button"
         onClick={onToggle}
@@ -195,12 +207,17 @@ function MesSection({
         <span className="text-[10px] font-bold tracking-[0.22em] uppercase text-slate-500 dark:text-slate-400 shrink-0">
           {label}
         </span>
+        {allFinished && (
+          <span className="ml-2 px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-semibold tracking-wide border border-slate-300 dark:border-slate-700">
+            Finalizado
+          </span>
+        )}
         <div className="flex-1 h-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
         <span className="shrink-0 text-[10px] tabular-nums text-slate-400 dark:text-slate-500">
           {count}
         </span>
         <ChevronDown
-          className={`w-4 h-4 shrink-0 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${open ? 'rotate-180 text-slate-400 dark:text-slate-500' : 'text-[#003B73] dark:text-blue-300 drop-shadow'}`}
           aria-hidden="true"
         />
       </button>
@@ -444,6 +461,7 @@ export default function CalendarPage() {
                   count={evs.length}
                   open={openMonths.has(key)}
                   onToggle={() => toggleMonth(key)}
+                  events={evs}
                 >
                   {evs.map((ev) => <EventCard key={ev.id} event={ev} />)}
                 </MesSection>

@@ -211,8 +211,23 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="pt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <p className="text-[11px] text-white/60 tracking-wide font-light">
-            © {new Date().getFullYear()} CONSUDES &nbsp;·&nbsp; {t.footer.rights}
+          <p className="text-[11px] text-white/60 tracking-wide font-light flex flex-wrap items-center gap-x-2">
+            © {new Date().getFullYear()} CONSUDES
+            <span aria-hidden="true" className="mx-1 text-white/25 select-none">·</span>
+            {t.footer.rights}
+            <span aria-hidden="true" className="mx-1 text-white/25 select-none">·</span>
+            <span className="inline-flex items-center gap-1 text-white/40">
+              Desenvolvido por
+              <a
+                href="https://www.leandrom.com.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/40 hover:text-consudes-gold transition-colors duration-200 underline-offset-2 decoration-dotted underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold rounded-sm px-0.5"
+                style={{ fontWeight: 500, opacity: 0.85, fontSize: '11px' }}
+              >
+                Leandro M.
+              </a>
+            </span>
           </p>
           <a
             href="/admin/login"
