@@ -1,3 +1,13 @@
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
 import { supabase } from '../lib/supabase';
 import type { ReportRow, PublishStatus, ReportCategory } from '../lib/database.types';
 
@@ -10,26 +20,10 @@ export interface ReportFormData {
   doc_date: string;
   file_url: string;
   status: PublishStatus;
-  featured: boolean;
-  sort_order: number;
+  // campos removidos: featured, sort_order
 }
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-}
-
 export const REPORT_CATEGORIES: { value: ReportCategory; label: string }[] = [
-  { value: 'relatorio',        label: 'Relatório' },
-  { value: 'estatuto',         label: 'Estatuto' },
+    // campos removidos: featured, sort_order
   { value: 'regulamento',      label: 'Regulamento' },
   { value: 'ata',              label: 'Ata' },
   { value: 'prestacao_contas', label: 'Prestação de Contas' },
@@ -41,14 +35,13 @@ export function categoryLabel(cat: ReportCategory): string {
 }
 
 // ── Admin queries ──────────────────────────────────────────────────────────
-
 export async function listReports(): Promise<{ data: ReportRow[]; error: string | null }> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('reports')
     .select('*')
     .order('year', { ascending: false })
-    .order('sort_order', { ascending: true })
+    .order('doc_date', { ascending: false })
     .order('created_at', { ascending: false });
 
   if (error) return { data: [], error: error.message };
@@ -74,7 +67,6 @@ export async function createReport(form: ReportFormData): Promise<{ data: Report
     .insert({
       ...form,
       year: Number(form.year),
-      sort_order: Number(form.sort_order),
       doc_date: form.doc_date || null,
       description: form.description || null,
       file_url: form.file_url || null,
@@ -90,13 +82,11 @@ export async function updateReport(
   id: string,
   form: ReportFormData,
 ): Promise<{ data: ReportRow | null; error: string | null }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
     .from('reports')
     .update({
       ...form,
       year: Number(form.year),
-      sort_order: Number(form.sort_order),
       doc_date: form.doc_date || null,
       description: form.description || null,
       file_url: form.file_url || null,
@@ -118,7 +108,6 @@ export async function setReportStatus(
     .from('reports')
     .update({ status })
     .eq('id', id);
-
   return { error: error?.message ?? null };
 }
 

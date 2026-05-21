@@ -27,8 +27,7 @@ create table if not exists reports (
   doc_date    date,
   file_url    text,
   status      text not null default 'draft' check (status in ('draft', 'published', 'archived')),
-  featured    boolean not null default false,
-  sort_order  int not null default 0,
+  -- campos removidos: featured, sort_order
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now()
 );

@@ -24,8 +24,6 @@ const EMPTY: ReportFormData = {
   doc_date: '',
   file_url: '',
   status: 'draft',
-  featured: false,
-  sort_order: 0,
 };
 
 export default function AdminReportsFormPage() {
@@ -64,8 +62,6 @@ export default function AdminReportsFormPage() {
         doc_date: data.doc_date ?? '',
         file_url: data.file_url ?? '',
         status: data.status as PublishStatus,
-        featured: data.featured,
-        sort_order: data.sort_order,
       });
       setSlugEdited(true);
       setLoading(false);
@@ -74,10 +70,9 @@ export default function AdminReportsFormPage() {
 
   // ── Campos controlados ─────────────────────────────────────────────────
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
+    const { name, value } = e.target;
     setForm((prev) => {
-      const next = { ...prev, [name]: type === 'checkbox' ? checked : value };
+      const next = { ...prev, [name]: value };
       if (name === 'title' && !slugEdited) next.slug = slugify(value);
       if (name === 'slug') setSlugEdited(true);
       return next;
@@ -322,30 +317,7 @@ export default function AdminReportsFormPage() {
               </select>
             </div>
 
-            <div>
-              <label htmlFor="sort_order" className={labelCls}>{tr.labelOrder}</label>
-              <input
-                id="sort_order"
-                name="sort_order"
-                type="number"
-                value={form.sort_order}
-                onChange={handleChange}
-                className={`${inputCls} font-mono`}
-              />
-            </div>
-
-            <div className="flex items-end pb-1">
-              <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  name="featured"
-                  checked={form.featured}
-                  onChange={handleChange}
-                  className="w-4 h-4 rounded border-gray-300 text-[#003B73] focus:ring-[#003B73]/30"
-                />
-                <span className="text-sm text-[#1F2937]">{tr.labelFeatured}</span>
-              </label>
-            </div>
+            {/* campos ordem/destaque removidos */}
           </div>
         </div>
 

@@ -25,10 +25,9 @@ export interface ReportRow {
   doc_date: string | null;
   file_url: string | null;
   status: PublishStatus;
-  featured: boolean;
-  sort_order: number;
   created_at: string;
   updated_at: string;
+
 }
 export type ChampionshipStatus = 'upcoming' | 'ongoing' | 'finished';
 export type AuditAction =
