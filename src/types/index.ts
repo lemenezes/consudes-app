@@ -5,6 +5,7 @@ export type ProfileStatus = 'approved' | 'suspended';
 
 export interface Profile {
   id: string;
+  display_name: string | null;
   full_name: string | null;
   email: string | null;
   block: string | null;

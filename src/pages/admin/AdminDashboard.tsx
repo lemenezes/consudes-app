@@ -20,7 +20,7 @@ const COMING_SOON = [
 ];
 
 export default function AdminDashboard() {
-  const { user } = useAuth();
+  const { profile } = useAuth();
   const { t } = useLanguage();
 
   const [news, setNews] = useState<NewsRow[]>([]);
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
         </h1>
         <p className="text-sm text-gray-500 mt-1">
           Bem-vindo,{' '}
-          <span className="font-medium text-[#0057A8]">{user?.email}</span>
+          <span className="text-xs text-gray-500 whitespace-nowrap">{profile?.display_name || ''}</span>
         </p>
       </div>
 
