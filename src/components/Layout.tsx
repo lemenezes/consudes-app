@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ScrollToTop from './ui/ScrollToTop';
 import AnalyticsTracker from './AnalyticsTracker';
+import ClarityTracker from './ClarityTracker';
 
 function RouteChangeScrollToTop() {
   const { pathname } = useLocation();
@@ -19,6 +20,7 @@ export default function Layout() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#0d1624] transition-colors duration-200">
       <RouteChangeScrollToTop />
       <AnalyticsTracker />
+      <ClarityTracker />
       <Header />
       <main className="flex-1">
         <Outlet />
