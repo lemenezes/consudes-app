@@ -179,7 +179,10 @@ export default function HomePage() {
               <div
                 key={label}
                 aria-hidden="true"
-                className={`text-center ${i > 0 ? 'sm:pl-16 sm:border-l sm:border-white/20' : ''}`}
+                className={
+                  `text-center ${i > 0 ? 'sm:pl-16 sm:border-l sm:border-white/20' : ''} ` +
+                  (i === 2 ? 'col-span-2 flex flex-col items-center justify-center' : '')
+                }
               >
                 <span className="block text-2xl sm:text-4xl font-bold text-white tabular-nums">{value}</span>
                 <span className="block text-white/80 text-xs sm:text-sm mt-0.5 sm:mt-1 tracking-wider uppercase">{label}</span>
