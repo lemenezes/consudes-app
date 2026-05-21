@@ -55,7 +55,6 @@ export async function deleteInlineImageUrls(
         deleted++;
         onDeleted?.(url);
       } else {
-        console.warn('[inlineImageCleanup] Falha ao deletar imagem:', url, error);
       }
     }),
   );

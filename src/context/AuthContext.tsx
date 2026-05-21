@@ -66,12 +66,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('*')
         .eq('id', user.id)
         .single();
-      console.log('profileData', profileData);
       if (error || !profileData) {
         setProfile(null);
       } else {
         setProfile(profileData as Profile);
-        console.log('profile', profileData);
       }
       setProfileLoading(false);
     })();
