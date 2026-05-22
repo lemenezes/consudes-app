@@ -7,6 +7,8 @@ import {
   updateNews,
   slugify,
 } from '../../services/newsService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import CoverImageUpload from '../../components/CoverImageUpload';
@@ -31,6 +33,7 @@ export default function AdminNewsFormPage() {
   const navigate = useNavigate();
   const { log } = useAuditLog();
   const { t } = useLanguage();
+  const { profile } = useAuth();
 
   const STATUS_OPTIONS: { value: PublishStatus; label: string }[] = [
     { value: 'draft',     label: t.admin.status.draft },
@@ -108,6 +111,13 @@ export default function AdminNewsFormPage() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
+
+    // Proteção RBAC para create/update
+    const actionType = isEditing ? 'update' : 'create';
+    if (!profile || !hasPermission(profile.role, 'noticias', actionType)) {
+      setError(t.admin.rbac.noPermission);
+      return;
+    }
 
     setSaving(true);
     setError(null);

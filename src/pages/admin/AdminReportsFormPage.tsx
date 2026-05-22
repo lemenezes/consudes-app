@@ -12,6 +12,8 @@ import {
 } from '../../services/reportsService';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import type { ReportFormData } from '../../services/reportsService';
 import type { PublishStatus } from '../../lib/database.types';
 
@@ -32,6 +34,7 @@ export default function AdminReportsFormPage() {
   const navigate = useNavigate();
   const { log } = useAuditLog();
   const { t } = useLanguage();
+  const { profile } = useAuth();
   const tr = t.admin.reports;
   const catLabels = t.transparencyPage.categories as Record<string, string>;
   const statusOptions: { value: PublishStatus; label: string }[] = [
@@ -108,6 +111,13 @@ export default function AdminReportsFormPage() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
+
+    // Proteção RBAC para create/update
+    const actionType = isEditing ? 'update' : 'create';
+    if (!profile || !hasPermission(profile.role, 'relatorios', actionType)) {
+      setError(t.admin.rbac.noPermission);
+      return;
+    }
 
     setSaving(true);
     setError(null);

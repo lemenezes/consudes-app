@@ -8,6 +8,8 @@ import {
   slugify,
   EMPTY_FORM,
 } from '../../services/calendarService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import type { CalendarEventFormData } from '../../services/calendarService';
@@ -63,6 +65,7 @@ export default function AdminCalendarFormPage() {
   const { log } = useAuditLog();
   const { t } = useLanguage();
   const ac = t.admin.calendar;
+  const { profile } = useAuth();
 
   const [form, setForm] = useState<CalendarEventFormData>(EMPTY_FORM);
   const [loading, setLoading] = useState(isEditing);
@@ -137,6 +140,13 @@ export default function AdminCalendarFormPage() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
+
+    // Proteção RBAC para create/update
+    const actionType = isEditing ? 'update' : 'create';
+    if (!profile || !hasPermission(profile.role, 'calendario', actionType)) {
+      setError(t.admin.rbac.noPermission);
+      return;
+    }
 
     setSaving(true);
     setError(null);

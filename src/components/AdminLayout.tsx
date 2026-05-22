@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { canAccessModule } from '../utils/rbac';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -77,8 +78,9 @@ const IconExternalLink = () => (
 );
 
 /* ── Tipos de item de nav ────────────────────────────────────────────────── */
+
 type NavItem =
-  | { kind: 'link'; to: string; end: boolean; label: string; icon: React.ReactNode }
+  | { kind: 'link'; to: string; end: boolean; label: string; icon: React.ReactNode; module?: string }
   | { kind: 'soon'; label: string; icon: React.ReactNode };
 
 type NavGroup = { heading: string; items: NavItem[] };
@@ -120,33 +122,48 @@ function SideNavLink({ item, onClick, comingSoonLabel }: { item: NavItem; onClic
 
 /* ── Sidebar content (compartilhado desktop/mobile) ─────────────────────── */
 function SidebarContent({ onNav }: { onNav?: () => void }) {
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
 
+  // Mapeamento de módulos para cada item do menu
   const NAV_GROUPS: NavGroup[] = [
     {
       heading: '',
       items: [
-        { kind: 'link', to: '/admin', end: true, label: t.admin.nav.dashboard, icon: <IconDashboard /> },
+        { kind: 'link', to: '/admin', end: true, label: t.admin.nav.dashboard, icon: <IconDashboard />, module: 'dashboard' },
       ],
     },
     {
       heading: 'Conteúdo',
       items: [
-        { kind: 'link', to: '/admin/noticias',   end: false, label: t.admin.nav.news,     icon: <IconNews /> },
-        { kind: 'link', to: '/admin/calendario', end: false, label: t.admin.nav.calendar, icon: <IconCalendar /> },
+        { kind: 'link', to: '/admin/noticias',   end: false, label: t.admin.nav.news,     icon: <IconNews />, module: 'noticias' },
+        { kind: 'link', to: '/admin/calendario', end: false, label: t.admin.nav.calendar, icon: <IconCalendar />, module: 'calendario' },
         { kind: 'soon', label: 'Galeria', icon: <IconGallery /> },
       ],
     },
     {
       heading: 'Institucional',
       items: [
-        { kind: 'link', to: '/admin/transparencia', end: false, label: 'Transparência', icon: <IconReports /> },
-        { kind: 'link', to: '/admin/federacoes',    end: false, label: 'Federações',    icon: <IconFederations /> },
+        { kind: 'link', to: '/admin/transparencia', end: false, label: 'Transparência', icon: <IconReports />, module: 'transparencia' },
+        { kind: 'link', to: '/admin/federacoes',    end: false, label: 'Federações',    icon: <IconFederations />, module: 'federacoes' },
       ],
     },
   ];
+
+  // Filtra menus conforme permissão do perfil
+  const filteredGroups = useMemo(() => {
+    if (!profile?.role) return NAV_GROUPS;
+    return NAV_GROUPS.map((group) => ({
+      ...group,
+      items: group.items.filter((item) => {
+        if (item.kind === 'soon') return true;
+        // Se não houver módulo mapeado, mostra apenas para super_admin
+        if (!('module' in item)) return profile.role === 'super_admin';
+        return canAccessModule(profile.role, item.module!);
+      }),
+    })).filter((group) => group.items.length > 0);
+  }, [profile?.role, NAV_GROUPS]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -184,7 +201,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
 
       {/* Nav groups */}
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
-        {NAV_GROUPS.map((group, gi) => (
+        {filteredGroups.map((group, gi) => (
           <div key={gi}>
             {group.heading && (
               <p className="px-3 mb-1.5 text-[9px] font-bold tracking-[0.18em] uppercase text-white/25">

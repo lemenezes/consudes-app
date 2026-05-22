@@ -366,6 +366,9 @@ export const translations = {
         btnSaving: "Guardando…",
         btnCancel: "Cancelar"
       },
+      rbac: {
+        noPermission: "No tienes permiso para realizar esta acción."
+      },
       login: {
         adminArea: "Área administrativa",
         restricted: "Acceso restringido al equipo autorizado de la CONSUDES",
@@ -897,6 +900,9 @@ export const translations = {
         btnSaving: "Salvando…",
         btnCancel: "Cancelar"
       },
+      rbac: {
+        noPermission: "Você não tem permissão para realizar esta ação."
+      },
       login: {
         adminArea: "Área Administrativa",
         restricted: "Acesso restrito à equipe autorizada da CONSUDES",
@@ -1314,6 +1320,9 @@ export const translations = {
         upcomingModules: "Upcoming modules",
         upcomingDesc:
           "Gallery, Reports and Federations are in development and will be available soon."
+      },
+      rbac: {
+        noPermission: "You do not have permission to perform this action."
       },
       login: {
         adminArea: "Administrative Area",

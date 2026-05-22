@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listFederations, deleteFederation } from '../../services/federationsService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
 import type { FederationRow } from '../../lib/database.types';
 
 export default function AdminFederationsListPage() {
   const { log } = useAuditLog();
+  const { t } = useLanguage();
+  const { profile } = useAuth();
   const [federations, setFederations] = useState<FederationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +31,12 @@ export default function AdminFederationsListPage() {
   // ── Apagar ─────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
+    // Proteção RBAC para delete
+    if (!profile || !hasPermission(profile.role, 'federacoes', 'delete')) {
+      setError(t.admin.rbac.noPermission);
+      setToDelete(null);
+      return;
+    }
     setActionLoading(toDelete.id);
     const { error } = await deleteFederation(toDelete.id, toDelete.logo_url);
     if (error) { setError(error); setToDelete(null); setActionLoading(null); return; }

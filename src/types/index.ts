@@ -1,6 +1,11 @@
 export type Category = 'venda' | 'servicos' | 'indicacoes' | 'doacao' | 'imoveis';
 
-export type ProfileRole = 'resident' | 'admin' | 'user';
+export type ProfileRole =
+  | 'super_admin'
+  | 'secretaria'
+  | 'diretor_esportes'
+  | 'financeiro'
+  | 'editor';
 export type ProfileStatus = 'approved' | 'suspended';
 
 export interface Profile {

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listNews, setNewsStatus, deleteNews } from '../../services/newsService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
@@ -15,6 +17,7 @@ const STATUS_COLORS: Record<PublishStatus, string> = {
 export default function AdminNewsListPage() {
   const { log } = useAuditLog();
   const { t } = useLanguage();
+  const { profile } = useAuth();
   const [news, setNews] = useState<NewsRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +57,12 @@ export default function AdminNewsListPage() {
   // ── Apagar ─────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
+    // Proteção RBAC para delete
+    if (!profile || !hasPermission(profile.role, 'noticias', 'delete')) {
+      setError(t.admin.rbac.noPermission);
+      setToDelete(null);
+      return;
+    }
     const { error } = await deleteNews(toDelete.id, toDelete.cover_url);
     if (error) { setError(error); setToDelete(null); return; }
 

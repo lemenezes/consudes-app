@@ -7,7 +7,10 @@ import {
   updateFederation,
   FEDERATIONS_BUCKET,
 } from '../../services/federationsService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
+import { useLanguage } from '../../context/LanguageContext';
 import CoverImageUpload from '../../components/CoverImageUpload';
 import type { FederationFormData } from '../../services/federationsService';
 
@@ -50,6 +53,8 @@ export default function AdminFederationFormPage() {
   const isEditing = Boolean(id);
   const navigate = useNavigate();
   const { log } = useAuditLog();
+  const { t } = useLanguage();
+  const { profile } = useAuth();
 
   const [form, setForm] = useState<FederationFormData>(EMPTY);
   const [loading, setLoading] = useState(isEditing);
@@ -111,6 +116,13 @@ export default function AdminFederationFormPage() {
     e.preventDefault();
     const validationError = validate();
     if (validationError) { setError(validationError); return; }
+
+    // Proteção RBAC para create/update
+    const actionType = isEditing ? 'update' : 'create';
+    if (!profile || !hasPermission(profile.role, 'federacoes', actionType)) {
+      setError(t.admin.rbac.noPermission);
+      return;
+    }
 
     setSaving(true);
     setError(null);

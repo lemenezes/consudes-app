@@ -5,6 +5,8 @@ import {
   setReportStatus,
   deleteReport,
 } from '../../services/reportsService';
+import { hasPermission } from '../../utils/rbac';
+import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
@@ -21,6 +23,7 @@ export default function AdminReportsListPage() {
   const tr = t.admin.reports;
   const catLabels = t.transparencyPage.categories as Record<string, string>;
   const { log } = useAuditLog();
+  const { profile } = useAuth();
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +57,12 @@ export default function AdminReportsListPage() {
 
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
+    // Proteção RBAC para delete
+    if (!profile || !hasPermission(profile.role, 'relatorios', 'delete')) {
+      setError(t.admin.rbac.noPermission);
+      setToDelete(null);
+      return;
+    }
     const { error } = await deleteReport(toDelete.id, toDelete.file_url);
     if (error) { setError(error); setToDelete(null); return; }
     await log({

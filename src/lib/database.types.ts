@@ -75,7 +75,12 @@ export interface CalendarEventRow {
 // ── Enums — legado marketplace ───────────────────────────────────────────────
 
 
-export type ProfileRole = 'user' | 'resident' | 'admin';
+export type ProfileRole =
+  | 'super_admin'
+  | 'secretaria'
+  | 'diretor_esportes'
+  | 'financeiro'
+  | 'editor';
 export type ProfileStatus = 'approved' | 'suspended';
 export type AccessRequestStatus = 'pending' | 'approved' | 'rejected';
 
