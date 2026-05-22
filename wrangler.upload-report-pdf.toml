@@ -1,0 +1,16 @@
+name = "upload-report-pdf-worker"
+type = "javascript"
+main = "workers/upload-report-pdf-worker.ts"
+compatibility_date = "2024-05-22"
+
+[env.production]
+# Substitua pelo bucket correto no painel Cloudflare
+r2_buckets = [
+  { binding = "CONSUDES_ASSETS", bucket_name = "consudes-assets" }
+]
+
+[triggers]
+# Rota do Worker
+routes = [
+  "upload.consudes.leandrom.com.br/report-pdf"
+]
