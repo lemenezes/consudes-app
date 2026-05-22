@@ -60,8 +60,16 @@ export default function AdminReportsFormPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
+  // Upload PDF UX
   const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0); // 0-100
+  type UploadStatus = 'idle' | 'preparing' | 'uploading' | 'processing' | 'done' | 'error';
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
+  const [uploadFile, setUploadFile] = useState<File|null>(null);
+  const [uploadError, setUploadError] = useState<string|null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Ref para armazenar o PDF anterior ao substituir
+  const previousPdfUrlRef = useRef<string | null>(null);
 
   // ── Carregar dados para edição ─────────────────────────────────────────
   useEffect(() => {
@@ -109,15 +117,86 @@ export default function AdminReportsFormPage() {
   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const err = validatePdfFile(file);
-    if (err) { setError(err); return; }
+    setUploadError(null);
+    setError(null);
+    console.log('PDF selecionado:', file.name, file.size);
+        setUploadFile(file);
+        setUploadProgress(0);
+        setUploadStatus('preparing');
+        const err = validatePdfFile(file);
+        console.log('Erro validação:', err);
+        if (err) {
+          setUploadError(  'Não foi possível enviar o documento porque ele excede o limite de 20 MB.\nPor favor, compacte o PDF e tente novamente.');
+          setUploadStatus('idle');
+          setUploadFile(file);
+          setUploadProgress(0);
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+          return;
+        }
 
     setUploading(true);
-    const { url, error } = await uploadReportPdf(file);
-    setUploading(false);
+    setUploadStatus('uploading');
 
-    if (error) { setError(error); return; }
-    setForm((prev) => ({ ...prev, file_url: url ?? '' }));
+    // Progresso simulado até 90% usando isActive
+    let isActive = true;
+    let progress = 8;
+    setUploadProgress(progress);
+    const simulate = () => {
+      if (!isActive) return;
+      progress += Math.random() * 10 + 4;
+      if (progress > 90) progress = 90;
+      setUploadProgress(Math.floor(progress));
+      setTimeout(simulate, 220);
+    };
+    simulate();
+
+    try {
+      const { url, error } = await uploadReportPdf(file);
+      isActive = false;
+      setUploadProgress(100);
+      setUploading(false);
+      if (error) {
+        setUploadError(error);
+        setUploadStatus('error');
+        return;
+      }
+      setForm((prev) => ({ ...prev, file_url: url ?? '' }));
+      setUploadStatus('done');
+
+      const previousPdfUrl = previousPdfUrlRef.current;
+
+      if (previousPdfUrl && previousPdfUrl !== url) {
+        try {
+          const oldUrl = new URL(previousPdfUrl);
+          const oldKey = oldUrl.pathname.startsWith('/')
+            ? oldUrl.pathname.slice(1)
+            : oldUrl.pathname;
+
+          if (oldKey.startsWith('reports/documents/')) {
+            const endpoint = import.meta.env.VITE_REPORT_UPLOAD_ENDPOINT as string;
+            const delUrl = `${endpoint}?key=${encodeURIComponent(oldKey)}`;
+            const res = await fetch(delUrl, { method: 'DELETE' });
+
+            if (!res.ok && res.status !== 204) {
+              console.warn('Falha ao deletar PDF anterior no R2:', await res.text());
+            }
+          }
+        } catch (err) {
+          console.warn('Erro ao tentar deletar PDF anterior após substituição:', err);
+        } finally {
+          previousPdfUrlRef.current = null;
+        }
+      }
+
+      setTimeout(() => setUploadStatus('idle'), 1200);
+    } catch (err: any) {
+      isActive = false;
+      setUploading(false);
+      setUploadError(err?.message || 'Erro ao enviar PDF');
+      setUploadStatus('error');
+    }
   };
 
   // ── Validação ──────────────────────────────────────────────────────────
@@ -190,10 +269,10 @@ export default function AdminReportsFormPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
+
         {/* Título + slug */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionIdentification}</h2>
-
           <div>
             <label htmlFor="title" className={labelCls}>{tr.labelTitle} *</label>
             <input
@@ -207,10 +286,8 @@ export default function AdminReportsFormPage() {
               className={inputCls}
             />
           </div>
-
           {/* Slug — oculto, gerado automaticamente do título */}
           <input type="hidden" name="slug" value={form.slug} />
-
           <div>
             <label htmlFor="description" className={labelCls}>{tr.labelDesc}</label>
             <textarea
@@ -274,57 +351,118 @@ export default function AdminReportsFormPage() {
           </div>
         </div>
 
-        {/* Upload PDF */}
+        {/* Upload PDF visual compacto */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionFile}</h2>
 
-          {form.file_url ? (
-            <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
-              <svg className="w-5 h-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm text-green-700 font-medium">{tr.pdfLinked}</p>
-                <a href={form.file_url} target="_blank" rel="noopener noreferrer" className="text-xs text-green-600 hover:text-green-800 underline truncate block">
-                  {form.file_url.split('/').pop()?.split('?')[0] ?? 'arquivo.pdf'}
-                </a>
+          {/* Card de upload PDF */}
+          {(uploadStatus === 'uploading' || uploading) && (
+            <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-2xl shadow-sm px-5 py-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50">
+                <svg className="w-7 h-7 text-blue-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
               </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-[#003B73] truncate">{uploadFile?.name}</span>
+                  <span className="text-xs text-gray-400">{uploadFile ? `${(uploadFile.size / 1024).toFixed(1)} KB` : ''}</span>
+                </div>
+                <div className="w-full mt-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-2 bg-[#003B73] transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+                </div>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-500">{uploadStatus === 'preparing' ? 'Preparando envio...' : 'Enviando PDF...'}</span>
+                  <span className="text-base font-bold text-[#003B73] tabular-nums">{uploadProgress}%</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sucesso */}
+          {form.file_url && (uploadStatus === 'idle' || uploadStatus === 'done') && (
+            <div className="flex items-center gap-4 bg-white border border-gray-100 rounded-2xl shadow-sm px-5 py-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-50">
+                <svg className="w-7 h-7 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-medium text-[#003B73] truncate block">{form.file_url.split('/').pop()?.split('?')[0] ?? 'arquivo.pdf'}</span>
+                <span className="text-xs text-gray-400 block">PDF enviado com sucesso</span>
+              </div>
+              <a
+                href={form.file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-green-700 hover:text-green-900 border border-green-200 bg-green-50 rounded-lg px-3 py-1 mr-2 transition-colors"
+              >
+                Visualizar
+              </a>
               <button
                 type="button"
-                onClick={() => { setForm((p) => ({ ...p, file_url: '' })); if (fileInputRef.current) fileInputRef.current.value = ''; }}
-                className="text-green-600 hover:text-red-500 transition-colors p-1"
-                aria-label={tr.pdfRemove}
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  previousPdfUrlRef.current = form.file_url;
+                  fileInputRef.current?.click();
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    previousPdfUrlRef.current = form.file_url;
+                    fileInputRef.current?.click();
+                  }
+                }}
+                className="text-xs font-semibold text-blue-700 hover:text-blue-900 border border-blue-100 bg-blue-50 rounded-lg px-3 py-1 transition-colors cursor-pointer"
+                aria-label="Substituir PDF"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                Substituir
               </button>
             </div>
-          ) : (
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl p-8 cursor-pointer hover:border-[#003B73]/40 hover:bg-blue-50/30 transition-colors">
-              <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-              </svg>
-              {uploading ? (
-                <p className="text-sm text-[#003B73]">{tr.pdfUploading}</p>
-              ) : (
-                <>
-                  <p className="text-sm text-gray-500">{tr.pdfClickUpload}</p>
-                  <p className="text-xs text-gray-400">{tr.pdfMaxSize}</p>
-                </>
-              )}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="application/pdf"
-                className="sr-only"
-                onChange={handleFileChange}
-                disabled={uploading}
-              />
+          )}
+
+          {/* Alerta de erro sempre abaixo do bloco de upload */}
+          {/* Alerta de erro sempre abaixo do uploader, nunca substitui a UI */}
+          {uploadError && (
+            <div className="mt-3 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <div className="whitespace-pre-line">{uploadError}</div>
+            </div>
+          )}
+
+          {/* Input de arquivo SEMPRE presente para permitir substituição */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/pdf"
+            className="sr-only"
+            onChange={handleFileChange}
+            disabled={uploading || String(uploadStatus) === 'uploading' || String(uploadStatus) === 'processing'}
+          />
+
+          {/* Botão visual de upload só aparece quando não há PDF */}
+          {(uploadStatus === 'idle' || uploadStatus === 'done') && !form.file_url && (
+            <label
+              className="flex items-center gap-3 cursor-pointer border border-dashed border-gray-200 rounded-2xl px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              tabIndex={0}
+              onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
+              role="button"
+              aria-label="Selecionar PDF"
+            >
+              <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-50">
+                <svg className="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="font-medium text-[#003B73]">Selecionar PDF</span>
+                <span className="text-xs text-gray-400 block">Tamanho máximo: 20 MB</span>
+              </div>
             </label>
           )}
 
-          <div>
+          {/* Campo de URL manual (mantido) */}
+          <div className="mt-4">
             <label htmlFor="file_url" className={labelCls}>{tr.pdfPasteUrl}</label>
             <input
               id="file_url"
@@ -336,8 +474,8 @@ export default function AdminReportsFormPage() {
               className={inputCls}
             />
           </div>
-        </div>
 
+        </div>
         {/* Publicação */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
           <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">{tr.sectionPublication}</h2>
@@ -361,7 +499,25 @@ export default function AdminReportsFormPage() {
           <Link
             to="/admin/transparencia"
             className="px-5 py-2.5 text-sm text-gray-500 hover:text-[#1F2937] transition-colors"
-            onClick={() => { localStorage.removeItem(DRAFT_KEY); }}
+            onClick={async () => {
+              // Limpa rascunho
+              localStorage.removeItem(DRAFT_KEY);
+              // Se for criação e PDF já enviado, deleta do bucket
+              if (!isEditing && form.file_url) {
+                try {
+                  const url = new URL(form.file_url);
+                  const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+                  if (key.startsWith('reports/documents/')) {
+                    const endpoint = import.meta.env.VITE_REPORT_UPLOAD_ENDPOINT as string;
+                    const delUrl = `${endpoint}?key=${encodeURIComponent(key)}`;
+                    await fetch(delUrl, { method: 'DELETE' });
+                  }
+                } catch (err) {
+                  // Silencioso
+                  console.warn('Erro ao tentar deletar PDF órfão ao cancelar:', err);
+                }
+              }
+            }}
           >
             {tr.btnCancel}
           </Link>
