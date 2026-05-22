@@ -83,154 +83,195 @@ DROP POLICY IF EXISTS "cms-reports: update authenticated" ON storage.objects;
 -- =====================
 
 -- profiles
-create policy if not exists "User can read own profile" on public.profiles
-for select using (auth.uid() = id);
+drop policy if exists "User can read own profile" on public.profiles;
+create policy "User can read own profile" on public.profiles
+  for select using (auth.uid() = id);
 
-create policy if not exists "Super admin can update profiles" on public.profiles
-for update using (public.has_role(array['super_admin']))
-with check (true);
+drop policy if exists "Users can insert own profile" on public.profiles;
+create policy "Users can insert own profile" on public.profiles
+  for insert
+  with check (auth.uid() = id);
+
+drop policy if exists "Super admin can update profiles" on public.profiles;
+create policy "Super admin can update profiles" on public.profiles
+  for update using (public.has_role(array['super_admin']))
+  with check (true);
 
 -- news
-create policy if not exists "Public can read published news" on public.news
-for select using (status = 'published');
+drop policy if exists "Public can read published news" on public.news;
+create policy "Public can read published news" on public.news
+  for select using (status = 'published');
 
-create policy if not exists "Admin/Secretaria/Editor pode ler todas" on public.news
-for select using (public.has_role(array['super_admin','secretaria','editor']));
+drop policy if exists "Admin/Secretaria/Editor pode ler todas" on public.news;
+create policy "Admin/Secretaria/Editor pode ler todas" on public.news
+  for select using (public.has_role(array['super_admin','secretaria','editor']));
 
-create policy if not exists "Admin/Secretaria/Editor pode criar" on public.news
-for insert with check (public.has_role(array['super_admin','secretaria','editor']));
+drop policy if exists "Admin/Secretaria/Editor pode criar" on public.news;
+create policy "Admin/Secretaria/Editor pode criar" on public.news
+  for insert with check (public.has_role(array['super_admin','secretaria','editor']));
 
-create policy if not exists "Admin/Secretaria/Editor pode editar" on public.news
-for update using (public.has_role(array['super_admin','secretaria','editor']))
-with check (public.has_role(array['super_admin','secretaria','editor']));
+drop policy if exists "Admin/Secretaria/Editor pode editar" on public.news;
+create policy "Admin/Secretaria/Editor pode editar" on public.news
+  for update using (public.has_role(array['super_admin','secretaria','editor']))
+  with check (public.has_role(array['super_admin','secretaria','editor']));
 
-create policy if not exists "Admin/Secretaria pode deletar" on public.news
-for delete using (public.has_role(array['super_admin','secretaria']));
+drop policy if exists "Admin/Secretaria pode deletar" on public.news;
+create policy "Admin/Secretaria pode deletar" on public.news
+  for delete using (public.has_role(array['super_admin','secretaria']));
 
 -- reports
-create policy if not exists "Public can read published reports" on public.reports
-for select using (status = 'published');
+drop policy if exists "Public can read published reports" on public.reports;
+create policy "Public can read published reports" on public.reports
+  for select using (status = 'published');
 
-create policy if not exists "Admin/Secretaria/Financeiro pode ler todas" on public.reports
-for select using (public.has_role(array['super_admin','secretaria','financeiro']));
+drop policy if exists "Admin/Secretaria/Financeiro pode ler todas" on public.reports;
+create policy "Admin/Secretaria/Financeiro pode ler todas" on public.reports
+  for select using (public.has_role(array['super_admin','secretaria','financeiro']));
 
-create policy if not exists "Admin/Secretaria/Financeiro pode criar" on public.reports
-for insert with check (public.has_role(array['super_admin','secretaria','financeiro']));
+drop policy if exists "Admin/Secretaria/Financeiro pode criar" on public.reports;
+create policy "Admin/Secretaria/Financeiro pode criar" on public.reports
+  for insert with check (public.has_role(array['super_admin','secretaria','financeiro']));
 
-create policy if not exists "Admin/Secretaria/Financeiro pode editar" on public.reports
-for update using (public.has_role(array['super_admin','secretaria','financeiro']))
-with check (public.has_role(array['super_admin','secretaria','financeiro']));
+drop policy if exists "Admin/Secretaria/Financeiro pode editar" on public.reports;
+create policy "Admin/Secretaria/Financeiro pode editar" on public.reports
+  for update using (public.has_role(array['super_admin','secretaria','financeiro']))
+  with check (public.has_role(array['super_admin','secretaria','financeiro']));
 
-create policy if not exists "Admin/Secretaria/Financeiro pode deletar" on public.reports
-for delete using (public.has_role(array['super_admin','secretaria','financeiro']));
+drop policy if exists "Admin/Secretaria/Financeiro pode deletar" on public.reports;
+create policy "Admin/Secretaria/Financeiro pode deletar" on public.reports
+  for delete using (public.has_role(array['super_admin','secretaria','financeiro']));
 
 -- calendar_events
-create policy if not exists "Public can read published events" on public.calendar_events
-for select using (status = 'published');
+drop policy if exists "Public can read published events" on public.calendar_events;
+create policy "Public can read published events" on public.calendar_events
+  for select using (status = 'published');
 
-create policy if not exists "Admin/Secretaria/Diretor pode ler todas" on public.calendar_events
-for select using (public.has_role(array['super_admin','secretaria','diretor_esportes']));
+drop policy if exists "Admin/Secretaria/Diretor pode ler todas" on public.calendar_events;
+create policy "Admin/Secretaria/Diretor pode ler todas" on public.calendar_events
+  for select using (public.has_role(array['super_admin','secretaria','diretor_esportes']));
 
-create policy if not exists "Admin/Secretaria/Diretor pode criar" on public.calendar_events
-for insert with check (public.has_role(array['super_admin','secretaria','diretor_esportes']));
+drop policy if exists "Admin/Secretaria/Diretor pode criar" on public.calendar_events;
+create policy "Admin/Secretaria/Diretor pode criar" on public.calendar_events
+  for insert with check (public.has_role(array['super_admin','secretaria','diretor_esportes']));
 
-create policy if not exists "Admin/Secretaria/Diretor pode editar" on public.calendar_events
-for update using (public.has_role(array['super_admin','secretaria','diretor_esportes']))
-with check (public.has_role(array['super_admin','secretaria','diretor_esportes']));
+drop policy if exists "Admin/Secretaria/Diretor pode editar" on public.calendar_events;
+create policy "Admin/Secretaria/Diretor pode editar" on public.calendar_events
+  for update using (public.has_role(array['super_admin','secretaria','diretor_esportes']))
+  with check (public.has_role(array['super_admin','secretaria','diretor_esportes']));
 
-create policy if not exists "Admin/Secretaria pode deletar" on public.calendar_events
-for delete using (public.has_role(array['super_admin','secretaria']));
+drop policy if exists "Admin/Secretaria pode deletar" on public.calendar_events;
+create policy "Admin/Secretaria pode deletar" on public.calendar_events
+  for delete using (public.has_role(array['super_admin','secretaria']));
 
 -- federations
-create policy if not exists "Public can read federations" on public.federations
-for select using (true);
+drop policy if exists "Public can read federations" on public.federations;
+create policy "Public can read federations" on public.federations
+  for select using (true);
 
-create policy if not exists "Admin/Secretaria pode criar" on public.federations
-for insert with check (public.has_role(array['super_admin','secretaria']));
+drop policy if exists "Admin/Secretaria pode criar" on public.federations;
+create policy "Admin/Secretaria pode criar" on public.federations
+  for insert with check (public.has_role(array['super_admin','secretaria']));
 
-create policy if not exists "Admin/Secretaria pode editar" on public.federations
-for update using (public.has_role(array['super_admin','secretaria']))
-with check (public.has_role(array['super_admin','secretaria']));
+drop policy if exists "Admin/Secretaria pode editar" on public.federations;
+create policy "Admin/Secretaria pode editar" on public.federations
+  for update using (public.has_role(array['super_admin','secretaria']))
+  with check (public.has_role(array['super_admin','secretaria']));
 
-create policy if not exists "Admin pode deletar" on public.federations
-for delete using (public.has_role(array['super_admin']));
+drop policy if exists "Admin pode deletar" on public.federations;
+create policy "Admin pode deletar" on public.federations
+  for delete using (public.has_role(array['super_admin']));
 
 -- storage.objects: cms-news
-create policy if not exists "Public can read cms-news" on storage.objects
-for select using (bucket_id = 'cms-news');
+drop policy if exists "Public can read cms-news" on storage.objects;
+create policy "Public can read cms-news" on storage.objects
+  for select using (bucket_id = 'cms-news');
 
-create policy if not exists "Admin/Secretaria/Editor pode upload cms-news" on storage.objects
-for insert with check (
-  bucket_id = 'cms-news' and public.has_role(array['super_admin','secretaria','editor'])
-);
+drop policy if exists "Admin/Secretaria/Editor pode upload cms-news" on storage.objects;
+create policy "Admin/Secretaria/Editor pode upload cms-news" on storage.objects
+  for insert with check (
+    bucket_id = 'cms-news' and public.has_role(array['super_admin','secretaria','editor'])
+  );
 
-create policy if not exists "Admin/Secretaria/Editor pode deletar cms-news" on storage.objects
-for delete using (
-  bucket_id = 'cms-news' and public.has_role(array['super_admin','secretaria','editor'])
-);
+drop policy if exists "Admin/Secretaria/Editor pode deletar cms-news" on storage.objects;
+create policy "Admin/Secretaria/Editor pode deletar cms-news" on storage.objects
+  for delete using (
+    bucket_id = 'cms-news' and public.has_role(array['super_admin','secretaria','editor'])
+  );
 
 -- storage.objects: cms-reports
-create policy if not exists "Public can read cms-reports" on storage.objects
-for select using (bucket_id = 'cms-reports');
+drop policy if exists "Public can read cms-reports" on storage.objects;
+create policy "Public can read cms-reports" on storage.objects
+  for select using (bucket_id = 'cms-reports');
 
-create policy if not exists "Admin/Secretaria/Financeiro pode upload cms-reports" on storage.objects
-for insert with check (
-  bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
-);
+drop policy if exists "Admin/Secretaria/Financeiro pode upload cms-reports" on storage.objects;
+create policy "Admin/Secretaria/Financeiro pode upload cms-reports" on storage.objects
+  for insert with check (
+    bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
+  );
 
-create policy if not exists "Admin/Secretaria/Financeiro pode update cms-reports" on storage.objects
-for update using (
-  bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
-) with check (
-  bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
-);
+drop policy if exists "Admin/Secretaria/Financeiro pode update cms-reports" on storage.objects;
+create policy "Admin/Secretaria/Financeiro pode update cms-reports" on storage.objects
+  for update using (
+    bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
+  ) with check (
+    bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
+  );
 
-create policy if not exists "Admin/Secretaria/Financeiro pode deletar cms-reports" on storage.objects
-for delete using (
-  bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
-);
+drop policy if exists "Admin/Secretaria/Financeiro pode deletar cms-reports" on storage.objects;
+create policy "Admin/Secretaria/Financeiro pode deletar cms-reports" on storage.objects
+  for delete using (
+    bucket_id = 'cms-reports' and public.has_role(array['super_admin','secretaria','financeiro'])
+  );
 
 -- storage.objects: cms-federations
-create policy if not exists "Public can read cms-federations" on storage.objects
-for select using (bucket_id = 'cms-federations');
+drop policy if exists "Public can read cms-federations" on storage.objects;
+create policy "Public can read cms-federations" on storage.objects
+  for select using (bucket_id = 'cms-federations');
 
-create policy if not exists "Admin/Secretaria pode upload cms-federations" on storage.objects
-for insert with check (
-  bucket_id = 'cms-federations' and public.has_role(array['super_admin','secretaria'])
-);
+drop policy if exists "Admin/Secretaria pode upload cms-federations" on storage.objects;
+create policy "Admin/Secretaria pode upload cms-federations" on storage.objects
+  for insert with check (
+    bucket_id = 'cms-federations' and public.has_role(array['super_admin','secretaria'])
+  );
 
-create policy if not exists "Admin/Secretaria pode deletar cms-federations" on storage.objects
-for delete using (
-  bucket_id = 'cms-federations' and public.has_role(array['super_admin','secretaria'])
-);
+drop policy if exists "Admin/Secretaria pode deletar cms-federations" on storage.objects;
+create policy "Admin/Secretaria pode deletar cms-federations" on storage.objects
+  for delete using (
+    bucket_id = 'cms-federations' and public.has_role(array['super_admin','secretaria'])
+  );
 
 -- storage.objects: cms-gallery
-create policy if not exists "Public can read cms-gallery" on storage.objects
-for select using (bucket_id = 'cms-gallery');
+drop policy if exists "Public can read cms-gallery" on storage.objects;
+create policy "Public can read cms-gallery" on storage.objects
+  for select using (bucket_id = 'cms-gallery');
 
-create policy if not exists "Admin/Diretor/Editor pode upload cms-gallery" on storage.objects
-for insert with check (
-  bucket_id = 'cms-gallery' and public.has_role(array['super_admin','diretor_esportes','editor'])
-);
+drop policy if exists "Admin/Diretor/Editor pode upload cms-gallery" on storage.objects;
+create policy "Admin/Diretor/Editor pode upload cms-gallery" on storage.objects
+  for insert with check (
+    bucket_id = 'cms-gallery' and public.has_role(array['super_admin','diretor_esportes','editor'])
+  );
 
-create policy if not exists "Admin/Diretor/Editor pode deletar cms-gallery" on storage.objects
-for delete using (
-  bucket_id = 'cms-gallery' and public.has_role(array['super_admin','diretor_esportes','editor'])
-);
+drop policy if exists "Admin/Diretor/Editor pode deletar cms-gallery" on storage.objects;
+create policy "Admin/Diretor/Editor pode deletar cms-gallery" on storage.objects
+  for delete using (
+    bucket_id = 'cms-gallery' and public.has_role(array['super_admin','diretor_esportes','editor'])
+  );
 
 -- storage.objects: cms-avatars
-create policy if not exists "Public can read cms-avatars" on storage.objects
-for select using (bucket_id = 'cms-avatars');
+drop policy if exists "Public can read cms-avatars" on storage.objects;
+create policy "Public can read cms-avatars" on storage.objects
+  for select using (bucket_id = 'cms-avatars');
 
-create policy if not exists "User pode upload/update/delete próprio avatar" on storage.objects
-for all using (
-  bucket_id = 'cms-avatars' and (
-    public.has_role(array['super_admin'])
-    or (auth.uid()::text = left(name, 36))
-  )
-) with check (
-  bucket_id = 'cms-avatars' and (
-    public.has_role(array['super_admin'])
-    or (auth.uid()::text = left(name, 36))
-  )
-);
+drop policy if exists "User pode upload/update/delete próprio avatar" on storage.objects;
+create policy "User pode upload/update/delete próprio avatar" on storage.objects
+  for all using (
+    bucket_id = 'cms-avatars' and (
+      public.has_role(array['super_admin'])
+      or (auth.uid()::text = left(name, 36))
+    )
+  ) with check (
+    bucket_id = 'cms-avatars' and (
+      public.has_role(array['super_admin'])
+      or (auth.uid()::text = left(name, 36))
+    )
+  );
