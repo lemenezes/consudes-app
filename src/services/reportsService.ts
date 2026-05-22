@@ -143,23 +143,19 @@ export function validatePdfFile(file: File): string | null {
   return null;
 }
 
+import { uploadReportPdfToR2 } from '../lib/uploadReportPdfToR2';
+
 export async function uploadReportPdf(
   file: File,
+  year?: number,
+  slug?: string
 ): Promise<{ url: string | null; error: string | null }> {
   const err = validatePdfFile(file);
   if (err) return { url: null, error: err };
-
-  const ts = Date.now();
-  const rand = Math.random().toString(36).slice(2, 8);
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const path = `documents/${ts}-${rand}-${safeName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('cms-reports')
-    .upload(path, file, { cacheControl: '3600', upsert: false, contentType: 'application/pdf' });
-
-  if (uploadError) return { url: null, error: uploadError.message };
-
-  const { data } = supabase.storage.from('cms-reports').getPublicUrl(path);
-  return { url: data.publicUrl, error: null };
+  try {
+    const { url } = await uploadReportPdfToR2(file, year ?? new Date().getFullYear(), slug);
+    return { url, error: null };
+  } catch (e: any) {
+    return { url: null, error: e.message || 'Falha ao enviar PDF' };
+  }
 }
