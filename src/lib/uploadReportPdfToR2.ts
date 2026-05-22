@@ -1,5 +1,4 @@
 // Reutiliza o client já configurado do projeto
-import { supabase } from '../lib/supabase';
 
 export interface UploadReportPdfResult {
   url: string;
@@ -12,12 +11,13 @@ export async function uploadReportPdfToR2(file: File, year: number, slug?: strin
   formData.append('year', String(year));
   if (slug) formData.append('slug', slug);
 
-  const { data, error } = await supabase.functions.invoke('upload-report-pdf', {
+  const res = await fetch('/api/upload-report-pdf', {
+    method: 'POST',
     body: formData,
   });
-
-  if (error || !data || !data.url) {
-    throw new Error(data?.error || error?.message || 'Falha ao enviar PDF');
+  const data = await res.json();
+  if (!res.ok || !data?.url) {
+    throw new Error(data?.error || 'Falha ao enviar PDF');
   }
   return data as UploadReportPdfResult;
 }
