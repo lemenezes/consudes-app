@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-import { Tag } from 'lucide-react';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -25,20 +23,3 @@ export default function EmptyState({ icon, title, description, actions }: EmptyS
   );
 }
 
-export function EmptyListings() {
-  return (
-    <EmptyState
-      icon={<Tag className="w-7 h-7 text-slate-300 dark:text-slate-500" />}
-      title="Nenhum anúncio ainda"
-      description="Seja a primeira pessoa a publicar! Venda, doe ou ofereça serviços para a comunidade."
-      actions={
-        <Link
-          to="/publicar"
-          className="bg-gradient-to-r from-[#0C5A86] to-[#1DAFD9] text-white px-6 py-3 rounded-full text-sm font-semibold hover:opacity-90 transition-opacity"
-        >
-          Publicar primeiro anúncio
-        </Link>
-      }
-    />
-  );
-}
