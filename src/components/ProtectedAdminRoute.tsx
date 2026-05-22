@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import AdminLayout from './AdminLayout';
 import { isAdminEmail } from '../utils/adminAllowlist';
@@ -34,9 +34,15 @@ function getModuleFromPath(pathname: string): string | null {
 }
 
 export default function ProtectedAdminRoute() {
+  // TODOS OS HOOKS NO TOPO
   const { user, loading, signOut, profile, profileLoading } = useAuth();
   const location = useLocation();
+  const module = useMemo(() => getModuleFromPath(location.pathname), [location.pathname]);
+  const role = profile?.role;
+  // Se não for rota de módulo conhecido, libera acesso (ex: dashboard, rotas futuras)
+  const canAccess = !module || (role && canAccessModule(role, module));
 
+  // RETORNOS CONDICIONAIS APÓS HOOKS
   if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]">
@@ -55,12 +61,6 @@ export default function ProtectedAdminRoute() {
     return <Navigate to="/admin/login" replace />;
   }
 
-  // Proteção por RBAC
-  const module = useMemo(() => getModuleFromPath(location.pathname), [location.pathname]);
-  const role = profile?.role;
-  // Se não for rota de módulo conhecido, libera acesso (ex: dashboard, rotas futuras)
-  const canAccess = !module || (role && canAccessModule(role, module));
-
   if (!canAccess) {
     // Evita loop: se já está no /admin, não redireciona
     if (location.pathname === '/admin') {
@@ -70,10 +70,5 @@ export default function ProtectedAdminRoute() {
   }
 
   // Renderiza layout e Outlet de forma compatível
-  return (
-    <>
-      <AdminLayout />
-      <Outlet />
-    </>
-  );
+  return <AdminLayout />;
 }
