@@ -48,15 +48,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ContentType: contentType,
       CacheControl: 'public, max-age=31536000, immutable',
     });
-    // Gera signed URL em virtual-hosted-style
-    // https://{bucket}.{accountId}.r2.cloudflarestorage.com/{key}
+    // Gera signed URL em virtual-hosted-style correto
+    // https://{bucket}.{accountId}.r2.cloudflarestorage.com/{key} (o SDK monta isso automaticamente)
     const s3VirtualHost = new S3Client({
       region: 'auto',
-      endpoint: `https://${R2_BUCKET}.${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
       credentials: {
         accessKeyId: R2_ACCESS_KEY_ID,
         secretAccessKey: R2_SECRET_ACCESS_KEY,
       },
+      // NÃO usar forcePathStyle
     });
     const signedUrl = await getSignedUrl(s3VirtualHost, command, { expiresIn: 60 * 5 });
     const publicUrl = `${R2_PUBLIC_BASE_URL}/${r2Key}`;
