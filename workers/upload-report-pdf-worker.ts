@@ -1,29 +1,31 @@
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method !== 'POST') {
       return new Response('Method Not Allowed', { status: 405 });
     }
-    const contentType = request.headers.get('content-type') || '';
-    if (!contentType.includes('application/pdf')) {
-      return new Response(JSON.stringify({ error: 'Arquivo deve ser PDF' }), { status: 400 });
-    }
     const url = new URL(request.url);
-    // Validação de tamanho (máx. 10MB)
-    const maxSize = 10 * 1024 * 1024;
-    const body = await request.arrayBuffer();
-    if (body.byteLength > maxSize) {
-      return new Response(JSON.stringify({ error: 'Arquivo excede 10MB' }), { status: 413 });
-    }
-    // Extrai nome e ano do query param
     const filename = url.searchParams.get('filename');
     const year = url.searchParams.get('year');
     if (!filename || !year) {
       return new Response(JSON.stringify({ error: 'filename e year são obrigatórios' }), { status: 400 });
     }
+    // Validação de extensão
+    if (!filename.toLowerCase().endsWith('.pdf')) {
+      return new Response(JSON.stringify({ error: 'Arquivo deve ser PDF' }), { status: 400 });
+    }
+    // Validação de tamanho (máx. 20MB)
+    const maxSize = 20 * 1024 * 1024;
+    const body = await request.arrayBuffer();
+    if (body.byteLength > maxSize) {
+      return new Response(JSON.stringify({ error: 'Arquivo excede 20MB' }), { status: 413 });
+    }
+    // Validação de Content-Type
+    const contentType = request.headers.get('content-type') || '';
+    if (!contentType.includes('pdf')) {
+      return new Response(JSON.stringify({ error: 'Content-Type inválido, deve ser PDF' }), { status: 400 });
+    }
     const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const finalName = safeName.endsWith('.pdf') ? safeName : `${safeName}.pdf`;
-    const key = `reports/documents/${year}/${finalName}`;
-    // Salva no R2
+    const key = `reports/documents/${year}/${safeName}`;
     await env.CONSUDES_ASSETS.put(key, body, {
       httpMetadata: {
         contentType: 'application/pdf',
@@ -38,6 +40,6 @@ export default {
   },
 };
 
-type Env = {
+
   CONSUDES_ASSETS: R2Bucket;
 };

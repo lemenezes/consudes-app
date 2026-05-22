@@ -6,14 +6,14 @@ export interface UploadReportPdfResult {
 }
 
 export async function uploadReportPdfToR2(file: File, year: number, slug?: string): Promise<UploadReportPdfResult> {
-  // Novo fluxo: envia PDF para o Worker
+  // Envia PDF para o Worker simplificado
   const filename = slug || file.name;
   const endpoint = import.meta.env.VITE_REPORT_UPLOAD_ENDPOINT as string;
   const url = `${endpoint}?filename=${encodeURIComponent(filename)}&year=${encodeURIComponent(year)}`;
   const res = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/pdf',
+      'Content-Type': file.type || 'application/pdf',
     },
     body: file,
   });
