@@ -11,7 +11,7 @@ const R2_PUBLIC_BASE_URL = process.env.R2_PUBLIC_BASE_URL!;
 const s3 = new S3Client({
   region: 'auto',
   endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  forcePathStyle: true,
+  // NÃO usar forcePathStyle para garantir virtual-hosted-style
   credentials: {
     accessKeyId: R2_ACCESS_KEY_ID,
     secretAccessKey: R2_SECRET_ACCESS_KEY,
@@ -48,7 +48,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ContentType: contentType,
       CacheControl: 'public, max-age=31536000, immutable',
     });
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); // 5 minutos
+    // Gera signed URL em virtual-hosted-style
+    // https://{bucket}.{accountId}.r2.cloudflarestorage.com/{key}
+    const s3VirtualHost = new S3Client({
+      region: 'auto',
+      endpoint: `https://${R2_BUCKET}.${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: R2_ACCESS_KEY_ID,
+        secretAccessKey: R2_SECRET_ACCESS_KEY,
+      },
+    });
+    const signedUrl = await getSignedUrl(s3VirtualHost, command, { expiresIn: 60 * 5 });
     const publicUrl = `${R2_PUBLIC_BASE_URL}/${r2Key}`;
     return res.status(200).json({ signedUrl, publicUrl, key: r2Key });
   } catch (e: any) {
