@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import type { ReportFormData } from '../../services/reportsService';
 import type { PublishStatus } from '../../lib/database.types';
 
+
 const EMPTY: ReportFormData = {
   title: '',
   slug: '',
@@ -27,6 +28,8 @@ const EMPTY: ReportFormData = {
   file_url: '',
   status: 'draft',
 };
+
+const DRAFT_KEY = 'admin-report-form-draft';
 
 export default function AdminReportsFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -43,7 +46,16 @@ export default function AdminReportsFormPage() {
     { value: 'archived',  label: tr.statusLabels.archived },
   ];
 
-  const [form, setForm] = useState<ReportFormData>(EMPTY);
+  const [form, setForm] = useState<ReportFormData>(() => {
+    // Se não está editando, tenta restaurar rascunho salvo
+    if (!id) {
+      try {
+        const draft = localStorage.getItem(DRAFT_KEY);
+        if (draft) return { ...EMPTY, ...JSON.parse(draft) };
+      } catch {}
+    }
+    return EMPTY;
+  });
   const [loading, setLoading] = useState(isEditing);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +81,18 @@ export default function AdminReportsFormPage() {
       setSlugEdited(true);
       setLoading(false);
     });
+    // Ao editar, limpa rascunho
+    localStorage.removeItem(DRAFT_KEY);
   }, [id]);
+
+  // Salva rascunho no localStorage sempre que form mudar (apenas criação)
+  useEffect(() => {
+    if (!id) {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(form));
+      } catch {}
+    }
+  }, [form, id]);
 
   // ── Campos controlados ─────────────────────────────────────────────────
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -126,11 +149,13 @@ export default function AdminReportsFormPage() {
       const { error } = await updateReport(id, form);
       if (error) { setError(error); setSaving(false); return; }
       await log({ action: 'create_report', entity_type: 'report', entity_id: id, entity_title: form.title });
+      localStorage.removeItem(DRAFT_KEY);
       navigate('/admin/transparencia');
     } else {
       const { data, error } = await createReport(form);
       if (error) { setError(error); setSaving(false); return; }
       await log({ action: 'create_report', entity_type: 'report', entity_id: data?.id, entity_title: form.title });
+      localStorage.removeItem(DRAFT_KEY);
       navigate('/admin/transparencia');
     }
   };
@@ -336,6 +361,7 @@ export default function AdminReportsFormPage() {
           <Link
             to="/admin/transparencia"
             className="px-5 py-2.5 text-sm text-gray-500 hover:text-[#1F2937] transition-colors"
+            onClick={() => { localStorage.removeItem(DRAFT_KEY); }}
           >
             {tr.btnCancel}
           </Link>

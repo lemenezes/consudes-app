@@ -43,7 +43,8 @@ export default function ProtectedAdminRoute() {
   const canAccess = !module || (role && canAccessModule(role, module));
 
   // RETORNOS CONDICIONAIS APÓS HOOKS
-  if (loading || profileLoading) {
+  // Só mostra loading global se não há user ou profile carregados
+  if ((loading || profileLoading) && (!user || !profile)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]">
         <div className="w-8 h-8 border-4 border-[#0057A8] border-t-transparent rounded-full animate-spin" />
