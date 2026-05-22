@@ -1,21 +1,31 @@
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "content-type",
 };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
         headers: CORS_HEADERS,
       });
     }
+    if (request.method === 'DELETE') {
+      // DELETE /report-pdf?key=reports/documents/2026/arquivo.pdf
+      const key = url.searchParams.get('key');
+      if (!key || !key.startsWith('reports/documents/')) {
+        return new Response(JSON.stringify({ error: 'Chave inválida' }), { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } });
+      }
+      await env.CONSUDES_ASSETS.delete(key);
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
     if (request.method !== 'POST') {
       return new Response('Method Not Allowed', { status: 405, headers: CORS_HEADERS });
     }
-    const url = new URL(request.url);
+    // POST upload
     const filename = url.searchParams.get('filename');
     const year = url.searchParams.get('year');
     if (!filename || !year) {

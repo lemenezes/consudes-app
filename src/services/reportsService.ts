@@ -115,16 +115,25 @@ export async function deleteReport(
   id: string,
   fileUrl?: string | null,
 ): Promise<{ error: string | null }> {
-  // Remove o PDF do storage se houver URL
+  // Remove o PDF do R2 via Worker se houver URL
   if (fileUrl) {
     try {
+      // Extrai key do CDN
+      // Exemplo: https://cdn.consudes.leandrom.com.br/reports/documents/2026/arquivo.pdf
       const url = new URL(fileUrl);
-      const parts = url.pathname.split('/object/public/cms-reports/');
-      if (parts[1]) {
-        await supabase.storage.from('cms-reports').remove([parts[1]]);
+      const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
+      if (key.startsWith('reports/documents/')) {
+        const endpoint = import.meta.env.VITE_REPORT_UPLOAD_ENDPOINT as string;
+        const delUrl = `${endpoint}?key=${encodeURIComponent(key)}`;
+        const res = await fetch(delUrl, { method: 'DELETE' });
+        if (!res.ok && res.status !== 204) {
+          // Não quebra exclusão, apenas loga
+          console.warn('Falha ao deletar PDF no R2:', await res.text());
+        }
       }
-    } catch {
+    } catch (err) {
       // Falha silenciosa — continua excluindo o registro
+      console.warn('Erro ao tentar deletar PDF no R2:', err);
     }
   }
 
