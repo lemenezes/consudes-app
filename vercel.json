@@ -1,4 +1,26 @@
 {
+  "redirects": [
+    {
+      "source": "/Calendario.html",
+      "destination": "/calendario",
+      "permanent": true
+    },
+    {
+      "source": "/Galeria.html",
+      "destination": "/galeria",
+      "permanent": true
+    },
+    {
+      "source": "/noticia.html",
+      "destination": "/noticias",
+      "permanent": true
+    },
+    {
+      "source": "/Mision_Vision.html",
+      "destination": "/",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
