@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ArrowLeft, Save } from "lucide-react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
+  Image,
+  Plus,
+  Save,
+  Star,
+  Trash2
+} from "lucide-react";
 import {
   getGalleryBySlug,
   updateGallery,
@@ -9,7 +18,9 @@ import {
 import { useAuditLog } from "../../hooks/useAuditLog";
 import {
   GALLERY_CATEGORIES,
+  getPhotoUrl,
   type GalleryAlbum,
+  type GalleryPhoto,
   type GalleryCategory
 } from "../../data/galleryData";
 
@@ -21,19 +32,64 @@ const TIER_LABELS: Record<string, string> = {
   T3: "Arquivo"
 };
 
+function extractSlugFromPath(pathname: string): string | undefined {
+  if (!pathname.includes("/editar/")) {
+    return undefined;
+  }
+
+  const slug = pathname.split("/editar/")[1];
+  return slug || undefined;
+}
+
+function getPhotoLabel(photo: GalleryPhoto): string {
+  if (photo.caption?.trim()) {
+    return photo.caption.trim();
+  }
+
+  if (/^https?:\/\//i.test(photo.filename)) {
+    try {
+      const parsedUrl = new URL(photo.filename);
+      const lastPart = parsedUrl.pathname.split("/").filter(Boolean).pop();
+      return lastPart || parsedUrl.hostname;
+    } catch {
+      return photo.filename;
+    }
+  }
+
+  return photo.filename;
+}
+
+function normalizeAlbumPhotos(
+  album: GalleryAlbum,
+  photos: GalleryPhoto[]
+): GalleryAlbum {
+  const coverExists = album.coverFile
+    ? photos.some(photo => photo.filename === album.coverFile)
+    : false;
+
+  return {
+    ...album,
+    photos,
+    photoCount: photos.length,
+    coverFile: coverExists ? album.coverFile : (photos[0]?.filename ?? null)
+  };
+}
+
 export default function AdminGalleryFormPage() {
   const navigate = useNavigate();
-  const { '*': slugParam } = useParams<{ '*'?: string }>();
+  const { "*": slugParam } = useParams<{ "*"?: string }>();
   const location = useLocation();
   const { log } = useAuditLog();
 
   // Extrai slug da URL: /admin/galeria/editar/... -> tudo após 'editar/'
-  const slug = slugParam || (location.pathname.includes('/editar/') ? location.pathname.split('/editar/')[1] : undefined);
+  const slug = slugParam || extractSlugFromPath(location.pathname);
 
   const [loading, setLoading] = useState(!!slug);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState("");
+  const [photoCaption, setPhotoCaption] = useState("");
 
   const [form, setForm] = useState<GalleryAlbum>({
     slug: "",
@@ -96,6 +152,99 @@ export default function AdminGalleryFormPage() {
     }));
   };
 
+  const persistAlbum = async (nextAlbum: GalleryAlbum, feedback: string) => {
+    if (!slug) return;
+
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    const { data, error } = await updateGallery(slug, nextAlbum);
+    if (error) {
+      setError(error);
+    } else if (data) {
+      setForm(data);
+      setSuccess(feedback);
+    } else {
+      setForm(nextAlbum);
+      setSuccess(feedback);
+    }
+
+    setSaving(false);
+  };
+
+  const updatePhotos = async (nextPhotos: GalleryPhoto[], feedback: string) => {
+    const nextAlbum = normalizeAlbumPhotos(form, nextPhotos);
+    await persistAlbum(nextAlbum, feedback);
+  };
+
+  const handleAddPhoto = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isEditMode || !slug) {
+      setError("Salve o álbum antes de gerenciar as fotos");
+      return;
+    }
+
+    const url = photoUrl.trim();
+    if (!url) {
+      setError("Informe a URL da foto");
+      return;
+    }
+
+    const nextPhotos = [
+      ...form.photos,
+      {
+        filename: url,
+        caption: photoCaption.trim() || undefined
+      }
+    ];
+
+    await updatePhotos(nextPhotos, "Foto adicionada com sucesso");
+    setPhotoUrl("");
+    setPhotoCaption("");
+  };
+
+  const handleRemovePhoto = async (index: number) => {
+    if (!isEditMode || !slug) return;
+
+    const photo = form.photos[index];
+    const confirmed = window.confirm(`Remover a foto ${getPhotoLabel(photo)}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    const nextPhotos = form.photos.filter(
+      (_, currentIndex) => currentIndex !== index
+    );
+    await updatePhotos(nextPhotos, "Foto removida com sucesso");
+  };
+
+  const handleMovePhoto = async (index: number, direction: -1 | 1) => {
+    if (!isEditMode || !slug) return;
+
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= form.photos.length) {
+      return;
+    }
+
+    const nextPhotos = [...form.photos];
+    [nextPhotos[index], nextPhotos[targetIndex]] = [
+      nextPhotos[targetIndex],
+      nextPhotos[index]
+    ];
+
+    await updatePhotos(nextPhotos, "Ordem das fotos atualizada");
+  };
+
+  const handleSetCover = async (index: number) => {
+    if (!isEditMode || !slug) return;
+
+    const nextAlbum = normalizeAlbumPhotos(form, form.photos);
+    nextAlbum.coverFile = form.photos[index]?.filename ?? null;
+    await persistAlbum(nextAlbum, "Foto definida como capa");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -115,6 +264,7 @@ export default function AdminGalleryFormPage() {
 
     setSaving(true);
     setError(null);
+    setSuccess(null);
 
     try {
       if (isEditMode && slug) {
@@ -129,7 +279,7 @@ export default function AdminGalleryFormPage() {
             entity_id: form.slug,
             entity_title: form.title
           });
-          setSuccess(true);
+          setSuccess("Álbum atualizado com sucesso");
           setTimeout(() => navigate("/admin/galeria"), 2000);
         }
       } else {
@@ -144,7 +294,7 @@ export default function AdminGalleryFormPage() {
             entity_id: form.slug,
             entity_title: form.title
           });
-          setSuccess(true);
+          setSuccess("Álbum criado com sucesso");
           setTimeout(() => navigate("/admin/galeria"), 2000);
         }
       }
@@ -198,8 +348,8 @@ export default function AdminGalleryFormPage() {
       {/* Success */}
       {success && (
         <div className="mb-4 px-4 py-3 bg-green-50 border border-green-100 rounded-lg text-sm text-green-700">
-          ✓ {isEditMode ? "Álbum atualizado" : "Álbum criado"} com sucesso!
-          Redirecionando...
+          ✓ {success}
+          {isEditMode ? " Redirecionando..." : ""}
         </div>
       )}
 
@@ -444,13 +594,217 @@ export default function AdminGalleryFormPage() {
       <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
         <p className="font-semibold mb-1">ℹ️ Nota sobre fotos:</p>
         <p>
-          Gerencie as fotos do álbum diretamente da listagem de galeria. Os
-          arquivos devem estar em R2 no caminho:{" "}
-          <code className="bg-blue-100 px-1 rounded">
-            gallery/[slug]/[arquivo]
-          </code>
+          As fotos são administradas nesta mesma tela. Você pode adicionar por
+          URL temporária, reordenar, definir capa e remover sem sair da edição.
         </p>
       </div>
+
+      {/* Fotos do álbum */}
+      <section className="mt-6 space-y-4">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
+              Fotos do álbum
+            </h2>
+            <p className="text-sm text-gray-500">
+              {isEditMode
+                ? "Adicione, remova, reordene e escolha a capa desta galeria."
+                : "Salve o álbum para começar a administrar as fotos."}
+            </p>
+          </div>
+
+          {isEditMode && (
+            <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
+              <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">
+                Contagem
+              </p>
+              <p className="text-sm font-semibold text-[#1F2937]">
+                {form.photos.length} foto{form.photos.length !== 1 ? "s" : ""}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {isEditMode ? (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="xl:col-span-1 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                  <Plus size={18} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-[#1F2937]">
+                    Adicionar foto
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Cole uma URL temporária para inserir na galeria.
+                  </p>
+                </div>
+              </div>
+
+              <form className="space-y-4" onSubmit={handleAddPhoto}>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    URL da foto
+                  </label>
+                  <input
+                    type="url"
+                    value={photoUrl}
+                    onChange={e => setPhotoUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Legenda opcional
+                  </label>
+                  <input
+                    type="text"
+                    value={photoCaption}
+                    onChange={e => setPhotoCaption(e.target.value)}
+                    placeholder="Ex: Cerimônia de abertura"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white font-semibold hover:bg-[#002d5a] transition-colors disabled:opacity-50">
+                  <Plus size={16} />
+                  {saving ? "Salvando..." : "Adicionar foto"}
+                </button>
+              </form>
+            </div>
+
+            <div className="xl:col-span-2 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-[#1F2937]">
+                    Lista de fotos
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Organize a ordem e a foto de destaque.
+                  </p>
+                </div>
+
+                {saving && (
+                  <span className="text-xs font-semibold text-gray-500">
+                    Salvando...
+                  </span>
+                )}
+              </div>
+
+              {form.photos.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-16 text-center">
+                  <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
+                  <p className="text-sm font-medium text-gray-500">
+                    Ainda não há fotos neste álbum.
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Adicione uma URL acima para começar.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {form.photos.map((photo, index) => {
+                    const src = getPhotoUrl(
+                      form.slug || slug || "",
+                      photo.filename
+                    );
+                    const isCover = form.coverFile === photo.filename;
+
+                    return (
+                      <article
+                        key={`${photo.filename}-${index}`}
+                        className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                        <div className="relative aspect-[4/3] bg-gray-100">
+                          <img
+                            src={src}
+                            alt={getPhotoLabel(photo)}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                          <div className="absolute top-3 left-3 flex gap-2">
+                            {isCover && (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-black/75 text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1">
+                                <Star size={10} fill="currentColor" />
+                                Capa
+                              </span>
+                            )}
+                            {photo.caption?.trim() && (
+                              <span className="inline-flex items-center rounded-full bg-white/90 text-gray-700 text-[10px] font-bold uppercase tracking-widest px-2 py-1">
+                                Legenda
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="p-4 space-y-3">
+                          <div>
+                            <p className="text-sm font-semibold text-[#1F2937] truncate">
+                              {getPhotoLabel(photo)}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate mt-0.5">
+                              {photo.filename}
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(index, -1)}
+                              disabled={saving || index === 0}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40">
+                              <ArrowUp size={14} />
+                              Subir
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleMovePhoto(index, 1)}
+                              disabled={
+                                saving || index === form.photos.length - 1
+                              }
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40">
+                              <ArrowDown size={14} />
+                              Descer
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSetCover(index)}
+                              disabled={saving || isCover}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 text-sm font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-40">
+                              <Star size={14} />
+                              {isCover ? "Já é capa" : "Definir capa"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleRemovePhoto(index)}
+                              disabled={saving}
+                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-200 bg-red-50 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-40">
+                              <Trash2 size={14} />
+                              Remover
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-16 text-center">
+            <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
+            <p className="text-sm font-medium text-gray-500">
+              Salve o álbum para liberar a gestão de fotos.
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -176,12 +176,6 @@ export default function AdminGalleryListPage() {
               <Edit size={12} />
               Editar
             </Link>
-            <Link
-              to={`/admin/galeria/editar/${album.slug}/fotos`}
-              className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md bg-purple-50 text-purple-700 hover:bg-purple-100 text-[11px] font-semibold transition-colors">
-              <Image size={12} />
-              Fotos
-            </Link>
             <button
               onClick={() => setToDelete(album)}
               disabled={actionLoading === album.slug}
@@ -262,11 +256,6 @@ export default function AdminGalleryListPage() {
               className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors">
               <Edit size={14} />
               Editar
-            </Link>
-            <Link
-              to={`/admin/galeria/editar/${album.slug}/fotos`}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors">
-              <Image size={14} />
             </Link>
             <button
               onClick={() => setToDelete(album)}
