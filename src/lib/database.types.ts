@@ -1,19 +1,25 @@
 // Tipos gerados manualmente para o CMS institucional da CONSUDES.
 // Rode `supabase gen types typescript` após criar as tabelas no Supabase.
 
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
 // ── Enums ────────────────────────────────────────────────────────────────────
 
-export type Lang = 'es' | 'pt' | 'en';
-export type PublishStatus = 'draft' | 'published' | 'archived';
+export type Lang = "es" | "pt" | "en";
+export type PublishStatus = "draft" | "published" | "archived";
 export type ReportCategory =
-  | 'relatorio'
-  | 'estatuto'
-  | 'regulamento'
-  | 'ata'
-  | 'prestacao_contas'
-  | 'documento_oficial';
+  | "relatorio"
+  | "estatuto"
+  | "regulamento"
+  | "ata"
+  | "prestacao_contas"
+  | "documento_oficial";
 
 export interface ReportRow {
   id: string;
@@ -27,23 +33,50 @@ export interface ReportRow {
   status: PublishStatus;
   created_at: string;
   updated_at: string;
-
 }
-export type ChampionshipStatus = 'upcoming' | 'ongoing' | 'finished';
+export type ChampionshipStatus = "upcoming" | "ongoing" | "finished";
 export type AuditAction =
-  | 'create_news' | 'edit_news' | 'publish_news' | 'unpublish_news' | 'delete_news'
-  | 'upload_image' | 'delete_image'
-  | 'create_report' | 'delete_report'
-  | 'create_federation' | 'edit_federation' | 'delete_federation'
-  | 'create_calendar_event' | 'edit_calendar_event' | 'publish_calendar_event'
-  | 'unpublish_calendar_event' | 'delete_calendar_event';
+  | "create_news"
+  | "edit_news"
+  | "publish_news"
+  | "unpublish_news"
+  | "delete_news"
+  | "upload_image"
+  | "delete_image"
+  | "create_report"
+  | "delete_report"
+  | "create_federation"
+  | "edit_federation"
+  | "delete_federation"
+  | "create_calendar_event"
+  | "edit_calendar_event"
+  | "publish_calendar_event"
+  | "unpublish_calendar_event"
+  | "delete_calendar_event"
+  | "create_gallery_album"
+  | "update_gallery_album"
+  | "delete_gallery_album";
 
 // ── Calendar event enums ──────────────────────────────────────────────────────
 
-export type CalendarEventCategory = 'interclubes' | 'sub21' | 'adulto' | 'institucional' | 'outro';
-export type CalendarEventType = 'championship' | 'interclubs' | 'congress' | 'assembly' | 'institutional';
-export type CalendarEventStatus = 'upcoming' | 'registrations_open' | 'confirmed' | 'finished';
-export type DatePrecision = 'full' | 'month' | 'year';
+export type CalendarEventCategory =
+  | "interclubes"
+  | "sub21"
+  | "adulto"
+  | "institucional"
+  | "outro";
+export type CalendarEventType =
+  | "championship"
+  | "interclubs"
+  | "congress"
+  | "assembly"
+  | "institutional";
+export type CalendarEventStatus =
+  | "upcoming"
+  | "registrations_open"
+  | "confirmed"
+  | "finished";
+export type DatePrecision = "full" | "month" | "year";
 
 export interface CalendarEventRow {
   id: string;
@@ -74,22 +107,20 @@ export interface CalendarEventRow {
 
 // ── Enums — legado marketplace ───────────────────────────────────────────────
 
-
 export type ProfileRole =
-  | 'super_admin'
-  | 'secretaria'
-  | 'diretor_esportes'
-  | 'financeiro'
-  | 'editor';
-export type ProfileStatus = 'approved' | 'suspended';
-export type AccessRequestStatus = 'pending' | 'approved' | 'rejected';
+  | "super_admin"
+  | "secretaria"
+  | "diretor_esportes"
+  | "financeiro"
+  | "editor";
+export type ProfileStatus = "approved" | "suspended";
+export type AccessRequestStatus = "pending" | "approved" | "rejected";
 
 // ── Database schema ──────────────────────────────────────────────────────────
 
 export type Database = {
   public: {
     Tables: {
-
       /** Notícias e avisos oficiais */
       news: {
         Row: {
@@ -247,7 +278,7 @@ export type Database = {
           title: string;
           description: string | null;
           media_url: string;
-          media_type: 'photo' | 'video';
+          media_type: "photo" | "video";
           cover_url: string | null;
           sort_order: number;
           published_at: string | null;
@@ -258,7 +289,7 @@ export type Database = {
           title: string;
           description?: string | null;
           media_url: string;
-          media_type?: 'photo' | 'video';
+          media_type?: "photo" | "video";
           cover_url?: string | null;
           sort_order?: number;
           published_at?: string | null;
@@ -269,7 +300,7 @@ export type Database = {
           title?: string;
           description?: string | null;
           media_url?: string;
-          media_type?: 'photo' | 'video';
+          media_type?: "photo" | "video";
           cover_url?: string | null;
           sort_order?: number;
           published_at?: string | null;
@@ -384,8 +415,6 @@ export type Database = {
         };
         Relationships: [];
       };
-
-
 
       profiles: {
         Row: {
@@ -547,7 +576,6 @@ export type Database = {
         };
         Relationships: [];
       };
-
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -558,15 +586,19 @@ export type Database = {
 
 // ── Helpers de tipo — CMS CONSUDES ───────────────────────────────────────────
 
-export type NewsRow            = Database['public']['Tables']['news']['Row'];
-export type FederationRow      = Database['public']['Tables']['federations']['Row'];
-export type GalleryRow         = Database['public']['Tables']['gallery']['Row'];
-export type ChampionshipRow    = Database['public']['Tables']['championships']['Row'];
-export type TeamMemberRow      = Database['public']['Tables']['team_members']['Row'];
-export type FormerPresidentRow = Database['public']['Tables']['former_presidents']['Row'];
-export type AuditLogRow        = Database['public']['Tables']['admin_audit_logs']['Row'];
-export type AuditLogInsert     = Database['public']['Tables']['admin_audit_logs']['Insert'];
+export type NewsRow = Database["public"]["Tables"]["news"]["Row"];
+export type FederationRow = Database["public"]["Tables"]["federations"]["Row"];
+export type GalleryRow = Database["public"]["Tables"]["gallery"]["Row"];
+export type ChampionshipRow =
+  Database["public"]["Tables"]["championships"]["Row"];
+export type TeamMemberRow = Database["public"]["Tables"]["team_members"]["Row"];
+export type FormerPresidentRow =
+  Database["public"]["Tables"]["former_presidents"]["Row"];
+export type AuditLogRow =
+  Database["public"]["Tables"]["admin_audit_logs"]["Row"];
+export type AuditLogInsert =
+  Database["public"]["Tables"]["admin_audit_logs"]["Insert"];
 
-export type ProfileRow       = Database['public']['Tables']['profiles']['Row'];
-export type AccessRequestRow = Database['public']['Tables']['access_requests']['Row'];
-
+export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
+export type AccessRequestRow =
+  Database["public"]["Tables"]["access_requests"]["Row"];
