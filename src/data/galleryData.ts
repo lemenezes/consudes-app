@@ -12,6 +12,8 @@ export const MEDIA_BASE =
 export function getPhotoUrl(albumSlug: string, filename: string): string {
   if (
     /^(https?:)?\/\//i.test(filename) ||
+    filename.startsWith("blob:") ||
+    filename.startsWith("data:image/") ||
     filename.startsWith("data:") ||
     filename.startsWith("/")
   ) {
@@ -46,7 +48,9 @@ export const GALLERY_CATEGORIES: GalleryCategory[] = [
 
 export interface GalleryPhoto {
   filename: string;
+  dataUrl?: string;
   caption?: string;
+  originalName?: string;
   isHero?: boolean;
 }
 

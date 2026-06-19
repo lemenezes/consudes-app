@@ -82,21 +82,18 @@ function AlbumHero({
 }
 
 function PhotoThumb({
-  album,
-  filename,
+  src,
   index,
   onOpen,
   t
 }: {
-  album: GalleryAlbum;
-  filename: string;
+  src: string;
   index: number;
   onOpen: (i: number) => void;
   t: ReturnType<typeof useLanguage>["t"];
 }) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const src = getPhotoUrl(album.slug, filename);
 
   return (
     <button
@@ -110,7 +107,7 @@ function PhotoThumb({
           )}
           <img
             src={src}
-            alt={filename}
+            alt={`Foto ${index + 1}`}
             loading="lazy"
             className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setLoaded(true)}
@@ -241,7 +238,7 @@ export default function GalleryAlbumPage() {
   }
 
   const slides = album.photos.map(p => ({
-    src: getPhotoUrl(album.slug, p.filename)
+    src: getPhotoUrl(album.slug, p.dataUrl || p.filename)
   }));
 
   const handleOpen = (index: number) => {
@@ -297,8 +294,7 @@ export default function GalleryAlbumPage() {
               {album.photos.map((photo, i) => (
                 <PhotoThumb
                   key={`${photo.filename}-${i}`}
-                  album={album}
-                  filename={photo.filename}
+                  src={getPhotoUrl(album.slug, photo.dataUrl || photo.filename)}
                   index={i}
                   onOpen={handleOpen}
                   t={t}

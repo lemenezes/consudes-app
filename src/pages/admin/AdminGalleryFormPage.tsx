@@ -1,21 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowUp,
-  Image,
-  Plus,
-  Save,
-  Star,
-  Trash2
-} from "lucide-react";
+import { ArrowLeft, Image, Plus, Save, Trash2, X, Eye } from "lucide-react";
+import SimpleConfirmModal from "../../components/SimpleConfirmModal";
 import {
   getGalleryBySlug,
   updateGallery,
   createGallery
 } from "../../services/galleryService";
 import { useAuditLog } from "../../hooks/useAuditLog";
+import { useToast } from "../../context/ToastContext";
 import {
   GALLERY_CATEGORIES,
   getPhotoUrl,
@@ -24,14 +17,6 @@ import {
   type GalleryCategory
 } from "../../data/galleryData";
 
-const TIERS = ["T1", "T2", "T3"] as const;
-
-const TIER_LABELS: Record<string, string> = {
-  T1: "Destaque",
-  T2: "Galeria",
-  T3: "Arquivo"
-};
-
 function extractSlugFromPath(pathname: string): string | undefined {
   if (!pathname.includes("/editar/")) {
     return undefined;
@@ -39,24 +24,6 @@ function extractSlugFromPath(pathname: string): string | undefined {
 
   const slug = pathname.split("/editar/")[1];
   return slug || undefined;
-}
-
-function getPhotoLabel(photo: GalleryPhoto): string {
-  if (photo.caption?.trim()) {
-    return photo.caption.trim();
-  }
-
-  if (/^https?:\/\//i.test(photo.filename)) {
-    try {
-      const parsedUrl = new URL(photo.filename);
-      const lastPart = parsedUrl.pathname.split("/").filter(Boolean).pop();
-      return lastPart || parsedUrl.hostname;
-    } catch {
-      return photo.filename;
-    }
-  }
-
-  return photo.filename;
 }
 
 function normalizeAlbumPhotos(
@@ -80,6 +47,8 @@ export default function AdminGalleryFormPage() {
   const { "*": slugParam } = useParams<{ "*"?: string }>();
   const location = useLocation();
   const { log } = useAuditLog();
+  const { showToast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extrai slug da URL: /admin/galeria/editar/... -> tudo após 'editar/'
   const slug = slugParam || extractSlugFromPath(location.pathname);
@@ -87,9 +56,14 @@ export default function AdminGalleryFormPage() {
   const [loading, setLoading] = useState(!!slug);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [photoUrl, setPhotoUrl] = useState("");
-  const [photoCaption, setPhotoCaption] = useState("");
+  const [photoToRemoveIndex, setPhotoToRemoveIndex] = useState<number | null>(
+    null
+  );
+  const [activeTab, setActiveTab] = useState<"informacoes" | "fotos">(
+    "informacoes"
+  );
+  const [previewPhoto, setPreviewPhoto] = useState<GalleryPhoto | null>(null);
+  const [failedPhotos, setFailedPhotos] = useState<Record<string, boolean>>({});
 
   const [form, setForm] = useState<GalleryAlbum>({
     slug: "",
@@ -119,6 +93,10 @@ export default function AdminGalleryFormPage() {
       loadAlbum();
     }
   }, [slug, isEditMode]);
+
+  useEffect(() => {
+    setFailedPhotos({});
+  }, [form.photos]);
 
   const loadAlbum = async () => {
     if (!slug) return;
@@ -152,89 +130,98 @@ export default function AdminGalleryFormPage() {
     }));
   };
 
-  const persistAlbum = async (nextAlbum: GalleryAlbum, feedback: string) => {
+  const persistAlbum = async (nextAlbum: GalleryAlbum) => {
     if (!slug) return;
 
     setSaving(true);
     setError(null);
-    setSuccess(null);
 
     const { data, error } = await updateGallery(slug, nextAlbum);
     if (error) {
       setError(error);
     } else if (data) {
       setForm(data);
-      setSuccess(feedback);
     } else {
       setForm(nextAlbum);
-      setSuccess(feedback);
     }
 
     setSaving(false);
   };
 
-  const updatePhotos = async (nextPhotos: GalleryPhoto[], feedback: string) => {
+  const updatePhotos = async (nextPhotos: GalleryPhoto[]) => {
     const nextAlbum = normalizeAlbumPhotos(form, nextPhotos);
-    await persistAlbum(nextAlbum, feedback);
+    await persistAlbum(nextAlbum);
   };
 
-  const handleAddPhoto = async (e: React.FormEvent) => {
+  const handleFileSelect = (files: FileList | null) => {
+    if (!isEditMode || !slug || !files) return;
+
+    const selectedFiles = Array.from(files);
+    setFailedPhotos({});
+
+    const readAsDataUrl = (file: File) =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result;
+          if (typeof result === "string") {
+            resolve(result);
+            return;
+          }
+          reject(new Error("Falha ao processar imagem selecionada"));
+        };
+        reader.onerror = () =>
+          reject(new Error("Falha ao ler imagem selecionada"));
+        reader.readAsDataURL(file);
+      });
+
+    void Promise.all(
+      selectedFiles.map(async file => ({
+        filename: file.name,
+        originalName: file.name,
+        dataUrl: await readAsDataUrl(file),
+        caption: file.name.replace(/\.[^/.]+$/, "") || undefined
+      }))
+    )
+      .then(newPhotos => {
+        const allPhotos = [...form.photos, ...newPhotos];
+        return updatePhotos(allPhotos);
+      })
+      .catch(err => {
+        const message = (err as Error).message || "Falha ao adicionar foto";
+        setError(message);
+        showToast(message, "error");
+      });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+  };
 
-    if (!isEditMode || !slug) {
-      setError("Salve o álbum antes de gerenciar as fotos");
-      return;
-    }
-
-    const url = photoUrl.trim();
-    if (!url) {
-      setError("Informe a URL da foto");
-      return;
-    }
-
-    const nextPhotos = [
-      ...form.photos,
-      {
-        filename: url,
-        caption: photoCaption.trim() || undefined
-      }
-    ];
-
-    await updatePhotos(nextPhotos, "Foto adicionada com sucesso");
-    setPhotoUrl("");
-    setPhotoCaption("");
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleFileSelect(e.dataTransfer.files);
   };
 
   const handleRemovePhoto = async (index: number) => {
-    if (!isEditMode || !slug) return;
+    setPhotoToRemoveIndex(index);
+  };
 
-    const photo = form.photos[index];
-    const confirmed = window.confirm(`Remover a foto ${getPhotoLabel(photo)}?`);
-    if (!confirmed) {
-      return;
-    }
+  const confirmRemovePhoto = async () => {
+    if (photoToRemoveIndex === null || !isEditMode || !slug) return;
 
+    const index = photoToRemoveIndex;
     const nextPhotos = form.photos.filter(
       (_, currentIndex) => currentIndex !== index
     );
-    await updatePhotos(nextPhotos, "Foto removida com sucesso");
-  };
-
-  const handleMovePhoto = async (index: number, direction: -1 | 1) => {
-    if (!isEditMode || !slug) return;
-
-    const targetIndex = index + direction;
-    if (targetIndex < 0 || targetIndex >= form.photos.length) {
-      return;
-    }
-
-    const nextPhotos = [...form.photos];
-    [nextPhotos[index], nextPhotos[targetIndex]] = [
-      nextPhotos[targetIndex],
-      nextPhotos[index]
-    ];
-
-    await updatePhotos(nextPhotos, "Ordem das fotos atualizada");
+    await updatePhotos(nextPhotos);
+    setPhotoToRemoveIndex(null);
   };
 
   const handleSetCover = async (index: number) => {
@@ -242,7 +229,7 @@ export default function AdminGalleryFormPage() {
 
     const nextAlbum = normalizeAlbumPhotos(form, form.photos);
     nextAlbum.coverFile = form.photos[index]?.filename ?? null;
-    await persistAlbum(nextAlbum, "Foto definida como capa");
+    await persistAlbum(nextAlbum);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -264,7 +251,6 @@ export default function AdminGalleryFormPage() {
 
     setSaving(true);
     setError(null);
-    setSuccess(null);
 
     try {
       if (isEditMode && slug) {
@@ -272,6 +258,7 @@ export default function AdminGalleryFormPage() {
         const { error } = await updateGallery(slug, form);
         if (error) {
           setError(error);
+          showToast(error, "error");
         } else {
           await log({
             action: "update_gallery_album" as const,
@@ -279,7 +266,7 @@ export default function AdminGalleryFormPage() {
             entity_id: form.slug,
             entity_title: form.title
           });
-          setSuccess("Álbum atualizado com sucesso");
+          showToast("Álbum salvo com sucesso.", "success");
           setTimeout(() => navigate("/admin/galeria"), 2000);
         }
       } else {
@@ -287,6 +274,7 @@ export default function AdminGalleryFormPage() {
         const { error } = await createGallery(form);
         if (error) {
           setError(error);
+          showToast(error, "error");
         } else {
           await log({
             action: "create_gallery_album" as const,
@@ -294,12 +282,14 @@ export default function AdminGalleryFormPage() {
             entity_id: form.slug,
             entity_title: form.title
           });
-          setSuccess("Álbum criado com sucesso");
+          showToast("Álbum salvo com sucesso.", "success");
           setTimeout(() => navigate("/admin/galeria"), 2000);
         }
       }
     } catch (err) {
-      setError((err as Error).message);
+      const message = (err as Error).message;
+      setError(message);
+      showToast(message, "error");
     } finally {
       setSaving(false);
     }
@@ -345,239 +335,349 @@ export default function AdminGalleryFormPage() {
         </div>
       )}
 
-      {/* Success */}
-      {success && (
-        <div className="mb-4 px-4 py-3 bg-green-50 border border-green-100 rounded-lg text-sm text-green-700">
-          ✓ {success}
-          {isEditMode ? " Redirecionando..." : ""}
-        </div>
-      )}
-
-      {/* Form */}
+      {/* Form com Abas */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white rounded-lg border border-gray-200 p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Título */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Título *
-            </label>
-            <input
-              type="text"
-              value={form.title}
-              onChange={e => handleInputChange("title", e.target.value)}
-              placeholder="Ex: II Juegos Sudamericanos 2019"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Slug */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Slug *
-            </label>
-            <input
-              type="text"
-              value={form.slug}
-              onChange={e => handleInputChange("slug", e.target.value)}
-              placeholder="Ex: juegos-sudamericanos/2019-juegos-ii"
-              disabled={isEditMode}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
-            />
-          </div>
-
-          {/* Categoria */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Categoria
-            </label>
-            <select
-              value={form.category}
-              onChange={e =>
-                handleInputChange("category", e.target.value as GalleryCategory)
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {GALLERY_CATEGORIES.map(cat => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Tier */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Tier
-            </label>
-            <select
-              value={form.tier}
-              onChange={e => handleInputChange("tier", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {TIERS.map(tier => (
-                <option key={tier} value={tier}>
-                  {TIER_LABELS[tier]}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Ano */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Ano
-            </label>
-            <input
-              type="number"
-              value={form.year || ""}
-              onChange={e =>
-                handleInputChange(
-                  "year",
-                  e.target.value ? parseInt(e.target.value) : null
-                )
-              }
-              placeholder="Ex: 2019"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Cidade */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Cidade
-            </label>
-            <input
-              type="text"
-              value={form.city || ""}
-              onChange={e => handleInputChange("city", e.target.value || null)}
-              placeholder="Ex: Goiânia"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* País */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              País
-            </label>
-            <input
-              type="text"
-              value={form.country || ""}
-              onChange={e =>
-                handleInputChange("country", e.target.value || null)
-              }
-              placeholder="Ex: Brasil"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Quantidade de fotos */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Total de fotos
-            </label>
-            <input
-              type="number"
-              value={form.photoCount}
-              onChange={e =>
-                handleInputChange(
-                  "photoCount",
-                  Math.max(0, parseInt(e.target.value) || 0)
-                )
-              }
-              min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Posição da capa */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Posição da capa (object-position)
-            </label>
-            <select
-              value={form.coverPosition || "center"}
-              onChange={e => handleInputChange("coverPosition", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="center">Centro</option>
-              <option value="top">Topo</option>
-              <option value="bottom">Base</option>
-              <option value="left">Esquerda</option>
-              <option value="right">Direita</option>
-            </select>
-          </div>
-
-          {/* Arquivo de capa */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-              Arquivo de capa (thumbnail)
-            </label>
-            <input
-              type="text"
-              value={form.coverFile || ""}
-              onChange={e =>
-                handleInputChange("coverFile", e.target.value || null)
-              }
-              placeholder="Ex: cover.webp"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Nome do arquivo em R2: gallery/[slug]/[arquivo]
-            </p>
-          </div>
-
-          {/* Featured */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="featured"
-              checked={form.featured || false}
-              onChange={e => handleInputChange("featured", e.target.checked)}
-              className="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-            />
-            <label
-              htmlFor="featured"
-              className="text-sm font-semibold text-gray-700">
-              Destaque na página principal
-            </label>
-          </div>
+        className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        {/* Abas */}
+        <div className="border-b border-gray-200 flex">
+          <button
+            type="button"
+            onClick={() => setActiveTab("informacoes")}
+            className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+              activeTab === "informacoes"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}>
+            Informações
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("fotos")}
+            className={`px-6 py-3 font-semibold text-sm transition-colors border-b-2 ${
+              activeTab === "fotos"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+            }`}
+            disabled={!isEditMode}>
+            Fotos {isEditMode && `(${form.photos.length})`}
+          </button>
         </div>
 
-        {/* Descrições multilíngues */}
-        <div className="border-t pt-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">
-            Descrições
-          </h3>
-          <div className="space-y-4">
-            {["pt", "es", "en"].map(lang => (
-              <div key={lang}>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                  Descrição em {lang.toUpperCase()}
-                </label>
-                <textarea
-                  value={form.description[lang as "pt" | "es" | "en"]}
-                  onChange={e =>
-                    handleDescriptionChange(
-                      lang as "pt" | "es" | "en",
-                      e.target.value
-                    )
-                  }
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder={`Descrição do álbum em ${lang.toUpperCase()}`}
-                />
+        {/* Conteúdo das Abas */}
+        <div className="p-6">
+          {/* ABA INFORMAÇÕES */}
+          {activeTab === "informacoes" && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Título */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Título *
+                  </label>
+                  <input
+                    type="text"
+                    value={form.title}
+                    onChange={e => handleInputChange("title", e.target.value)}
+                    placeholder="Ex: II Juegos Sudamericanos 2019"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Categoria */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Categoria
+                  </label>
+                  <select
+                    value={form.category}
+                    onChange={e =>
+                      handleInputChange(
+                        "category",
+                        e.target.value as GalleryCategory
+                      )
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {GALLERY_CATEGORIES.map(cat => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Ano */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Ano
+                  </label>
+                  <input
+                    type="number"
+                    value={form.year || ""}
+                    onChange={e =>
+                      handleInputChange(
+                        "year",
+                        e.target.value ? parseInt(e.target.value) : null
+                      )
+                    }
+                    placeholder="Ex: 2019"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Cidade */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    Cidade
+                  </label>
+                  <input
+                    type="text"
+                    value={form.city || ""}
+                    onChange={e =>
+                      handleInputChange("city", e.target.value || null)
+                    }
+                    placeholder="Ex: Goiânia"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* País */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                    País
+                  </label>
+                  <input
+                    type="text"
+                    value={form.country || ""}
+                    onChange={e =>
+                      handleInputChange("country", e.target.value || null)
+                    }
+                    placeholder="Ex: Brasil"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Destaque */}
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    checked={form.featured || false}
+                    onChange={e =>
+                      handleInputChange("featured", e.target.checked)
+                    }
+                    className="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <label
+                    htmlFor="featured"
+                    className="text-sm font-semibold text-gray-700">
+                    Destaque na página principal
+                  </label>
+                </div>
               </div>
-            ))}
-          </div>
+
+              {/* Descrições multilíngues */}
+              <div className="border-t pt-6">
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                  Descrições
+                </h3>
+                <div className="space-y-4">
+                  {["pt", "es", "en"].map(lang => (
+                    <div key={lang}>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                        Descrição em {lang.toUpperCase()}
+                      </label>
+                      <textarea
+                        value={form.description[lang as "pt" | "es" | "en"]}
+                        onChange={e =>
+                          handleDescriptionChange(
+                            lang as "pt" | "es" | "en",
+                            e.target.value
+                          )
+                        }
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder={`Descrição do álbum em ${lang.toUpperCase()}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ABA FOTOS */}
+          {activeTab === "fotos" && isEditMode && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-['Cormorant_Garamond'] font-semibold text-[#1F2937] mb-1">
+                  Biblioteca de fotos
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {form.photos.length}{" "}
+                  {form.photos.length === 1 ? "imagem" : "imagens"}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 xl:grid-cols-[repeat(7,minmax(0,1fr))] gap-2">
+                {/* Card de Upload */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  disabled={saving}
+                  className="group relative rounded-lg overflow-hidden bg-white border-2 border-dashed border-gray-300 shadow-sm hover:shadow-md hover:border-blue-400 transition-all aspect-square flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Adicionar fotos">
+                  <div className="flex flex-col items-center justify-center gap-1.5 text-center px-2">
+                    <Plus
+                      size={28}
+                      className="text-gray-300 group-hover:text-blue-500 transition-colors"
+                    />
+                    <p className="text-[11px] font-semibold leading-tight text-gray-600 group-hover:text-blue-600 transition-colors">
+                      Adicionar fotos
+                    </p>
+                  </div>
+                </button>
+
+                {/* Cards de Fotos */}
+                {form.photos.map((photo, index) => {
+                  const photoKey = `${photo.filename}-${index}`;
+                  const src = getPhotoUrl(
+                    form.slug || slug || "",
+                    photo.dataUrl || photo.filename
+                  );
+                  const isCover = form.coverFile === photo.filename;
+                  const hasLoadError = !!failedPhotos[photoKey];
+
+                  return (
+                    <article
+                      key={photoKey}
+                      className={`group relative rounded-lg border-2 overflow-hidden bg-white shadow-sm transition-all ${
+                        isCover
+                          ? "border-blue-500 ring-1 ring-blue-200"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}>
+                      <div className="relative aspect-square bg-gray-100">
+                        {hasLoadError ? (
+                          <div
+                            className="w-full h-full flex flex-col items-center justify-center gap-2 px-2 text-center"
+                            aria-label="Imagem não disponível">
+                            <Image size={24} className="text-gray-400" />
+                            <p className="text-[11px] font-medium text-gray-500 leading-tight">
+                              Imagem não disponível
+                            </p>
+                          </div>
+                        ) : (
+                          <img
+                            src={src}
+                            alt="Foto do álbum"
+                            className="block w-full h-full object-contain cursor-pointer"
+                            loading="lazy"
+                            onLoad={() => {
+                              setFailedPhotos(prev => {
+                                if (!prev[photoKey]) {
+                                  return prev;
+                                }
+
+                                const next = { ...prev };
+                                delete next[photoKey];
+                                return next;
+                              });
+                            }}
+                            onError={() => {
+                              setFailedPhotos(prev => ({
+                                ...prev,
+                                [photoKey]: true
+                              }));
+                            }}
+                            onClick={() => setPreviewPhoto(photo)}
+                          />
+                        )}
+
+                        {isCover && (
+                          <span className="absolute top-1 left-1 rounded px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-widest text-white bg-blue-600">
+                            CAPA
+                          </span>
+                        )}
+
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              setPreviewPhoto(photo);
+                            }}
+                            disabled={saving}
+                            title="Visualizar"
+                            className="inline-flex items-center justify-center rounded-full bg-white p-2 text-gray-700 shadow-sm hover:bg-blue-50 transition-colors disabled:opacity-40">
+                            <Eye size={14} />
+                          </button>
+                          {!isCover && (
+                            <button
+                              type="button"
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleSetCover(index);
+                              }}
+                              disabled={saving}
+                              title="Definir como capa"
+                              className="inline-flex items-center justify-center rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-gray-700 shadow-sm hover:bg-blue-50 transition-colors disabled:opacity-40">
+                              Capa
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={e => {
+                              e.stopPropagation();
+                              handleRemovePhoto(index);
+                            }}
+                            disabled={saving}
+                            title="Remover foto"
+                            className="inline-flex items-center justify-center rounded-full bg-white p-2 text-gray-700 shadow-sm hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-40">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+              {form.photos.length === 0 && (
+                <p className="mt-4 text-sm text-gray-500 text-center py-8">
+                  Nenhuma foto adicionada ainda. Clique em{" "}
+                  <strong>Adicionar fotos</strong> para começar.
+                </p>
+              )}
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={e => handleFileSelect(e.target.files)}
+                className="hidden"
+              />
+            </div>
+          )}
+
+          {activeTab === "fotos" && !isEditMode && (
+            <div className="text-center py-8">
+              <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
+              <p className="text-sm font-medium text-gray-500">
+                Salve o álbum para liberar a gestão de fotos.
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Ações */}
-        <div className="flex items-center gap-3 border-t pt-6">
+        {/* Botões de Ação */}
+        <div className="border-t border-gray-200 bg-gray-50 px-6 py-4 flex items-center gap-3">
           <button
             type="button"
             onClick={() => navigate("/admin/galeria")}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-colors">
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors">
             Cancelar
           </button>
           <button
@@ -589,222 +689,50 @@ export default function AdminGalleryFormPage() {
           </button>
         </div>
       </form>
+      {/* Modal de Confirmação de Remoção */}
+      {photoToRemoveIndex !== null && (
+        <SimpleConfirmModal
+          title="Remover foto"
+          message="Tem certeza que deseja remover esta foto?"
+          onConfirm={confirmRemovePhoto}
+          onCancel={() => setPhotoToRemoveIndex(null)}
+          confirmLabel="Remover"
+          cancelLabel="Cancelar"
+          isDangerous={true}
+        />
+      )}
 
-      {/* Info */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700">
-        <p className="font-semibold mb-1">ℹ️ Nota sobre fotos:</p>
-        <p>
-          As fotos são administradas nesta mesma tela. Você pode adicionar por
-          URL temporária, reordenar, definir capa e remover sem sair da edição.
-        </p>
-      </div>
-
-      {/* Fotos do álbum */}
-      <section className="mt-6 space-y-4">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <h2 className="text-xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-              Fotos do álbum
-            </h2>
-            <p className="text-sm text-gray-500">
-              {isEditMode
-                ? "Adicione, remova, reordene e escolha a capa desta galeria."
-                : "Salve o álbum para começar a administrar as fotos."}
-            </p>
-          </div>
-
-          {isEditMode && (
-            <div className="rounded-2xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
-              <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">
-                Contagem
-              </p>
-              <p className="text-sm font-semibold text-[#1F2937]">
-                {form.photos.length} foto{form.photos.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {isEditMode ? (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-1 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                  <Plus size={18} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-[#1F2937]">
-                    Adicionar foto
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Cole uma URL temporária para inserir na galeria.
-                  </p>
-                </div>
-              </div>
-
-              <form className="space-y-4" onSubmit={handleAddPhoto}>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    URL da foto
-                  </label>
-                  <input
-                    type="url"
-                    value={photoUrl}
-                    onChange={e => setPhotoUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    Legenda opcional
-                  </label>
-                  <input
-                    type="text"
-                    value={photoCaption}
-                    onChange={e => setPhotoCaption(e.target.value)}
-                    placeholder="Ex: Cerimônia de abertura"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white font-semibold hover:bg-[#002d5a] transition-colors disabled:opacity-50">
-                  <Plus size={16} />
-                  {saving ? "Salvando..." : "Adicionar foto"}
-                </button>
-              </form>
-            </div>
-
-            <div className="xl:col-span-2 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-[#1F2937]">
-                    Lista de fotos
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Organize a ordem e a foto de destaque.
-                  </p>
-                </div>
-
-                {saving && (
-                  <span className="text-xs font-semibold text-gray-500">
-                    Salvando...
-                  </span>
-                )}
-              </div>
-
-              {form.photos.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-16 text-center">
-                  <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
-                  <p className="text-sm font-medium text-gray-500">
-                    Ainda não há fotos neste álbum.
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Adicione uma URL acima para começar.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {form.photos.map((photo, index) => {
-                    const src = getPhotoUrl(
-                      form.slug || slug || "",
-                      photo.filename
-                    );
-                    const isCover = form.coverFile === photo.filename;
-
-                    return (
-                      <article
-                        key={`${photo.filename}-${index}`}
-                        className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
-                        <div className="relative aspect-[4/3] bg-gray-100">
-                          <img
-                            src={src}
-                            alt={getPhotoLabel(photo)}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
-                          <div className="absolute top-3 left-3 flex gap-2">
-                            {isCover && (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-black/75 text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1">
-                                <Star size={10} fill="currentColor" />
-                                Capa
-                              </span>
-                            )}
-                            {photo.caption?.trim() && (
-                              <span className="inline-flex items-center rounded-full bg-white/90 text-gray-700 text-[10px] font-bold uppercase tracking-widest px-2 py-1">
-                                Legenda
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="p-4 space-y-3">
-                          <div>
-                            <p className="text-sm font-semibold text-[#1F2937] truncate">
-                              {getPhotoLabel(photo)}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate mt-0.5">
-                              {photo.filename}
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleMovePhoto(index, -1)}
-                              disabled={saving || index === 0}
-                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40">
-                              <ArrowUp size={14} />
-                              Subir
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleMovePhoto(index, 1)}
-                              disabled={
-                                saving || index === form.photos.length - 1
-                              }
-                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40">
-                              <ArrowDown size={14} />
-                              Descer
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleSetCover(index)}
-                              disabled={saving || isCover}
-                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 text-sm font-semibold text-blue-700 hover:bg-blue-100 disabled:opacity-40">
-                              <Star size={14} />
-                              {isCover ? "Já é capa" : "Definir capa"}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleRemovePhoto(index)}
-                              disabled={saving}
-                              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-red-200 bg-red-50 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-40">
-                              <Trash2 size={14} />
-                              Remover
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
+      {/* Lightbox de Preview */}
+      {previewPhoto && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          onClick={() => setPreviewPhoto(null)}>
+          <div className="relative max-w-4xl w-full">
+            <button
+              type="button"
+              onClick={() => setPreviewPhoto(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+              aria-label="Fechar preview">
+              <X size={32} />
+            </button>
+            <img
+              src={getPhotoUrl(
+                form.slug || slug || "",
+                previewPhoto.dataUrl || previewPhoto.filename
               )}
-            </div>
+              alt="Foto do álbum"
+              className="w-full h-auto rounded-lg"
+            />
+            {previewPhoto.caption && (
+              <p className="mt-4 text-center text-white text-sm">
+                {previewPhoto.caption}
+              </p>
+            )}
           </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 py-16 text-center">
-            <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
-            <p className="text-sm font-medium text-gray-500">
-              Salve o álbum para liberar a gestão de fotos.
-            </p>
-          </div>
-        )}
-      </section>
+        </div>
+      )}
     </div>
   );
 }
