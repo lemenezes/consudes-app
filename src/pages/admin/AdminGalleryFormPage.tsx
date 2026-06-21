@@ -1,6 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, Image, Plus, Save, Trash2, X, Eye } from "lucide-react";
+import { ArrowLeft, Image, Plus, Save, Trash2, Eye } from "lucide-react";
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Counter from "yet-another-react-lightbox/plugins/counter";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/counter.css";
 import SimpleConfirmModal from "../../components/SimpleConfirmModal";
 import {
   getGalleryBySlug,
@@ -62,7 +68,8 @@ export default function AdminGalleryFormPage() {
   const [activeTab, setActiveTab] = useState<"informacoes" | "fotos">(
     "informacoes"
   );
-  const [previewPhoto, setPreviewPhoto] = useState<GalleryPhoto | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
   const [failedPhotos, setFailedPhotos] = useState<Record<string, boolean>>({});
 
   const [form, setForm] = useState<GalleryAlbum>({
@@ -230,6 +237,15 @@ export default function AdminGalleryFormPage() {
     const nextAlbum = normalizeAlbumPhotos(form, form.photos);
     nextAlbum.coverFile = form.photos[index]?.filename ?? null;
     await persistAlbum(nextAlbum);
+  };
+
+  const slides = form.photos.map(photo => ({
+    src: getPhotoUrl(form.slug || slug || "", photo.dataUrl || photo.filename)
+  }));
+
+  const handleOpenLightbox = (index: number) => {
+    setPhotoIndex(index);
+    setLightboxOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -591,7 +607,7 @@ export default function AdminGalleryFormPage() {
                                 [photoKey]: true
                               }));
                             }}
-                            onClick={() => setPreviewPhoto(photo)}
+                            onClick={() => handleOpenLightbox(index)}
                           />
                         )}
 
@@ -606,7 +622,7 @@ export default function AdminGalleryFormPage() {
                             type="button"
                             onClick={e => {
                               e.stopPropagation();
-                              setPreviewPhoto(photo);
+                              handleOpenLightbox(index);
                             }}
                             disabled={saving}
                             title="Visualizar"
@@ -702,37 +718,35 @@ export default function AdminGalleryFormPage() {
         />
       )}
 
-      {/* Lightbox de Preview */}
-      {previewPhoto && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-          onClick={() => setPreviewPhoto(null)}>
-          <div className="relative max-w-4xl w-full">
-            <button
-              type="button"
-              onClick={() => setPreviewPhoto(null)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
-              aria-label="Fechar preview">
-              <X size={32} />
-            </button>
-            <img
-              src={getPhotoUrl(
-                form.slug || slug || "",
-                previewPhoto.dataUrl || previewPhoto.filename
-              )}
-              alt="Foto do álbum"
-              className="w-full h-auto rounded-lg"
-            />
-            {previewPhoto.caption && (
-              <p className="mt-4 text-center text-white text-sm">
-                {previewPhoto.caption}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Lightbox de Preview (mesmo padrão da galeria pública) */}
+      <Lightbox
+        open={lightboxOpen}
+        close={() => setLightboxOpen(false)}
+        index={photoIndex}
+        slides={slides}
+        plugins={[Zoom, Counter, Fullscreen]}
+        zoom={{
+          maxZoomPixelRatio: 4,
+          zoomInMultiplier: 2,
+          doubleTapDelay: 300,
+          doubleClickDelay: 300,
+          doubleClickMaxStops: 2,
+          wheelZoomDistanceFactor: 100,
+          pinchZoomDistanceFactor: 100,
+          scrollToZoom: true
+        }}
+        carousel={{ preload: 2 }}
+        animation={{ fade: 200, swipe: 250 }}
+        controller={{ closeOnBackdropClick: true }}
+        styles={{
+          container: {
+            backgroundColor: "rgba(0, 0, 0, 0.97)"
+          },
+          slide: {
+            padding: "0 56px"
+          }
+        }}
+      />
     </div>
   );
 }
