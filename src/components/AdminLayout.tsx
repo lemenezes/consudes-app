@@ -325,7 +325,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
       {/* Link para o site público — acima do menu */}
       <div className="px-3 pt-3 pb-1">
         <a
-          href="https://consudes.leandrom.com.br"
+          href="https://www.consudes.com"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-white/55 hover:text-white hover:bg-white/8 border border-transparent">

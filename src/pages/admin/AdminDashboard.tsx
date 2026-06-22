@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Building2,
+  CalendarDays,
+  FileText,
+  Images,
+  Newspaper
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { listNews } from "../../services/newsService";
@@ -16,6 +24,12 @@ import type {
 import type { GalleryAlbum } from "../../data/galleryData";
 
 const COMING_SOON: any[] = [];
+const CARD_CLASS =
+  "bg-white rounded-xl shadow-sm border border-gray-200 ring-1 ring-gray-100 flex flex-col hover:shadow-md hover:border-gray-300 transition-all duration-200";
+const CARD_TITLE_CLASS = "text-base font-semibold text-[#1F2937]";
+const CARD_ICON_CLASS = "w-4 h-4 text-[#0057A8]/35";
+const CARD_CTA_CLASS =
+  "inline-flex items-center gap-1.5 text-sm font-semibold text-[#0057A8] hover:text-[#004a8f] transition-colors";
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
@@ -67,18 +81,13 @@ export default function AdminDashboard() {
       </div>
 
       {/* Grid de módulos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
-        {/* ── Card Notícias — ATIVO ── */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#0057A8]/20 ring-1 ring-[#0057A8]/10 flex flex-col">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mb-10">
+        {/* ── Card Notícias ── */}
+        <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <span className="text-sm font-semibold text-[#1F2937]">
-                {t.admin.nav.news}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {t.admin.dashboard.active}
-              </span>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={CARD_TITLE_CLASS}>{t.admin.nav.news}</span>
+              <Newspaper className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
 
             {/* Número — sans-serif para evitar "1" parecer "I" */}
@@ -106,37 +115,19 @@ export default function AdminDashboard() {
           </div>
 
           <div className="px-6 pb-5">
-            <Link
-              to="/admin/noticias"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#0057A8] text-white text-xs font-semibold hover:bg-[#004a8f] transition-colors">
-              {t.admin.dashboard.manage}
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+            <Link to="/admin/noticias" className={CARD_CTA_CLASS}>
+              Ver notícias
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
 
-        {/* ── Card Calendário — ATIVO ── */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#D9A441]/20 ring-1 ring-[#D9A441]/10 flex flex-col">
+        {/* ── Card Calendário ── */}
+        <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <span className="text-sm font-semibold text-[#1F2937]">
-                {t.admin.nav.calendar}
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {t.admin.dashboard.active}
-              </span>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={CARD_TITLE_CLASS}>{t.admin.nav.calendar}</span>
+              <CalendarDays className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
               <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
@@ -152,37 +143,19 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="px-6 pb-5">
-            <Link
-              to="/admin/calendario"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors">
-              {t.admin.dashboard.manageCalendar}
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+            <Link to="/admin/calendario" className={CARD_CTA_CLASS}>
+              Ver calendário
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
 
-        {/* ── Card Transparência — ATIVO ── */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#003B73]/20 ring-1 ring-[#003B73]/10 flex flex-col">
+        {/* ── Card Transparência ── */}
+        <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <span className="text-sm font-semibold text-[#1F2937]">
-                Transparência
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {t.admin.dashboard.active}
-              </span>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={CARD_TITLE_CLASS}>Transparência</span>
+              <FileText className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
               <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
@@ -198,37 +171,19 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="px-6 pb-5">
-            <Link
-              to="/admin/transparencia"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors">
-              Gerenciar
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+            <Link to="/admin/transparencia" className={CARD_CTA_CLASS}>
+              Ver transparência
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
 
-        {/* ── Card Federações — ATIVO ── */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#D9A441]/20 ring-1 ring-[#D9A441]/10 flex flex-col">
+        {/* ── Card Federações ── */}
+        <div className={`${CARD_CLASS} xl:col-span-2 xl:col-start-2`}>
           <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <span className="text-sm font-semibold text-[#1F2937]">
-                Federações
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {t.admin.dashboard.active}
-              </span>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={CARD_TITLE_CLASS}>Federações</span>
+              <Building2 className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
               <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
@@ -244,37 +199,19 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="px-6 pb-5">
-            <Link
-              to="/admin/federacoes"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors">
-              Gerenciar
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+            <Link to="/admin/federacoes" className={CARD_CTA_CLASS}>
+              Ver federações
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
 
-        {/* ── Card Galeria — ATIVO ── */}
-        <div className="bg-white rounded-xl shadow-sm border border-[#003B73]/20 ring-1 ring-[#003B73]/10 flex flex-col">
+        {/* ── Card Galeria ── */}
+        <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <span className="text-sm font-semibold text-[#1F2937]">
-                Galeria
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-50 border border-green-200 text-[10px] font-bold uppercase tracking-wide text-green-700">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
-                {t.admin.dashboard.active}
-              </span>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <span className={CARD_TITLE_CLASS}>Galeria</span>
+              <Images className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
               <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
@@ -286,26 +223,13 @@ export default function AdminDashboard() {
             <p className="text-xs text-gray-400 mt-1.5">
               {loading
                 ? "…"
-                : `${galleries.length} álbum${galleries.length !== 1 ? "ns" : ""}`}
+                : `${galleries.length} álbum${galleries.length !== 1 ? "ns" : ""} · ${galleries.reduce((acc, g) => acc + (g.photoCount || 0), 0)} fotos`}
             </p>
           </div>
           <div className="px-6 pb-5">
-            <Link
-              to="/admin/galeria"
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#003B73] text-white text-xs font-semibold hover:bg-[#002d5a] transition-colors">
-              Gerenciar
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
+            <Link to="/admin/galeria" className={CARD_CTA_CLASS}>
+              Ver galeria
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -332,16 +256,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Banner */}
-      <div className="bg-gray-50 border border-gray-100 rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-gray-500 mb-1">
-          {t.admin.dashboard.upcomingModules}
-        </h2>
-        <p className="text-sm text-gray-400 leading-relaxed">
-          {t.admin.dashboard.upcomingDesc}
-        </p>
       </div>
     </div>
   );
