@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
 interface ForcedPasswordChangeModalProps {
   loading: boolean;
@@ -10,27 +11,34 @@ export default function ForcedPasswordChangeModal({
   loading,
   onConfirm
 }: ForcedPasswordChangeModalProps) {
+  const { t } = useLanguage();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const newPasswordError = useMemo(() => {
     if (!submitAttempted) return "";
-    if (!newPassword) return "A nova senha é obrigatória.";
+    if (!newPassword) return t.admin.forcedPassword.validation.newRequired;
     if (newPassword.length < 8) {
-      return "A nova senha deve ter no mínimo 8 caracteres.";
+      return t.admin.forcedPassword.validation.minLength;
     }
     return "";
-  }, [newPassword, submitAttempted]);
+  }, [newPassword, submitAttempted, t.admin.forcedPassword.validation]);
 
   const confirmPasswordError = useMemo(() => {
     if (!submitAttempted) return "";
-    if (!confirmPassword) return "Confirme a nova senha.";
+    if (!confirmPassword)
+      return t.admin.forcedPassword.validation.confirmRequired;
     if (confirmPassword !== newPassword) {
-      return "As senhas não coincidem.";
+      return t.admin.forcedPassword.validation.mismatch;
     }
     return "";
-  }, [confirmPassword, newPassword, submitAttempted]);
+  }, [
+    confirmPassword,
+    newPassword,
+    submitAttempted,
+    t.admin.forcedPassword.validation
+  ]);
 
   const isValid =
     newPassword.length >= 8 &&
@@ -59,11 +67,10 @@ export default function ForcedPasswordChangeModal({
           <h2
             id="forced-password-change-title"
             className="text-lg font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-            Alteração obrigatória de senha
+            {t.admin.forcedPassword.title}
           </h2>
           <p className="text-sm text-gray-600 mt-2">
-            Sua senha inicial é temporária e deve ser alterada antes de utilizar
-            o sistema.
+            {t.admin.forcedPassword.description}
           </p>
         </div>
 
@@ -72,7 +79,7 @@ export default function ForcedPasswordChangeModal({
             <label
               htmlFor="new-password"
               className="block text-sm font-medium text-[#1F2937] mb-1.5">
-              Nova Senha
+              {t.admin.forcedPassword.newPasswordLabel}
             </label>
             <input
               id="new-password"
@@ -89,7 +96,7 @@ export default function ForcedPasswordChangeModal({
                   ? "border-red-400 focus:border-red-400 focus:ring-red-200"
                   : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
               }`}
-              placeholder="No mínimo 8 caracteres"
+              placeholder={t.admin.forcedPassword.newPasswordPlaceholder}
               required
               minLength={8}
             />
@@ -106,7 +113,7 @@ export default function ForcedPasswordChangeModal({
             <label
               htmlFor="confirm-password"
               className="block text-sm font-medium text-[#1F2937] mb-1.5">
-              Confirmar Senha
+              {t.admin.forcedPassword.confirmPasswordLabel}
             </label>
             <input
               id="confirm-password"
@@ -123,7 +130,7 @@ export default function ForcedPasswordChangeModal({
                   ? "border-red-400 focus:border-red-400 focus:ring-red-200"
                   : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
               }`}
-              placeholder="Repita a nova senha"
+              placeholder={t.admin.forcedPassword.confirmPasswordPlaceholder}
               required
             />
             {confirmPasswordError && (
@@ -139,7 +146,9 @@ export default function ForcedPasswordChangeModal({
             type="submit"
             disabled={loading}
             className="w-full inline-flex items-center justify-center rounded-lg bg-[#0057A8] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#004A90] transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-            {loading ? "Atualizando senha..." : "Salvar nova senha"}
+            {loading
+              ? t.admin.forcedPassword.submitting
+              : t.admin.forcedPassword.submit}
           </button>
         </form>
       </div>

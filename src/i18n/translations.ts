@@ -369,6 +369,31 @@ export const translations = {
       rbac: {
         noPermission: "No tienes permiso para realizar esta acción."
       },
+      forcedPassword: {
+        title: "Cambio obligatorio de contraseña",
+        description:
+          "Tu contraseña inicial es temporal y debe cambiarse antes de usar el sistema.",
+        newPasswordLabel: "Nueva contraseña",
+        confirmPasswordLabel: "Confirmar contraseña",
+        newPasswordPlaceholder: "Mínimo 8 caracteres",
+        confirmPasswordPlaceholder: "Repite la nueva contraseña",
+        submit: "Guardar nueva contraseña",
+        submitting: "Actualizando contraseña...",
+        validation: {
+          newRequired: "La nueva contraseña es obligatoria.",
+          minLength: "La nueva contraseña debe tener al menos 8 caracteres.",
+          confirmRequired: "Confirma la nueva contraseña.",
+          mismatch: "Las contraseñas no coinciden."
+        },
+        toast: {
+          updateError: "No se pudo actualizar la contraseña.",
+          profileSyncError:
+            "La contraseña se cambió, pero no se pudo actualizar el perfil.",
+          refreshError:
+            "La contraseña se cambió, pero no se pudo recargar tu perfil. Inténtalo de nuevo.",
+          success: "Contraseña cambiada con éxito. Acceso liberado."
+        }
+      },
       login: {
         adminArea: "Área administrativa",
         restricted: "Acceso restringido al equipo autorizado de la CONSUDES",
@@ -903,6 +928,31 @@ export const translations = {
       rbac: {
         noPermission: "Você não tem permissão para realizar esta ação."
       },
+      forcedPassword: {
+        title: "Alteração obrigatória de senha",
+        description:
+          "Sua senha inicial é temporária e deve ser alterada antes de utilizar o sistema.",
+        newPasswordLabel: "Nova senha",
+        confirmPasswordLabel: "Confirmar senha",
+        newPasswordPlaceholder: "No mínimo 8 caracteres",
+        confirmPasswordPlaceholder: "Repita a nova senha",
+        submit: "Salvar nova senha",
+        submitting: "Atualizando senha...",
+        validation: {
+          newRequired: "A nova senha é obrigatória.",
+          minLength: "A nova senha deve ter no mínimo 8 caracteres.",
+          confirmRequired: "Confirme a nova senha.",
+          mismatch: "As senhas não coincidem."
+        },
+        toast: {
+          updateError: "Não foi possível atualizar a senha.",
+          profileSyncError:
+            "Senha alterada, mas não foi possível concluir a atualização do perfil.",
+          refreshError:
+            "Senha alterada, mas não foi possível recarregar seu perfil. Tente novamente.",
+          success: "Senha alterada com sucesso. Acesso liberado."
+        }
+      },
       login: {
         adminArea: "Área Administrativa",
         restricted: "Acesso restrito à equipe autorizada da CONSUDES",
@@ -1323,6 +1373,31 @@ export const translations = {
       },
       rbac: {
         noPermission: "You do not have permission to perform this action."
+      },
+      forcedPassword: {
+        title: "Mandatory password change",
+        description:
+          "Your initial password is temporary and must be changed before using the system.",
+        newPasswordLabel: "New password",
+        confirmPasswordLabel: "Confirm password",
+        newPasswordPlaceholder: "At least 8 characters",
+        confirmPasswordPlaceholder: "Repeat the new password",
+        submit: "Save new password",
+        submitting: "Updating password...",
+        validation: {
+          newRequired: "New password is required.",
+          minLength: "New password must be at least 8 characters.",
+          confirmRequired: "Please confirm the new password.",
+          mismatch: "Passwords do not match."
+        },
+        toast: {
+          updateError: "Unable to update password.",
+          profileSyncError:
+            "Password changed, but profile update could not be completed.",
+          refreshError:
+            "Password changed, but your profile could not be reloaded. Please try again.",
+          success: "Password changed successfully. Access granted."
+        }
       },
       login: {
         adminArea: "Administrative Area",

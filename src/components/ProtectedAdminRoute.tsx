@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useToast } from "../context/ToastContext";
 import ForcedPasswordChangeModal from "./ForcedPasswordChangeModal";
+import { useLanguage } from "../context/LanguageContext";
 
 // Mapeamento de path para módulo RBAC
 const PATH_MODULE_MAP: Record<string, string> = {
@@ -40,6 +41,7 @@ export default function ProtectedAdminRoute() {
   const { user, loading, signOut, profile, profileLoading, refreshProfile } =
     useAuth();
   const { showToast } = useToast();
+  const { t } = useLanguage();
   const location = useLocation();
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const module = useMemo(
@@ -62,10 +64,7 @@ export default function ProtectedAdminRoute() {
     });
 
     if (updatePasswordError) {
-      showToast(
-        updatePasswordError.message || "Não foi possível atualizar a senha.",
-        "error"
-      );
+      showToast(t.admin.forcedPassword.toast.updateError, "error");
       setIsUpdatingPassword(false);
       return;
     }
@@ -75,26 +74,19 @@ export default function ProtectedAdminRoute() {
     );
 
     if (edgeError) {
-      showToast(
-        edgeError.message ||
-          "Senha alterada, mas não foi possível concluir a atualização do perfil.",
-        "error"
-      );
+      showToast(t.admin.forcedPassword.toast.profileSyncError, "error");
       setIsUpdatingPassword(false);
       return;
     }
 
     const { error: refreshError } = await refreshProfile();
     if (refreshError) {
-      showToast(
-        "Senha alterada, mas não foi possível recarregar seu perfil. Tente novamente.",
-        "error"
-      );
+      showToast(t.admin.forcedPassword.toast.refreshError, "error");
       setIsUpdatingPassword(false);
       return;
     }
 
-    showToast("Senha alterada com sucesso. Acesso liberado.", "success");
+    showToast(t.admin.forcedPassword.toast.success, "success");
     setIsUpdatingPassword(false);
   };
 
