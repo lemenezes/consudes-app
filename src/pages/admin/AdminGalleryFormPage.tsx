@@ -21,9 +21,7 @@ import {
   updateGallery,
   createGallery
 } from "../../services/galleryService";
-import {
-  uploadGalleryImage
-} from "../../services/galleryUploadService";
+import { uploadGalleryImage } from "../../services/galleryUploadService";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useToast } from "../../context/ToastContext";
 import {
@@ -277,7 +275,10 @@ export default function AdminGalleryFormPage() {
 
     // Validar se é modo edição e slug existe
     if (!isEditMode || !slug) {
-      showToast("Salve as informações do álbum antes de adicionar fotos.", "error");
+      showToast(
+        "Salve as informações do álbum antes de adicionar fotos.",
+        "error"
+      );
       return;
     }
 

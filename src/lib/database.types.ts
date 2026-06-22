@@ -1,604 +1,780 @@
-// Tipos gerados manualmente para o CMS institucional da CONSUDES.
-// Rode `supabase gen types typescript` após criar as tabelas no Supabase.
-
 export type Json =
   | string
   | number
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
-
-// ── Enums ────────────────────────────────────────────────────────────────────
-
-export type Lang = "es" | "pt" | "en";
-export type PublishStatus = "draft" | "published" | "archived";
-export type ReportCategory =
-  | "relatorio"
-  | "estatuto"
-  | "regulamento"
-  | "ata"
-  | "prestacao_contas"
-  | "documento_oficial";
-
-export interface ReportRow {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  category: ReportCategory;
-  year: number;
-  doc_date: string | null;
-  file_url: string | null;
-  status: PublishStatus;
-  created_at: string;
-  updated_at: string;
-}
-export type ChampionshipStatus = "upcoming" | "ongoing" | "finished";
-export type AuditAction =
-  | "create_news"
-  | "edit_news"
-  | "publish_news"
-  | "unpublish_news"
-  | "delete_news"
-  | "upload_image"
-  | "delete_image"
-  | "create_report"
-  | "delete_report"
-  | "create_federation"
-  | "edit_federation"
-  | "delete_federation"
-  | "create_calendar_event"
-  | "edit_calendar_event"
-  | "publish_calendar_event"
-  | "unpublish_calendar_event"
-  | "delete_calendar_event"
-  | "create_gallery_album"
-  | "update_gallery_album"
-  | "delete_gallery_album";
-
-// ── Calendar event enums ──────────────────────────────────────────────────────
-
-export type CalendarEventCategory =
-  | "interclubes"
-  | "sub21"
-  | "adulto"
-  | "institucional"
-  | "outro";
-export type CalendarEventType =
-  | "championship"
-  | "interclubs"
-  | "congress"
-  | "assembly"
-  | "institutional";
-export type CalendarEventStatus =
-  | "upcoming"
-  | "registrations_open"
-  | "confirmed"
-  | "finished";
-export type DatePrecision = "full" | "month" | "year";
-
-export interface CalendarEventRow {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  full_description: string | null;
-  start_date: string; // date as YYYY-MM-DD
-  end_date: string | null;
-  date_precision: DatePrecision;
-  country: string;
-  city: string | null;
-  venue: string | null;
-  location_open: boolean;
-  sport: string;
-  category: CalendarEventCategory;
-  event_type: CalendarEventType;
-  event_status: CalendarEventStatus;
-  federation: string | null;
-  link: string | null;
-  cover_url: string | null;
-  status: PublishStatus;
-  featured: boolean;
-  sort_order: number;
-  created_at: string;
-  updated_at: string;
-}
-
-// ── Enums — legado marketplace ───────────────────────────────────────────────
-
-export type ProfileRole =
-  | "super_admin"
-  | "secretaria"
-  | "diretor_esportes"
-  | "financeiro"
-  | "editor";
-export type ProfileStatus = "approved" | "suspended";
-export type AccessRequestStatus = "pending" | "approved" | "rejected";
-
-// ── Database schema ──────────────────────────────────────────────────────────
+  | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
-      /** Notícias e avisos oficiais */
-      news: {
-        Row: {
-          id: string;
-          title: string;
-          slug: string;
-          excerpt: string | null;
-          content: string | null;
-          cover_url: string | null;
-          lang: Lang;
-          status: PublishStatus;
-          published_at: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          slug: string;
-          excerpt?: string | null;
-          content?: string | null;
-          cover_url?: string | null;
-          lang?: Lang;
-          status?: PublishStatus;
-          published_at?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          slug?: string;
-          excerpt?: string | null;
-          content?: string | null;
-          cover_url?: string | null;
-          lang?: Lang;
-          status?: PublishStatus;
-          published_at?: string | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-
-      /** Federações afiliadas */
-      federations: {
-        Row: {
-          id: string;
-          acronym: string;
-          name_es: string;
-          name_pt: string | null;
-          name_en: string | null;
-          country_es: string;
-          country_pt: string | null;
-          country_en: string | null;
-          flag: string;
-          logo_url: string | null;
-          website_url: string | null;
-          instagram_url: string | null;
-          facebook_url: string | null;
-          youtube_url: string | null;
-          twitter_url: string | null;
-          linkedin_url: string | null;
-          tiktok_url: string | null;
-          flickr_url: string | null;
-          sort_order: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          acronym: string;
-          name_es: string;
-          name_pt?: string | null;
-          name_en?: string | null;
-          country_es: string;
-          country_pt?: string | null;
-          country_en?: string | null;
-          flag?: string;
-          logo_url?: string | null;
-          website_url?: string | null;
-          instagram_url?: string | null;
-          facebook_url?: string | null;
-          youtube_url?: string | null;
-          twitter_url?: string | null;
-          linkedin_url?: string | null;
-          tiktok_url?: string | null;
-          flickr_url?: string | null;
-          sort_order?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          acronym?: string;
-          name_es?: string;
-          name_pt?: string | null;
-          name_en?: string | null;
-          country_es?: string;
-          country_pt?: string | null;
-          country_en?: string | null;
-          flag?: string;
-          logo_url?: string | null;
-          website_url?: string | null;
-          instagram_url?: string | null;
-          facebook_url?: string | null;
-          youtube_url?: string | null;
-          twitter_url?: string | null;
-          linkedin_url?: string | null;
-          tiktok_url?: string | null;
-          flickr_url?: string | null;
-          sort_order?: number;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-
-      /** Documentos de transparência (informes, atas, estatutos) */
-      reports: {
-        Row: {
-          id: string;
-          title: string;
-          category: ReportCategory;
-          file_url: string;
-          year: number | null;
-          description: string | null;
-          sort_order: number;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          category: ReportCategory;
-          file_url: string;
-          year?: number | null;
-          description?: string | null;
-          sort_order?: number;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          category?: ReportCategory;
-          file_url?: string;
-          year?: number | null;
-          description?: string | null;
-          sort_order?: number;
-        };
-        Relationships: [];
-      };
-
-      /** Galeria de fotos e vídeos */
-      gallery: {
-        Row: {
-          id: string;
-          title: string;
-          description: string | null;
-          media_url: string;
-          media_type: "photo" | "video";
-          cover_url: string | null;
-          sort_order: number;
-          published_at: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          description?: string | null;
-          media_url: string;
-          media_type?: "photo" | "video";
-          cover_url?: string | null;
-          sort_order?: number;
-          published_at?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          description?: string | null;
-          media_url?: string;
-          media_type?: "photo" | "video";
-          cover_url?: string | null;
-          sort_order?: number;
-          published_at?: string | null;
-        };
-        Relationships: [];
-      };
-
-      /** Campeonatos e competições */
-      championships: {
-        Row: {
-          id: string;
-          title: string;
-          edition: string | null;
-          location: string | null;
-          country: string | null;
-          start_date: string | null;
-          end_date: string | null;
-          status: ChampionshipStatus;
-          cover_url: string | null;
-          description: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          title: string;
-          edition?: string | null;
-          location?: string | null;
-          country?: string | null;
-          start_date?: string | null;
-          end_date?: string | null;
-          status?: ChampionshipStatus;
-          cover_url?: string | null;
-          description?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          title?: string;
-          edition?: string | null;
-          location?: string | null;
-          country?: string | null;
-          start_date?: string | null;
-          end_date?: string | null;
-          status?: ChampionshipStatus;
-          cover_url?: string | null;
-          description?: string | null;
-        };
-        Relationships: [];
-      };
-
-      /** Membros da equipe atual */
-      team_members: {
-        Row: {
-          id: string;
-          name: string;
-          role: string;
-          country: string | null;
-          photo_url: string | null;
-          sort_order: number;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          role: string;
-          country?: string | null;
-          photo_url?: string | null;
-          sort_order?: number;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          role?: string;
-          country?: string | null;
-          photo_url?: string | null;
-          sort_order?: number;
-        };
-        Relationships: [];
-      };
-
-      /** Ex-presidentes */
-      former_presidents: {
-        Row: {
-          id: string;
-          name: string;
-          country: string | null;
-          period_start: number;
-          period_end: number | null;
-          photo_url: string | null;
-          sort_order: number;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          country?: string | null;
-          period_start: number;
-          period_end?: number | null;
-          photo_url?: string | null;
-          sort_order?: number;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          country?: string | null;
-          period_start?: number;
-          period_end?: number | null;
-          photo_url?: string | null;
-          sort_order?: number;
-        };
-        Relationships: [];
-      };
-
-      profiles: {
-        Row: {
-          id: string;
-          full_name: string | null;
-          email: string | null;
-          block: string | null;
-          apartment: string | null;
-          role: ProfileRole;
-          status: ProfileStatus;
-          created_at: string;
-        };
-        Insert: {
-          id: string;
-          full_name?: string | null;
-          email?: string | null;
-          block?: string | null;
-          apartment?: string | null;
-          role?: ProfileRole;
-          status?: ProfileStatus;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          full_name?: string | null;
-          email?: string | null;
-          block?: string | null;
-          apartment?: string | null;
-          role?: ProfileRole;
-          status?: ProfileStatus;
-          created_at?: string;
-        };
-        Relationships: [];
-      };
-
-      access_requests: {
-        Row: {
-          id: string;
-          full_name: string;
-          email: string;
-          block: string;
-          apartment: string;
-          message: string | null;
-          status: AccessRequestStatus;
-          created_at: string;
-          reviewed_at: string | null;
-          reviewed_by: string | null;
-          rejection_reason: string | null;
-        };
-        Insert: {
-          id?: string;
-          full_name: string;
-          email: string;
-          block: string;
-          apartment: string;
-          message?: string | null;
-          status?: AccessRequestStatus;
-          created_at?: string;
-          reviewed_at?: string | null;
-          reviewed_by?: string | null;
-          rejection_reason?: string | null;
-        };
-        Update: {
-          id?: string;
-          full_name?: string;
-          email?: string;
-          block?: string;
-          apartment?: string;
-          message?: string | null;
-          status?: AccessRequestStatus;
-          reviewed_at?: string | null;
-          reviewed_by?: string | null;
-          rejection_reason?: string | null;
-        };
-        Relationships: [];
-      };
-
-      /** Log de auditoria das ações administrativas */
       admin_audit_logs: {
         Row: {
-          id: string;
-          actor_email: string;
-          action: AuditAction;
-          entity_type: string;
-          entity_id: string | null;
-          entity_title: string | null;
-          reason: string | null;
-          metadata: Json;
-          created_at: string;
-        };
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_email: string
+          created_at: string
+          entity_id: string | null
+          entity_title: string | null
+          entity_type: string
+          id: string
+          metadata: Json
+          reason: string | null
+        }
         Insert: {
-          id?: string;
-          actor_email: string;
-          action: AuditAction;
-          entity_type: string;
-          entity_id?: string | null;
-          entity_title?: string | null;
-          reason?: string | null;
-          metadata?: Json;
-          created_at?: string;
-        };
-        Update: Record<string, never>; // imutável após inserido
-        Relationships: [];
-      };
-
-      /** Eventos do calendário esportivo institucional */
-      calendar_events: {
-        Row: CalendarEventRow;
-        Insert: {
-          id?: string;
-          title: string;
-          slug: string;
-          description?: string | null;
-          full_description?: string | null;
-          start_date: string;
-          end_date?: string | null;
-          date_precision?: DatePrecision;
-          country?: string;
-          city?: string | null;
-          venue?: string | null;
-          location_open?: boolean;
-          sport?: string;
-          category?: CalendarEventCategory;
-          event_type?: CalendarEventType;
-          event_status?: CalendarEventStatus;
-          federation?: string | null;
-          link?: string | null;
-          cover_url?: string | null;
-          status?: PublishStatus;
-          featured?: boolean;
-          sort_order?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
+          action: Database["public"]["Enums"]["audit_action"]
+          actor_email: string
+          created_at?: string
+          entity_id?: string | null
+          entity_title?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+        }
         Update: {
-          id?: string;
-          title?: string;
-          slug?: string;
-          description?: string | null;
-          full_description?: string | null;
-          start_date?: string;
-          end_date?: string | null;
-          date_precision?: DatePrecision;
-          country?: string;
-          city?: string | null;
-          venue?: string | null;
-          location_open?: boolean;
-          sport?: string;
-          category?: CalendarEventCategory;
-          event_type?: CalendarEventType;
-          event_status?: CalendarEventStatus;
-          federation?: string | null;
-          link?: string | null;
-          cover_url?: string | null;
-          status?: PublishStatus;
-          featured?: boolean;
-          sort_order?: number;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
-  };
-};
+          action?: Database["public"]["Enums"]["audit_action"]
+          actor_email?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_title?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json
+          reason?: string | null
+        }
+        Relationships: []
+      }
+      calendar_events: {
+        Row: {
+          category: Database["public"]["Enums"]["calendar_event_category"]
+          city: string | null
+          country: string
+          cover_url: string | null
+          created_at: string
+          date_precision: Database["public"]["Enums"]["date_precision"]
+          description: string | null
+          end_date: string | null
+          event_status: Database["public"]["Enums"]["calendar_event_status"]
+          event_type: Database["public"]["Enums"]["calendar_event_type"]
+          featured: boolean
+          federation: string | null
+          full_description: string | null
+          id: string
+          link: string | null
+          location_open: boolean
+          slug: string
+          sort_order: number
+          sport: string
+          start_date: string
+          status: Database["public"]["Enums"]["publish_status"]
+          title: string
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["calendar_event_category"]
+          city?: string | null
+          country?: string
+          cover_url?: string | null
+          created_at?: string
+          date_precision?: Database["public"]["Enums"]["date_precision"]
+          description?: string | null
+          end_date?: string | null
+          event_status?: Database["public"]["Enums"]["calendar_event_status"]
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          featured?: boolean
+          federation?: string | null
+          full_description?: string | null
+          id?: string
+          link?: string | null
+          location_open?: boolean
+          slug: string
+          sort_order?: number
+          sport?: string
+          start_date: string
+          status?: Database["public"]["Enums"]["publish_status"]
+          title: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["calendar_event_category"]
+          city?: string | null
+          country?: string
+          cover_url?: string | null
+          created_at?: string
+          date_precision?: Database["public"]["Enums"]["date_precision"]
+          description?: string | null
+          end_date?: string | null
+          event_status?: Database["public"]["Enums"]["calendar_event_status"]
+          event_type?: Database["public"]["Enums"]["calendar_event_type"]
+          featured?: boolean
+          federation?: string | null
+          full_description?: string | null
+          id?: string
+          link?: string | null
+          location_open?: boolean
+          slug?: string
+          sort_order?: number
+          sport?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["publish_status"]
+          title?: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      championships: {
+        Row: {
+          country: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          edition: string | null
+          end_date: string | null
+          id: string
+          location: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["championship_status"]
+          title: string
+        }
+        Insert: {
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          edition?: string | null
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["championship_status"]
+          title: string
+        }
+        Update: {
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          edition?: string | null
+          end_date?: string | null
+          id?: string
+          location?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["championship_status"]
+          title?: string
+        }
+        Relationships: []
+      }
+      federations: {
+        Row: {
+          acronym: string | null
+          contact_email: string | null
+          country: string
+          country_code: string
+          country_en: string | null
+          country_es: string | null
+          country_pt: string | null
+          created_at: string
+          facebook_url: string | null
+          flag: string
+          flickr_url: string | null
+          id: string
+          instagram_url: string | null
+          linkedin_url: string | null
+          logo_url: string | null
+          name: string
+          name_en: string | null
+          name_es: string | null
+          name_pt: string | null
+          sort_order: number
+          tiktok_url: string | null
+          twitter_url: string | null
+          updated_at: string
+          website_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          acronym?: string | null
+          contact_email?: string | null
+          country: string
+          country_code: string
+          country_en?: string | null
+          country_es?: string | null
+          country_pt?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          flag?: string
+          flickr_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
+          logo_url?: string | null
+          name: string
+          name_en?: string | null
+          name_es?: string | null
+          name_pt?: string | null
+          sort_order?: number
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          acronym?: string | null
+          contact_email?: string | null
+          country?: string
+          country_code?: string
+          country_en?: string | null
+          country_es?: string | null
+          country_pt?: string | null
+          created_at?: string
+          facebook_url?: string | null
+          flag?: string
+          flickr_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          linkedin_url?: string | null
+          logo_url?: string | null
+          name?: string
+          name_en?: string | null
+          name_es?: string | null
+          name_pt?: string | null
+          sort_order?: number
+          tiktok_url?: string | null
+          twitter_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      former_presidents: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          name: string
+          period_end: number | null
+          period_start: number
+          photo_url: string | null
+          sort_order: number
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          period_end?: number | null
+          period_start: number
+          photo_url?: string | null
+          sort_order?: number
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          period_end?: number | null
+          period_start?: number
+          photo_url?: string | null
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      gallery: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          media_type: Database["public"]["Enums"]["media_type"]
+          media_url: string
+          published_at: string | null
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          media_type?: Database["public"]["Enums"]["media_type"]
+          media_url: string
+          published_at?: string | null
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          media_type?: Database["public"]["Enums"]["media_type"]
+          media_url?: string
+          published_at?: string | null
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      gallery_albums: {
+        Row: {
+          admin_touched_at: number | null
+          category: string
+          city: string | null
+          country: string | null
+          cover_file: string | null
+          cover_position: string | null
+          created_at: string
+          description: Json
+          featured: boolean
+          id: string
+          photo_count: number
+          photos: Json
+          slug: string
+          tier: string
+          title: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          admin_touched_at?: number | null
+          category: string
+          city?: string | null
+          country?: string | null
+          cover_file?: string | null
+          cover_position?: string | null
+          created_at?: string
+          description?: Json
+          featured?: boolean
+          id?: string
+          photo_count?: number
+          photos?: Json
+          slug: string
+          tier?: string
+          title: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          admin_touched_at?: number | null
+          category?: string
+          city?: string | null
+          country?: string | null
+          cover_file?: string | null
+          cover_position?: string | null
+          created_at?: string
+          description?: Json
+          featured?: boolean
+          id?: string
+          photo_count?: number
+          photos?: Json
+          slug?: string
+          tier?: string
+          title?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      news: {
+        Row: {
+          content: string | null
+          cover_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          lang: Database["public"]["Enums"]["content_lang"]
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["publish_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          lang?: Database["public"]["Enums"]["content_lang"]
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["publish_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          lang?: Database["public"]["Enums"]["content_lang"]
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["publish_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          id: string
+          role: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          id: string
+          role?: string
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          id?: string
+          role?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          category: Database["public"]["Enums"]["report_category"]
+          created_at: string
+          description: string | null
+          doc_date: string | null
+          featured: boolean
+          file_url: string | null
+          id: string
+          slug: string
+          sort_order: number
+          status: string
+          title: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["report_category"]
+          created_at?: string
+          description?: string | null
+          doc_date?: string | null
+          featured?: boolean
+          file_url?: string | null
+          id?: string
+          slug: string
+          sort_order?: number
+          status?: string
+          title: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["report_category"]
+          created_at?: string
+          description?: string | null
+          doc_date?: string | null
+          featured?: boolean
+          file_url?: string | null
+          id?: string
+          slug?: string
+          sort_order?: number
+          status?: string
+          title?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          name: string
+          photo_url: string | null
+          role: string
+          sort_order: number
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          role: string
+          sort_order?: number
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          role?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      has_role: { Args: { roles: string[] }; Returns: boolean }
+    }
+    Enums: {
+      audit_action:
+        | "create_news"
+        | "edit_news"
+        | "publish_news"
+        | "unpublish_news"
+        | "delete_news"
+        | "upload_image"
+        | "delete_image"
+        | "create_report"
+        | "delete_report"
+        | "create_federation"
+        | "edit_federation"
+        | "delete_federation"
+      calendar_event_category:
+        | "interclubes"
+        | "sub21"
+        | "adulto"
+        | "institucional"
+        | "outro"
+      calendar_event_status:
+        | "upcoming"
+        | "registrations_open"
+        | "confirmed"
+        | "finished"
+      calendar_event_type:
+        | "championship"
+        | "interclubs"
+        | "congress"
+        | "assembly"
+        | "institutional"
+      championship_status: "upcoming" | "ongoing" | "finished"
+      content_lang: "es" | "pt" | "en"
+      date_precision: "full" | "month" | "year"
+      media_type: "photo" | "video"
+      publish_status: "draft" | "published" | "archived"
+      report_category:
+        | "relatorio"
+        | "estatuto"
+        | "regulamento"
+        | "ata"
+        | "prestacao_contas"
+        | "documento_oficial"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
 
-// ── Helpers de tipo — CMS CONSUDES ───────────────────────────────────────────
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type NewsRow = Database["public"]["Tables"]["news"]["Row"];
-export type FederationRow = Database["public"]["Tables"]["federations"]["Row"];
-export type GalleryRow = Database["public"]["Tables"]["gallery"]["Row"];
-export type ChampionshipRow =
-  Database["public"]["Tables"]["championships"]["Row"];
-export type TeamMemberRow = Database["public"]["Tables"]["team_members"]["Row"];
-export type FormerPresidentRow =
-  Database["public"]["Tables"]["former_presidents"]["Row"];
-export type AuditLogRow =
-  Database["public"]["Tables"]["admin_audit_logs"]["Row"];
-export type AuditLogInsert =
-  Database["public"]["Tables"]["admin_audit_logs"]["Insert"];
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
-export type AccessRequestRow =
-  Database["public"]["Tables"]["access_requests"]["Row"];
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
+  public: {
+    Enums: {
+      audit_action: [
+        "create_news",
+        "edit_news",
+        "publish_news",
+        "unpublish_news",
+        "delete_news",
+        "upload_image",
+        "delete_image",
+        "create_report",
+        "delete_report",
+        "create_federation",
+        "edit_federation",
+        "delete_federation",
+      ],
+      calendar_event_category: [
+        "interclubes",
+        "sub21",
+        "adulto",
+        "institucional",
+        "outro",
+      ],
+      calendar_event_status: [
+        "upcoming",
+        "registrations_open",
+        "confirmed",
+        "finished",
+      ],
+      calendar_event_type: [
+        "championship",
+        "interclubs",
+        "congress",
+        "assembly",
+        "institutional",
+      ],
+      championship_status: ["upcoming", "ongoing", "finished"],
+      content_lang: ["es", "pt", "en"],
+      date_precision: ["full", "month", "year"],
+      media_type: ["photo", "video"],
+      publish_status: ["draft", "published", "archived"],
+      report_category: [
+        "relatorio",
+        "estatuto",
+        "regulamento",
+        "ata",
+        "prestacao_contas",
+        "documento_oficial",
+      ],
+    },
+  },
+} as const
+
