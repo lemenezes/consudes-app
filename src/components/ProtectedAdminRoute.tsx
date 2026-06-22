@@ -1,7 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AdminLayout from "./AdminLayout";
-import { isAdminEmail } from "../utils/adminAllowlist";
 import { canAccessModule } from "../utils/rbac";
 import { useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
@@ -48,9 +47,10 @@ export default function ProtectedAdminRoute() {
     [location.pathname]
   );
   const role = profile?.role;
+  const hasAdminRole = !!role && canAccessModule(role, "dashboard");
   const mustChangePassword = Boolean(profile?.must_change_password);
   // Se não for rota de módulo conhecido, libera acesso (ex: dashboard, rotas futuras)
-  const canAccess = !module || (role && canAccessModule(role, module));
+  const canAccess = hasAdminRole && (!module || canAccessModule(role, module));
 
   const handleForcePasswordChange = async (newPassword: string) => {
     if (!user) return;
@@ -112,8 +112,8 @@ export default function ProtectedAdminRoute() {
     return <Navigate to="/admin/login" replace />;
   }
 
-  // Email não está na allowlist → desloga e bloqueia
-  if (!isAdminEmail(user.email)) {
+  // Usuário sem role administrativa não pode acessar o painel.
+  if (!hasAdminRole) {
     signOut();
     return <Navigate to="/admin/login" replace />;
   }

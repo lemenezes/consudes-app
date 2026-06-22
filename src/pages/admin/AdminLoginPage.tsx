@@ -3,7 +3,6 @@ import type { FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
-import { isAdminEmail } from "../../utils/adminAllowlist";
 import type { Lang } from "../../i18n/translations";
 
 const LANGS: { code: Lang; label: string }[] = [
@@ -29,11 +28,6 @@ export default function AdminLoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!isAdminEmail(email)) {
-      setError(t.admin.login.errorUnauthorized);
-      return;
-    }
 
     setLoading(true);
     const { error: authError } = await signIn(email, password);
