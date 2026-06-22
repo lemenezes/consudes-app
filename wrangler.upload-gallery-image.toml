@@ -1,0 +1,12 @@
+name = "consudes-upload-gallery-image"
+main = "workers/upload-gallery-image-worker.ts"
+compatibility_date = "2026-06-22"
+
+[[r2_buckets]]
+binding = "CONSUDES_ASSETS"
+bucket_name = "consudes-assets"
+
+[vars]
+CDN_BASE_URL = "https://cdn.consudes.leandrom.com.br"
+# Opcional: definir origens permitidas em CSV (ex: "https://consudes.org,https://admin.consudes.org")
+# ALLOWED_ORIGINS = "*"

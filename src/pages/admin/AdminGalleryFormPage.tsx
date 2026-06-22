@@ -21,6 +21,9 @@ import {
   updateGallery,
   createGallery
 } from "../../services/galleryService";
+import {
+  uploadGalleryImage
+} from "../../services/galleryUploadService";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useToast } from "../../context/ToastContext";
 import {
@@ -107,6 +110,7 @@ export default function AdminGalleryFormPage() {
 
   const [loading, setLoading] = useState(!!slug);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{
     title?: string;
@@ -269,41 +273,42 @@ export default function AdminGalleryFormPage() {
   };
 
   const handleFileSelect = (files: FileList | null) => {
-    if (!isEditMode || !slug || !files) return;
+    if (!files) return;
+
+    // Validar se é modo edição e slug existe
+    if (!isEditMode || !slug) {
+      showToast("Salve as informações do álbum antes de adicionar fotos.", "error");
+      return;
+    }
 
     const selectedFiles = Array.from(files);
     setFailedPhotos({});
-
-    const readAsDataUrl = (file: File) =>
-      new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result;
-          if (typeof result === "string") {
-            resolve(result);
-            return;
-          }
-          reject(new Error("Falha ao processar imagem selecionada"));
-        };
-        reader.onerror = () =>
-          reject(new Error("Falha ao ler imagem selecionada"));
-        reader.readAsDataURL(file);
-      });
+    setUploading(true);
 
     void Promise.all(
-      selectedFiles.map(async file => ({
-        filename: file.name,
-        originalName: file.name,
-        dataUrl: await readAsDataUrl(file),
-        caption: file.name.replace(/\.[^/.]+$/, "") || undefined
-      }))
+      selectedFiles.map(async file => {
+        // Fazer upload para R2
+        const uploadResult = await uploadGalleryImage(slug, file);
+
+        if (!uploadResult.ok) {
+          showToast(uploadResult.error, "error");
+          throw new Error(uploadResult.error);
+        }
+
+        // Foto com URL de R2 (sem dataUrl para novas fotos)
+        return {
+          filename: uploadResult.filename,
+          originalName: file.name,
+          caption: file.name.replace(/\.[^/.]+$/, "") || undefined
+        };
+      })
     )
       .then(newPhotos => {
         const now = Date.now();
         setTempPhotoCreatedAt(prev => {
           const next = { ...prev };
           newPhotos.forEach((photo, addedIndex) => {
-            const key = photo.dataUrl || `name:${photo.filename}`;
+            const key = `name:${photo.filename}`;
             next[key] = now + addedIndex;
           });
           return next;
@@ -312,10 +317,11 @@ export default function AdminGalleryFormPage() {
         const allPhotos = [...form.photos, ...newPhotos];
         return updatePhotos(allPhotos);
       })
-      .catch(err => {
-        const message = (err as Error).message || "Falha ao adicionar foto";
-        setError(message);
-        showToast(message, "error");
+      .catch(() => {
+        // Erro já foi exibido via toast na promise acima
+      })
+      .finally(() => {
+        setUploading(false);
       });
 
     if (fileInputRef.current) {
@@ -835,16 +841,23 @@ export default function AdminGalleryFormPage() {
                   onClick={() => fileInputRef.current?.click()}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
-                  disabled={saving}
+                  disabled={saving || uploading || !isEditMode}
                   className="group relative rounded-lg overflow-hidden bg-white border-2 border-dashed border-gray-300 shadow-sm hover:shadow-md hover:border-blue-400 transition-all aspect-square flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label="Adicionar fotos">
                   <div className="flex flex-col items-center justify-center gap-1.5 text-center px-2">
-                    <Plus
-                      size={28}
-                      className="text-gray-300 group-hover:text-blue-500 transition-colors"
-                    />
+                    {uploading ? (
+                      <Loader
+                        size={28}
+                        className="text-gray-400 animate-spin"
+                      />
+                    ) : (
+                      <Plus
+                        size={28}
+                        className="text-gray-300 group-hover:text-blue-500 transition-colors"
+                      />
+                    )}
                     <p className="text-[11px] font-semibold leading-tight text-gray-600 group-hover:text-blue-600 transition-colors">
-                      Adicionar fotos
+                      {uploading ? "Enviando..." : "Adicionar fotos"}
                     </p>
                   </div>
                 </button>
