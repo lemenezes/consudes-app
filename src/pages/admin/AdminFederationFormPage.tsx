@@ -1,50 +1,78 @@
-import { useEffect, useState } from 'react';
-import type { FormEvent, ChangeEvent } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import type { FormEvent, ChangeEvent } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import {
   getFederationById,
   createFederation,
   updateFederation,
-  FEDERATIONS_BUCKET,
-} from '../../services/federationsService';
-import { hasPermission } from '../../utils/rbac';
-import { useAuth } from '../../context/AuthContext';
-import { useAuditLog } from '../../hooks/useAuditLog';
-import { useLanguage } from '../../context/LanguageContext';
-import CoverImageUpload from '../../components/CoverImageUpload';
-import type { FederationFormData } from '../../services/federationsService';
+  FEDERATIONS_BUCKET
+} from "../../services/federationsService";
+import { hasPermission } from "../../utils/rbac";
+import { useAuth } from "../../context/AuthContext";
+import { useAuditLog } from "../../hooks/useAuditLog";
+import { useLanguage } from "../../context/LanguageContext";
+import CoverImageUpload from "../../components/CoverImageUpload";
+import type { FederationFormData } from "../../services/federationsService";
 
 const EMPTY: FederationFormData = {
-  acronym: '',
-  name_es: '',
-  name_pt: '',
-  name_en: '',
-  country_es: '',
-  country_pt: '',
-  country_en: '',
-  flag: '',
-  logo_url: '',
-  website_url: '',
-  instagram_url: '',
-  facebook_url: '',
-  youtube_url: '',
-  twitter_url: '',
-  linkedin_url: '',
-  tiktok_url: '',
-  flickr_url: '',
-  sort_order: 0,
+  acronym: "",
+  name_es: "",
+  name_pt: "",
+  name_en: "",
+  country_es: "",
+  country_pt: "",
+  country_en: "",
+  flag: "",
+  logo_url: "",
+  website_url: "",
+  instagram_url: "",
+  facebook_url: "",
+  youtube_url: "",
+  twitter_url: "",
+  linkedin_url: "",
+  tiktok_url: "",
+  flickr_url: "",
+  sort_order: 0
 };
 
 /* ── Rótulos de campos ─────────────────────────────────────────────────── */
-const SOCIAL_FIELDS: { name: keyof FederationFormData; label: string; placeholder: string }[] = [
-  { name: 'website_url',   label: 'Website',    placeholder: 'https://...' },
-  { name: 'instagram_url', label: 'Instagram',  placeholder: 'https://instagram.com/...' },
-  { name: 'facebook_url',  label: 'Facebook',   placeholder: 'https://facebook.com/...' },
-  { name: 'youtube_url',   label: 'YouTube',    placeholder: 'https://youtube.com/...' },
-  { name: 'twitter_url',   label: 'X / Twitter', placeholder: 'https://x.com/...' },
-  { name: 'linkedin_url',  label: 'LinkedIn',   placeholder: 'https://linkedin.com/...' },
-  { name: 'tiktok_url',    label: 'TikTok',     placeholder: 'https://tiktok.com/...' },
-  { name: 'flickr_url',    label: 'Flickr',     placeholder: 'https://flickr.com/...' },
+const SOCIAL_FIELDS: {
+  name: keyof FederationFormData;
+  label: string;
+  placeholder: string;
+}[] = [
+  { name: "website_url", label: "Website", placeholder: "https://..." },
+  {
+    name: "instagram_url",
+    label: "Instagram",
+    placeholder: "https://instagram.com/..."
+  },
+  {
+    name: "facebook_url",
+    label: "Facebook",
+    placeholder: "https://facebook.com/..."
+  },
+  {
+    name: "youtube_url",
+    label: "YouTube",
+    placeholder: "https://youtube.com/..."
+  },
+  {
+    name: "twitter_url",
+    label: "X / Twitter",
+    placeholder: "https://x.com/..."
+  },
+  {
+    name: "linkedin_url",
+    label: "LinkedIn",
+    placeholder: "https://linkedin.com/..."
+  },
+  {
+    name: "tiktok_url",
+    label: "TikTok",
+    placeholder: "https://tiktok.com/..."
+  },
+  { name: "flickr_url", label: "Flickr", placeholder: "https://flickr.com/..." }
 ];
 
 /* ── Componente ─────────────────────────────────────────────────────────── */
@@ -66,48 +94,50 @@ export default function AdminFederationFormPage() {
     if (!id) return;
     getFederationById(id).then(({ data, error }) => {
       if (error || !data) {
-        setError(error ?? 'Federação não encontrada.');
+        setError(error ?? "Federação não encontrada.");
         setLoading(false);
         return;
       }
       setForm({
-        acronym:       data.acronym,
-        name_es:       data.name_es,
-        name_pt:       data.name_pt ?? '',
-        name_en:       data.name_en ?? '',
-        country_es:    data.country_es,
-        country_pt:    data.country_pt ?? '',
-        country_en:    data.country_en ?? '',
-        flag:          data.flag,
-        logo_url:      data.logo_url ?? '',
-        website_url:   data.website_url ?? '',
-        instagram_url: data.instagram_url ?? '',
-        facebook_url:  data.facebook_url ?? '',
-        youtube_url:   data.youtube_url ?? '',
-        twitter_url:   data.twitter_url ?? '',
-        linkedin_url:  data.linkedin_url ?? '',
-        tiktok_url:    data.tiktok_url ?? '',
-        flickr_url:    data.flickr_url ?? '',
-        sort_order:    data.sort_order,
+        acronym: data.acronym ?? "",
+        name_es: data.name_es ?? "",
+        name_pt: data.name_pt ?? "",
+        name_en: data.name_en ?? "",
+        country_es: data.country_es ?? "",
+        country_pt: data.country_pt ?? "",
+        country_en: data.country_en ?? "",
+        flag: data.flag ?? "",
+        logo_url: data.logo_url ?? "",
+        website_url: data.website_url ?? "",
+        instagram_url: data.instagram_url ?? "",
+        facebook_url: data.facebook_url ?? "",
+        youtube_url: data.youtube_url ?? "",
+        twitter_url: data.twitter_url ?? "",
+        linkedin_url: data.linkedin_url ?? "",
+        tiktok_url: data.tiktok_url ?? "",
+        flickr_url: data.flickr_url ?? "",
+        sort_order: data.sort_order ?? 0
       });
       setLoading(false);
     });
   }, [id]);
 
   // ── Campos controlados ─────────────────────────────────────────────────
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
+    setForm(prev => ({
       ...prev,
-      [name]: name === 'sort_order' ? Number(value) : value,
+      [name]: name === "sort_order" ? Number(value) : value
     }));
   };
 
   // ── Validação ──────────────────────────────────────────────────────────
   const validate = (): string | null => {
-    if (!form.acronym.trim()) return 'Sigla é obrigatória.';
-    if (!form.name_es.trim()) return 'Nome oficial (ES) é obrigatório.';
-    if (!form.country_es.trim()) return 'País (ES) é obrigatório.';
+    if (!form.acronym.trim()) return "Sigla é obrigatória.";
+    if (!form.name_es.trim()) return "Nome oficial (ES) é obrigatório.";
+    if (!form.country_es.trim()) return "País (ES) é obrigatório.";
     return null;
   };
 
@@ -115,11 +145,14 @@ export default function AdminFederationFormPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const validationError = validate();
-    if (validationError) { setError(validationError); return; }
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
     // Proteção RBAC para create/update
-    const actionType = isEditing ? 'update' : 'create';
-    if (!profile || !hasPermission(profile.role, 'federacoes', actionType)) {
+    const actionType = isEditing ? "update" : "create";
+    if (!profile || !hasPermission(profile.role, "federacoes", actionType)) {
       setError(t.admin.rbac.noPermission);
       return;
     }
@@ -129,28 +162,36 @@ export default function AdminFederationFormPage() {
 
     if (isEditing && id) {
       const { error } = await updateFederation(id, form);
-      if (error) { setError(error); setSaving(false); return; }
+      if (error) {
+        setError(error);
+        setSaving(false);
+        return;
+      }
 
       await log({
-        action: 'edit_federation',
-        entity_type: 'federation',
+        action: "edit_federation",
+        entity_type: "federation",
         entity_id: id,
-        entity_title: form.acronym,
+        entity_title: form.acronym
       });
 
-      navigate('/admin/federacoes');
+      navigate("/admin/federacoes");
     } else {
       const { data, error } = await createFederation(form);
-      if (error) { setError(error); setSaving(false); return; }
+      if (error) {
+        setError(error);
+        setSaving(false);
+        return;
+      }
 
       await log({
-        action: 'create_federation',
-        entity_type: 'federation',
+        action: "create_federation",
+        entity_type: "federation",
         entity_id: data?.id,
-        entity_title: form.acronym,
+        entity_title: form.acronym
       });
 
-      navigate('/admin/federacoes');
+      navigate("/admin/federacoes");
     }
   };
 
@@ -158,7 +199,7 @@ export default function AdminFederationFormPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map(i => (
           <div key={i} className="h-12 bg-gray-100 rounded-xl animate-pulse" />
         ))}
       </div>
@@ -172,14 +213,22 @@ export default function AdminFederationFormPage() {
         <Link
           to="/admin/federacoes"
           className="p-2 rounded-lg text-gray-400 hover:text-[#1F2937] hover:bg-gray-100 transition-colors"
-          aria-label="Voltar"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          aria-label="Voltar">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
           </svg>
         </Link>
         <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-          {isEditing ? 'Editar federação' : 'Nova federação'}
+          {isEditing ? "Editar federação" : "Nova federação"}
         </h1>
       </div>
 
@@ -191,7 +240,6 @@ export default function AdminFederationFormPage() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
-
         {/* ── Identidade ── */}
         <section className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
           <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
@@ -356,7 +404,7 @@ export default function AdminFederationFormPage() {
           </h2>
           <CoverImageUpload
             value={form.logo_url}
-            onChange={(url) => setForm((prev) => ({ ...prev, logo_url: url }))}
+            onChange={url => setForm(prev => ({ ...prev, logo_url: url }))}
             bucket={FEDERATIONS_BUCKET}
             folder="logos"
           />
@@ -391,19 +439,20 @@ export default function AdminFederationFormPage() {
         <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             to="/admin/federacoes"
-            className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
-          >
+            className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
             Cancelar
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 rounded-lg bg-[#0057A8] text-white text-sm font-semibold hover:bg-[#004a8f] disabled:opacity-50 transition-colors"
-          >
-            {saving ? 'Salvando…' : isEditing ? 'Salvar alterações' : 'Criar federação'}
+            className="px-6 py-2.5 rounded-lg bg-[#0057A8] text-white text-sm font-semibold hover:bg-[#004a8f] disabled:opacity-50 transition-colors">
+            {saving
+              ? "Salvando…"
+              : isEditing
+                ? "Salvar alterações"
+                : "Criar federação"}
           </button>
         </div>
-
       </form>
     </div>
   );

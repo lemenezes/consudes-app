@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
-import type { ReportRow, PublishStatus } from '../../lib/database.types';
+import type { ReportRow, PublishStatus } from '../../lib/database.aliases';
 
 const STATUS_COLORS: Record<PublishStatus, string> = {
   draft:     'bg-gray-100 text-gray-600',

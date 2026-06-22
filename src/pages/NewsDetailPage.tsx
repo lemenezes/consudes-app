@@ -5,7 +5,7 @@ import { getPublishedNewsBySlug } from '../services/newsPublicService';
 import { useLanguage } from '../context/LanguageContext';
 import { translatePlain, translateHTML } from '../utils/translateContent';
 import { useSEO } from '../hooks/useSEO';
-import type { NewsRow } from '../lib/database.types';
+import type { NewsRow } from '../lib/database.aliases';
 
 function formatDate(iso: string | null, locale: string): string {
   if (!iso) return '';

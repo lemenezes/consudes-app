@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trophy, Users } from 'lucide-react';
-import type { CalendarEventType, CalendarEventCategory, CalendarEventStatus } from '../lib/database.types';
+import type { CalendarEventType, CalendarEventCategory, CalendarEventStatus } from '../lib/database.aliases';
 
 export const typeBorderColor: Record<CalendarEventType, string> = {
 	championship:  'border-l-[#003B73]',

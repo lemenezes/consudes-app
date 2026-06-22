@@ -1,5 +1,5 @@
 // Utils de datas para o calendário institucional
-import type { CalendarEventRow } from '../lib/database.types';
+import type { CalendarEventRow } from '../lib/database.aliases';
 
 export function getLocale(lang: string) {
   return lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en-US' : 'es-AR';

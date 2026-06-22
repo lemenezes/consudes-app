@@ -26,7 +26,7 @@ import type {
   CalendarEventRow,
   CalendarEventStatus,
   CalendarEventCategory
-} from "../lib/database.types";
+} from '../lib/database.aliases';
 import {
   typeBorderColor,
   typeIcon,

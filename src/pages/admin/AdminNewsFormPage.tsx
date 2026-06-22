@@ -15,7 +15,7 @@ import CoverImageUpload from '../../components/CoverImageUpload';
 import RichTextEditor from '../../components/RichTextEditor';
 import { getOrphanedInlineUrls, getNewlyAddedInlineUrls, deleteInlineImageUrls } from '../../utils/inlineImageCleanup';
 import type { NewsFormData } from '../../services/newsService';
-import type { PublishStatus } from '../../lib/database.types';
+import type { PublishStatus } from '../../lib/database.aliases';
 
 const EMPTY: NewsFormData = {
   title: '',

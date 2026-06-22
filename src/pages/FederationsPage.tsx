@@ -5,7 +5,7 @@ import PageShell from '../components/PageShell';
 import FederationCard from '../components/FederationCard';
 import { federationsData } from '../data/federationsData';
 import { listFederations } from '../services/federationsService';
-import type { FederationRow } from '../lib/database.types';
+import type { FederationRow } from '../lib/database.aliases';
 import type { Federation } from '../data/federationsData';
 import { useSEO } from '../hooks/useSEO';
 

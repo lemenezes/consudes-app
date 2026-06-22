@@ -9,7 +9,7 @@ export function slugify(text: string): string {
     .replace(/-+/g, '-');
 }
 import { supabase } from '../lib/supabase';
-import type { ReportRow, PublishStatus, ReportCategory } from '../lib/database.types';
+import type { ReportRow, PublishStatus, ReportCategory } from '../lib/database.aliases';
 
 export interface ReportFormData {
   title: string;

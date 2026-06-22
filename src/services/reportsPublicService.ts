@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { ReportRow, ReportCategory } from '../lib/database.types';
+import type { ReportRow, ReportCategory } from '../lib/database.aliases';
 
 export type ReportPublicItem = Pick<
   ReportRow,

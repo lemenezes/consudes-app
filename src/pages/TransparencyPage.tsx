@@ -5,7 +5,7 @@ import PageShell from '../components/PageShell';
 import { listPublishedReports } from '../services/reportsPublicService';
 import { REPORT_CATEGORIES } from '../services/reportsService';
 import type { ReportPublicItem } from '../services/reportsPublicService';
-import type { ReportCategory } from '../lib/database.types';
+import type { ReportCategory } from '../lib/database.aliases';
 
 const CATEGORY_COLORS: Record<ReportCategory, string> = {
   relatorio:         'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',

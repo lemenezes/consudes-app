@@ -12,7 +12,7 @@ import {
 import { useAuditLog } from '../../hooks/useAuditLog';
 import { useLanguage } from '../../context/LanguageContext';
 import DeleteConfirmModal from '../../components/DeleteConfirmModal';
-import type { CalendarEventRow, PublishStatus, CalendarEventCategory } from '../../lib/database.types';
+import type { CalendarEventRow, PublishStatus, CalendarEventCategory } from '../../lib/database.aliases';
 
 // ── Cores de status ──────────────────────────────────────────────────────
 const STATUS_COLORS: Record<PublishStatus, string> = {

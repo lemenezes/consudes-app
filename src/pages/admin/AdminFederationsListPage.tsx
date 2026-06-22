@@ -10,7 +10,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useLanguage } from "../../context/LanguageContext";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import type { FederationRow } from "../../lib/database.types";
+import type { FederationRow } from "../../lib/database.aliases";
 
 export default function AdminFederationsListPage() {
   const { log } = useAuditLog();
@@ -189,7 +189,7 @@ export default function AdminFederationsListPage() {
                         <span
                           className="text-[22px] leading-none"
                           role="img"
-                          aria-label={fed.country_es}>
+                          aria-label={fed.country_es ?? undefined}>
                           {fed.flag}
                         </span>
                         <p className="truncate text-sm font-semibold text-[#1F2937]">
@@ -263,7 +263,7 @@ export default function AdminFederationsListPage() {
                     <span
                       className="text-2xl"
                       role="img"
-                      aria-label={fed.country_es}>
+                      aria-label={fed.country_es ?? undefined}>
                       {fed.flag}
                     </span>
                   </td>
@@ -311,7 +311,7 @@ export default function AdminFederationsListPage() {
       {toDelete && (
         <DeleteConfirmModal
           title={`Apagar ${toDelete.acronym}?`}
-          itemLabel={toDelete.name_es}
+          itemLabel={toDelete.name_es ?? ""}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setToDelete(null)}
         />

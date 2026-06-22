@@ -6,7 +6,7 @@ import type {
   CalendarEventStatus,
   DatePrecision,
   PublishStatus,
-} from '../lib/database.types';
+} from '../lib/database.aliases';
 
 // ── Tipos públicos ─────────────────────────────────────────────────────────
 

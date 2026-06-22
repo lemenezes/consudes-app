@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { NewsRow } from '../lib/database.types';
+import type { NewsRow } from '../lib/database.aliases';
 
 /** Campos que o site público precisa (sem content completo na listagem) */
 export type NewsListItem = Pick<

@@ -15,7 +15,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { hasPermission } from '../../utils/rbac';
 import { useAuth } from '../../context/AuthContext';
 import type { ReportFormData } from '../../services/reportsService';
-import type { PublishStatus } from '../../lib/database.types';
+import type { PublishStatus } from '../../lib/database.aliases';
 
 
 const EMPTY: ReportFormData = {

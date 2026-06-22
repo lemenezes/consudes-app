@@ -20,7 +20,7 @@ import type {
   CalendarEventRow,
   ReportRow,
   FederationRow
-} from "../../lib/database.types";
+} from '../../lib/database.aliases';
 import type { GalleryAlbum } from "../../data/galleryData";
 
 const COMING_SOON: any[] = [];

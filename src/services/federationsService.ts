@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { deleteImageByUrl } from './storageService';
-import type { FederationRow } from '../lib/database.types';
+import type { FederationRow } from '../lib/database.aliases';
 
 export const FEDERATIONS_BUCKET = 'cms-federations';
 

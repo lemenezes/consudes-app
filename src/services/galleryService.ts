@@ -20,7 +20,7 @@ import {
   type GalleryTier,
   type GalleryPhoto
 } from "../data/galleryData";
-import type { Database } from "../lib/database.types";
+import type { Database } from '../lib/database.aliases';
 
 export interface GalleryServiceResult<T = any> {
   data?: T;

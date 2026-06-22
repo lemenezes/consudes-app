@@ -1,5 +1,5 @@
 import { calendarEvents as mockEvents } from '../data/calendarData';
-import type { CalendarEventRow, CalendarEventType, CalendarEventStatus, CalendarEventCategory } from '../lib/database.types';
+import type { CalendarEventRow, CalendarEventType, CalendarEventStatus, CalendarEventCategory } from '../lib/database.aliases';
 
 /**
  * Converte um evento mock para o formato CalendarEventRow (usado como fallback).

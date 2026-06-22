@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { deleteImageByUrl } from './storageService';
-import type { NewsRow, PublishStatus, Lang } from '../lib/database.types';
+import type { NewsRow, PublishStatus, Lang } from '../lib/database.aliases';
 
 export interface NewsFormData {
   title: string;

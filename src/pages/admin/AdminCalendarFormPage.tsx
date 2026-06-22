@@ -19,7 +19,7 @@ import type {
   CalendarEventType,
   CalendarEventStatus,
   DatePrecision,
-} from '../../lib/database.types';
+} from '../../lib/database.aliases';
 
 // ── Opções de selects ─────────────────────────────────────────────────────
 
