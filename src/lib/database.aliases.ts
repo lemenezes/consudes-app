@@ -114,6 +114,7 @@ export interface CalendarEventRow {
  */
 export type ProfileRole =
   | "super_admin"
+  | "presidente"
   | "secretaria"
   | "diretor_esportes"
   | "financeiro"

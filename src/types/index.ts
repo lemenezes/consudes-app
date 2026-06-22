@@ -7,6 +7,7 @@ export type Category =
 
 export type ProfileRole =
   | "super_admin"
+  | "presidente"
   | "secretaria"
   | "diretor_esportes"
   | "financeiro"
