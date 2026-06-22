@@ -13,6 +13,7 @@ import { hasPermission } from "../../utils/rbac";
 import { useAuth } from "../../context/AuthContext";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useLanguage } from "../../context/LanguageContext";
+import { useToast } from "../../context/ToastContext";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
 import { galleryAlbums, getPhotoUrl } from "../../data/galleryData";
 import type { GalleryAlbum } from "../../data/galleryData";
@@ -32,6 +33,7 @@ export default function AdminGalleryListPage() {
   const { log } = useAuditLog();
   const { t } = useLanguage();
   const { profile } = useAuth();
+  const { showToast } = useToast();
   const [galleries, setGalleries] = useState<GalleryAlbum[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -236,6 +238,7 @@ export default function AdminGalleryListPage() {
       setError(error);
       setToDelete(null);
       setActionLoading(null);
+      showToast("Não foi possível excluir o álbum.", "error");
       return;
     }
 
@@ -250,6 +253,7 @@ export default function AdminGalleryListPage() {
     setToDelete(null);
     setActionLoading(null);
     setOpenMobileMenuSlug(null);
+    showToast("Álbum excluído com sucesso.", "success");
     await load();
   };
 
@@ -323,15 +327,15 @@ export default function AdminGalleryListPage() {
                   current === album.slug ? null : album.slug
                 )
               }
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:bg-white hover:text-gray-800">
-              <MoreVertical size={12} />
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-[0_1px_4px_rgba(15,23,42,0.08)] backdrop-blur-sm transition-colors hover:bg-white hover:text-gray-800">
+              <MoreVertical size={11} />
             </button>
             {openMobileMenuSlug === album.slug && (
-              <div className="absolute right-0 top-9 z-30 min-w-[180px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+              <div className="absolute right-0 top-9 z-30 w-[180px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
                 <Link
                   to={`/admin/galeria/editar/${album.slug}`}
                   onClick={() => setOpenMobileMenuSlug(null)}
-                  className="flex items-center gap-1.5 whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-blue-600">
+                  className="flex items-center gap-1.5 whitespace-nowrap px-2.5 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-blue-600">
                   <Edit size={12} />
                   Editar álbum
                 </Link>
@@ -341,7 +345,7 @@ export default function AdminGalleryListPage() {
                     setToDelete(album);
                   }}
                   disabled={actionLoading === album.slug}
-                  className="flex w-full items-center gap-1.5 whitespace-nowrap px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-red-600 disabled:opacity-50">
+                  className="flex w-full items-center gap-1.5 whitespace-nowrap px-2.5 py-1.5 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-red-600 disabled:opacity-50">
                   <Trash2 size={12} />
                   Apagar álbum
                 </button>

@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ArrowLeft, Image, Plus, Save, Trash2, Eye } from "lucide-react";
+import {
+  ArrowLeft,
+  Image,
+  Plus,
+  Save,
+  Trash2,
+  Eye,
+  Loader
+} from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -60,6 +68,28 @@ function normalizeAlbumPhotos(
   };
 }
 
+function createAlbumSnapshot(album: GalleryAlbum): string {
+  // Snapshot normalizado focando apenas em dados persistentes
+  const persistableAlbum = {
+    title: album.title,
+    category: album.category,
+    year: album.year,
+    city: album.city,
+    country: album.country,
+    featured: album.featured,
+    description: album.description,
+    coverFile: album.coverFile,
+    coverPosition: album.coverPosition,
+    photos: album.photos.map(photo => ({
+      filename: photo.filename,
+      caption: photo.caption,
+      isHero: photo.isHero,
+      originalName: photo.originalName
+    }))
+  };
+  return JSON.stringify(persistableAlbum);
+}
+
 export default function AdminGalleryFormPage() {
   const navigate = useNavigate();
   const { "*": slugParam } = useParams<{ "*"?: string }>();
@@ -67,6 +97,10 @@ export default function AdminGalleryFormPage() {
   const { log } = useAuditLog();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const categorySelectRef = useRef<HTMLSelectElement>(null);
+  const yearInputRef = useRef<HTMLInputElement>(null);
+  const countryInputRef = useRef<HTMLInputElement>(null);
 
   // Extrai slug da URL: /admin/galeria/editar/... -> tudo após 'editar/'
   const slug = slugParam || extractSlugFromPath(location.pathname);
@@ -74,6 +108,12 @@ export default function AdminGalleryFormPage() {
   const [loading, setLoading] = useState(!!slug);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: string;
+    category?: string;
+    year?: string;
+    country?: string;
+  }>({});
   const [photoToRemoveIndex, setPhotoToRemoveIndex] = useState<number | null>(
     null
   );
@@ -103,7 +143,7 @@ export default function AdminGalleryFormPage() {
       pt: "",
       en: ""
     },
-    category: "historico",
+    category: "" as GalleryCategory,
     tier: "T2",
     coverFile: null,
     coverPosition: "center",
@@ -111,6 +151,9 @@ export default function AdminGalleryFormPage() {
     photos: [],
     featured: false
   });
+  const [initialFormSnapshot, setInitialFormSnapshot] = useState<string | null>(
+    null
+  );
 
   const isEditMode = !!slug;
 
@@ -154,6 +197,7 @@ export default function AdminGalleryFormPage() {
       setError(error);
     } else if (data) {
       setForm(data);
+      setInitialFormSnapshot(createAlbumSnapshot(data));
     }
     setLoading(false);
   };
@@ -162,6 +206,18 @@ export default function AdminGalleryFormPage() {
     field: keyof Omit<GalleryAlbum, "description" | "photos">,
     value: any
   ) => {
+    if (
+      field === "title" ||
+      field === "category" ||
+      field === "year" ||
+      field === "country"
+    ) {
+      setFieldErrors(prev => {
+        if (!prev[field]) return prev;
+        return { ...prev, [field]: undefined };
+      });
+    }
+
     setForm(prev => {
       if (field === "title" && !isEditMode) {
         const title = String(value ?? "");
@@ -295,7 +351,9 @@ export default function AdminGalleryFormPage() {
 
     const selectedSet = new Set(selectedPhotoIndexes);
     setForm(prev => {
-      const nextPhotos = prev.photos.filter((_, index) => !selectedSet.has(index));
+      const nextPhotos = prev.photos.filter(
+        (_, index) => !selectedSet.has(index)
+      );
       return normalizeAlbumPhotos(prev, nextPhotos);
     });
 
@@ -308,9 +366,16 @@ export default function AdminGalleryFormPage() {
     if (photoToRemoveIndex === null || !isEditMode || !slug) return;
 
     const index = photoToRemoveIndex;
+    const removedPhoto = form.photos[index];
     const nextPhotos = form.photos.filter(
       (_, currentIndex) => currentIndex !== index
     );
+
+    // Se a foto removida era a capa, escolher primeira foto restante como nova capa
+    if (removedPhoto && form.coverFile === removedPhoto.filename) {
+      form.coverFile = nextPhotos[0]?.filename ?? null;
+    }
+
     await updatePhotos(nextPhotos);
     setPhotoToRemoveIndex(null);
   };
@@ -356,14 +421,56 @@ export default function AdminGalleryFormPage() {
     setLightboxOpen(true);
   };
 
+  const isDirty = useMemo(() => {
+    if (!isEditMode || !initialFormSnapshot) return true;
+    const currentSnapshot = createAlbumSnapshot(form);
+    return currentSnapshot !== initialFormSnapshot;
+  }, [form, initialFormSnapshot, isEditMode]);
+
+  const focusField = (field: "title" | "category" | "year" | "country") => {
+    const fieldRefMap = {
+      title: titleInputRef,
+      category: categorySelectRef,
+      year: yearInputRef,
+      country: countryInputRef
+    };
+
+    setActiveTab("informacoes");
+    setTimeout(() => {
+      const target = fieldRefMap[field].current;
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      target?.focus();
+    }, 0);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validação básica
+    const nextFieldErrors: typeof fieldErrors = {};
+
     if (!form.title.trim()) {
-      setError("Título é obrigatório");
+      nextFieldErrors.title = "Informe o título do álbum.";
+    }
+    if (!form.category) {
+      nextFieldErrors.category = "Selecione uma categoria.";
+    }
+    if (form.year === null) {
+      nextFieldErrors.year = "Informe o ano do álbum.";
+    }
+    if (!String(form.country ?? "").trim()) {
+      nextFieldErrors.country = "Informe o país do álbum.";
+    }
+
+    const firstInvalidField = ["title", "category", "year", "country"].find(
+      field => !!nextFieldErrors[field as keyof typeof nextFieldErrors]
+    ) as "title" | "category" | "year" | "country" | undefined;
+
+    if (firstInvalidField) {
+      setFieldErrors(nextFieldErrors);
+      focusField(firstInvalidField);
       return;
     }
+
     if (form.photoCount < 0) {
       setError("Quantidade de fotos não pode ser negativa");
       return;
@@ -371,6 +478,7 @@ export default function AdminGalleryFormPage() {
 
     setSaving(true);
     setError(null);
+    setFieldErrors({});
 
     try {
       if (isEditMode && slug) {
@@ -380,6 +488,7 @@ export default function AdminGalleryFormPage() {
           setError(error);
           showToast(error, "error");
         } else {
+          setInitialFormSnapshot(createAlbumSnapshot(form));
           await log({
             action: "update_gallery_album" as const,
             entity_type: "gallery_album",
@@ -387,7 +496,7 @@ export default function AdminGalleryFormPage() {
             entity_title: form.title
           });
           showToast("Álbum salvo com sucesso.", "success");
-          setTimeout(() => navigate("/admin/galeria"), 2000);
+          navigate("/admin/galeria");
         }
       } else {
         // Create new
@@ -414,7 +523,7 @@ export default function AdminGalleryFormPage() {
             entity_title: form.title
           });
           showToast("Álbum salvo com sucesso.", "success");
-          setTimeout(() => navigate("/admin/galeria"), 2000);
+          navigate("/admin/galeria");
         }
       }
     } catch (err) {
@@ -489,8 +598,7 @@ export default function AdminGalleryFormPage() {
               activeTab === "fotos"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-gray-600 hover:text-gray-900"
-            }`}
-            disabled={!isEditMode}>
+            }`}>
             Fotos {isEditMode && `(${form.photos.length})`}
           </button>
         </div>
@@ -507,20 +615,32 @@ export default function AdminGalleryFormPage() {
                     Título *
                   </label>
                   <input
+                    ref={titleInputRef}
                     type="text"
                     value={form.title}
                     onChange={e => handleInputChange("title", e.target.value)}
                     placeholder="Ex: II Juegos Sudamericanos 2019"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-invalid={fieldErrors.title ? "true" : "false"}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                      fieldErrors.title
+                        ? "border-red-400 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
                   />
+                  {fieldErrors.title && (
+                    <p className="mt-1.5 text-sm text-red-600">
+                      {fieldErrors.title}
+                    </p>
+                  )}
                 </div>
 
                 {/* Categoria */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    Categoria
+                    Categoria *
                   </label>
                   <select
+                    ref={categorySelectRef}
                     value={form.category}
                     onChange={e =>
                       handleInputChange(
@@ -528,21 +648,33 @@ export default function AdminGalleryFormPage() {
                         e.target.value as GalleryCategory
                       )
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    aria-invalid={fieldErrors.category ? "true" : "false"}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                      fieldErrors.category
+                        ? "border-red-400 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}>
+                    <option value="">Selecione uma categoria</option>
                     {GALLERY_CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>
                         {cat}
                       </option>
                     ))}
                   </select>
+                  {fieldErrors.category && (
+                    <p className="mt-1.5 text-sm text-red-600">
+                      {fieldErrors.category}
+                    </p>
+                  )}
                 </div>
 
                 {/* Ano */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    Ano
+                    Ano *
                   </label>
                   <input
+                    ref={yearInputRef}
                     type="number"
                     value={form.year || ""}
                     onChange={e =>
@@ -552,8 +684,18 @@ export default function AdminGalleryFormPage() {
                       )
                     }
                     placeholder="Ex: 2019"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-invalid={fieldErrors.year ? "true" : "false"}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                      fieldErrors.year
+                        ? "border-red-400 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
                   />
+                  {fieldErrors.year && (
+                    <p className="mt-1.5 text-sm text-red-600">
+                      {fieldErrors.year}
+                    </p>
+                  )}
                 </div>
 
                 {/* Cidade */}
@@ -575,17 +717,28 @@ export default function AdminGalleryFormPage() {
                 {/* País */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                    País
+                    País *
                   </label>
                   <input
+                    ref={countryInputRef}
                     type="text"
                     value={form.country || ""}
                     onChange={e =>
                       handleInputChange("country", e.target.value || null)
                     }
                     placeholder="Ex: Brasil"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-invalid={fieldErrors.country ? "true" : "false"}
+                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 ${
+                      fieldErrors.country
+                        ? "border-red-400 focus:ring-red-500"
+                        : "border-gray-300 focus:ring-blue-500"
+                    }`}
                   />
+                  {fieldErrors.country && (
+                    <p className="mt-1.5 text-sm text-red-600">
+                      {fieldErrors.country}
+                    </p>
+                  )}
                 </div>
 
                 {/* Destaque */}
@@ -653,7 +806,10 @@ export default function AdminGalleryFormPage() {
               {selectedPhotoIndexes.length > 0 && (
                 <div className="flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50/70 px-3 py-2">
                   <p className="text-sm font-medium text-blue-900">
-                    {selectedPhotoIndexes.length} {selectedPhotoIndexes.length === 1 ? "imagem selecionada" : "imagens selecionadas"}
+                    {selectedPhotoIndexes.length}{" "}
+                    {selectedPhotoIndexes.length === 1
+                      ? "imagem selecionada"
+                      : "imagens selecionadas"}
                   </p>
                   <div className="flex items-center gap-2">
                     <button
@@ -759,7 +915,9 @@ export default function AdminGalleryFormPage() {
                           onClick={e => e.stopPropagation()}>
                           <input
                             type="checkbox"
-                            checked={selectedPhotoIndexes.includes(originalIndex)}
+                            checked={selectedPhotoIndexes.includes(
+                              originalIndex
+                            )}
                             onChange={() => togglePhotoSelection(originalIndex)}
                             className="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             aria-label="Selecionar foto"
@@ -831,7 +989,9 @@ export default function AdminGalleryFormPage() {
             <div className="text-center py-8">
               <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
               <p className="text-sm font-medium text-gray-500">
-                Salve o álbum para liberar a gestão de fotos.
+                {form.title.trim()
+                  ? "Salve o álbum antes de adicionar fotos."
+                  : "Preencha as informações do álbum antes de adicionar fotos."}
               </p>
             </div>
           )}
@@ -841,16 +1001,27 @@ export default function AdminGalleryFormPage() {
         <div className="border-t border-gray-200 bg-gray-50 px-6 py-4 flex items-center gap-3">
           <button
             type="button"
+            disabled={saving}
             onClick={() => navigate("/admin/galeria")}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors">
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:text-gray-400">
             Cancelar
           </button>
           <button
             type="submit"
-            disabled={saving}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50">
-            <Save size={16} />
-            {saving ? "Salvando..." : "Salvar"}
+            disabled={saving || (isEditMode && !isDirty)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            {saving ? (
+              <Loader size={16} className="animate-spin" />
+            ) : (
+              <Save size={16} />
+            )}
+            {saving
+              ? "Salvando..."
+              : isEditMode
+                ? isDirty
+                  ? "Salvar alterações"
+                  : "Sem alterações"
+                : "Salvar"}
           </button>
         </div>
       </form>

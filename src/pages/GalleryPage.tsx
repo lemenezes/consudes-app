@@ -69,7 +69,21 @@ function AlbumCover({
 }) {
   const [failed, setFailed] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const src = album.coverFile ? getPhotoUrl(album.slug, album.coverFile) : "";
+
+  // Resolver URL da capa: usar dataUrl se disponível (foto local), senão usar getPhotoUrl
+  const src = (() => {
+    if (!album.coverFile) return "";
+
+    // Procura foto no array de fotos
+    const coverPhoto = album.photos.find(p => p.filename === album.coverFile);
+    if (coverPhoto) {
+      // Se tem dataUrl (foto local), usar dataUrl. Senão usar filename
+      return getPhotoUrl(album.slug, coverPhoto.dataUrl || coverPhoto.filename);
+    }
+
+    // Fallback: tentar usar coverFile diretamente (pode ser arquivo do servidor)
+    return getPhotoUrl(album.slug, album.coverFile);
+  })();
 
   if (!src || failed) {
     return (
