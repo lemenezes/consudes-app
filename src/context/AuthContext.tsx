@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import type { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import type { Profile } from '../types';
+import { createContext, useContext, useEffect, useState } from "react";
+import type { User, Session } from "@supabase/supabase-js";
+import { supabase } from "../lib/supabase";
+import type { Profile } from "../types";
 
 interface AuthContextValue {
   user: User | null;
@@ -9,8 +9,16 @@ interface AuthContextValue {
   loading: boolean;
   profile: Profile | null;
   profileLoading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<{ error: string | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  refreshProfile: () => Promise<{ error: string | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string
+  ) => Promise<{ error: string | null }>;
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -20,9 +28,10 @@ const AuthContext = createContext<AuthContextValue>({
   loading: true,
   profile: null,
   profileLoading: false,
+  refreshProfile: async () => ({ error: null }),
   signUp: async () => ({ error: null }),
   signIn: async () => ({ error: null }),
-  signOut: async () => {},
+  signOut: async () => {}
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -32,17 +41,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
+  const fetchProfileByUserId = async (
+    userId: string
+  ): Promise<{ data: Profile | null; error: string | null }> => {
+    const { data: profileData, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error || !profileData) {
+      return { data: null, error: error?.message ?? "Perfil não encontrado" };
+    }
+
+    return {
+      data: {
+        ...(profileData as Omit<Profile, "must_change_password">),
+        must_change_password: Boolean(
+          (profileData as { must_change_password?: boolean })
+            .must_change_password
+        )
+      },
+      error: null
+    };
+  };
+
   useEffect(() => {
     // Listen for auth changes — includes INITIAL_SESSION on mount
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, newSession) => {
-      if (event === 'INITIAL_SESSION') {
+    const {
+      data: { subscription }
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      if (event === "INITIAL_SESSION") {
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
-      } else if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+      } else if (event === "TOKEN_REFRESHED" || event === "SIGNED_IN") {
         setSession(newSession);
         setUser(newSession?.user ?? null);
-      } else if (event === 'SIGNED_OUT') {
+      } else if (event === "SIGNED_OUT") {
         setSession(null);
         setUser(null);
       }
@@ -51,33 +87,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load profile whenever user changes
+  const refreshProfile = async (): Promise<{ error: string | null }> => {
+    if (!user) {
+      setProfile(null);
+      setProfileLoading(false);
+      return { error: null };
+    }
 
+    setProfileLoading(true);
+    const { data, error } = await fetchProfileByUserId(user.id);
+    setProfile(data);
+    setProfileLoading(false);
+
+    return { error };
+  };
+
+  // Load profile whenever user changes
   useEffect(() => {
     if (!user) {
       setProfile(null);
       setProfileLoading(false);
       return;
     }
-    setProfileLoading(true);
-    (async () => {
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      if (error || !profileData) {
-        setProfile(null);
-      } else {
-        setProfile(profileData as Profile);
-      }
-      setProfileLoading(false);
-    })();
+
+    void refreshProfile();
   }, [user]);
 
-
   // Novo signUp para aceitar display_name
-  const signUp = async (email: string, password: string, name: string): Promise<{ error: string | null }> => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string
+  ): Promise<{ error: string | null }> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -87,12 +128,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     });
-    if (error || !data?.user) return { error: error?.message ?? 'Erro ao cadastrar' };
+    if (error || !data?.user)
+      return { error: error?.message ?? "Erro ao cadastrar" };
     return { error: null };
   };
 
-  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const signIn = async (
+    email: string,
+    password: string
+  ): Promise<{ error: string | null }> => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
     if (error) return { error: error.message };
     return { error: null };
   };
@@ -102,7 +150,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, profile, profileLoading, signUp, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        profile,
+        profileLoading,
+        refreshProfile,
+        signUp,
+        signIn,
+        signOut
+      }}>
       {children}
     </AuthContext.Provider>
   );
