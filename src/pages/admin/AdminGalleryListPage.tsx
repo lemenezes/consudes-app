@@ -1,5 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { LayoutGrid, List, Edit, Trash2, Image } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  LayoutGrid,
+  List,
+  Edit,
+  Trash2,
+  Image,
+  MoreVertical
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { listGalleries, deleteGallery } from "../../services/galleryService";
 import { hasPermission } from "../../utils/rbac";
@@ -30,6 +37,10 @@ export default function AdminGalleryListPage() {
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<GalleryAlbum | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [openMobileMenuSlug, setOpenMobileMenuSlug] = useState<string | null>(
+    null
+  );
+  const openMobileMenuRef = useRef<HTMLDivElement | null>(null);
   const [sortState, setSortState] = useState<{
     key: SortKey;
     direction: SortDirection;
@@ -190,6 +201,25 @@ export default function AdminGalleryListPage() {
     window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, viewMode);
   }, [viewMode]);
 
+  useEffect(() => {
+    if (!openMobileMenuSlug) return;
+
+    const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (openMobileMenuRef.current?.contains(target)) return;
+      setOpenMobileMenuSlug(null);
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [openMobileMenuSlug]);
+
   // ── Apagar ─────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
@@ -197,6 +227,7 @@ export default function AdminGalleryListPage() {
     if (!profile || !hasPermission(profile.role, "galeria", "delete")) {
       setError(t.admin.rbac.noPermission);
       setToDelete(null);
+      setOpenMobileMenuSlug(null);
       return;
     }
     setActionLoading(toDelete.slug);
@@ -218,6 +249,7 @@ export default function AdminGalleryListPage() {
 
     setToDelete(null);
     setActionLoading(null);
+    setOpenMobileMenuSlug(null);
     await load();
   };
 
@@ -278,8 +310,47 @@ export default function AdminGalleryListPage() {
             </span>
           </div>
 
-          {/* Ações — ícones no canto superior direito, visíveis apenas no hover */}
-          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-200">
+          {/* Ações mobile */}
+          <div
+            ref={openMobileMenuSlug === album.slug ? openMobileMenuRef : null}
+            className="absolute top-2 right-2 z-20 md:hidden">
+            <button
+              type="button"
+              aria-label="Abrir menu do álbum"
+              aria-expanded={openMobileMenuSlug === album.slug}
+              onClick={() =>
+                setOpenMobileMenuSlug(current =>
+                  current === album.slug ? null : album.slug
+                )
+              }
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm transition-colors hover:bg-white hover:text-gray-800">
+              <MoreVertical size={12} />
+            </button>
+            {openMobileMenuSlug === album.slug && (
+              <div className="absolute right-0 top-9 z-30 min-w-[180px] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                <Link
+                  to={`/admin/galeria/editar/${album.slug}`}
+                  onClick={() => setOpenMobileMenuSlug(null)}
+                  className="flex items-center gap-1.5 whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-blue-600">
+                  <Edit size={12} />
+                  Editar álbum
+                </Link>
+                <button
+                  onClick={() => {
+                    setOpenMobileMenuSlug(null);
+                    setToDelete(album);
+                  }}
+                  disabled={actionLoading === album.slug}
+                  className="flex w-full items-center gap-1.5 whitespace-nowrap px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-red-600 disabled:opacity-50">
+                  <Trash2 size={12} />
+                  Apagar álbum
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Ações desktop — ícones no canto superior direito, visíveis apenas no hover */}
+          <div className="absolute top-2 right-2 hidden gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 md:flex">
             <Link
               to={`/admin/galeria/editar/${album.slug}`}
               title="Editar"
