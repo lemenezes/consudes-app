@@ -180,7 +180,7 @@ export async function updateGallery(
     const merged = { ...fromDatabaseAlbum(current), ...updates };
     const dbUpdate: Database["public"]["Tables"]["gallery_albums"]["Update"] = {
       ...toDatabaseAlbum(merged),
-      admin_touched_at: new Date().toISOString() as any
+      admin_touched_at: Date.now()
     };
 
     // Atualizar no Supabase
@@ -252,7 +252,7 @@ export async function createGallery(
   try {
     const dbData: Database["public"]["Tables"]["gallery_albums"]["Insert"] = {
       ...toDatabaseAlbum(album),
-      admin_touched_at: new Date().toISOString() as any
+      admin_touched_at: Date.now()
     };
 
     // Inserir no Supabase
