@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ArrowLeft, Image, Plus, Save, Trash2, Eye } from "lucide-react";
 import Lightbox from "yet-another-react-lightbox";
@@ -30,6 +30,18 @@ function extractSlugFromPath(pathname: string): string | undefined {
 
   const slug = pathname.split("/editar/")[1];
   return slug || undefined;
+}
+
+function toSlug(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function normalizeAlbumPhotos(
@@ -65,12 +77,20 @@ export default function AdminGalleryFormPage() {
   const [photoToRemoveIndex, setPhotoToRemoveIndex] = useState<number | null>(
     null
   );
+  const [selectedPhotoIndexes, setSelectedPhotoIndexes] = useState<number[]>(
+    []
+  );
+  const [batchRemoveConfirmOpen, setBatchRemoveConfirmOpen] =
+    useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<"informacoes" | "fotos">(
     "informacoes"
   );
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
   const [failedPhotos, setFailedPhotos] = useState<Record<string, boolean>>({});
+  const [tempPhotoCreatedAt, setTempPhotoCreatedAt] = useState<
+    Record<string, number>
+  >({});
 
   const [form, setForm] = useState<GalleryAlbum>({
     slug: "",
@@ -103,6 +123,27 @@ export default function AdminGalleryFormPage() {
 
   useEffect(() => {
     setFailedPhotos({});
+    setSelectedPhotoIndexes(prev =>
+      prev.filter(index => index >= 0 && index < form.photos.length)
+    );
+
+    setTempPhotoCreatedAt(prev => {
+      const activeKeys = new Set(
+        form.photos.map(photo => photo.dataUrl || `name:${photo.filename}`)
+      );
+      let changed = false;
+      const next: Record<string, number> = {};
+
+      Object.entries(prev).forEach(([key, value]) => {
+        if (activeKeys.has(key)) {
+          next[key] = value;
+        } else {
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
   }, [form.photos]);
 
   const loadAlbum = async () => {
@@ -121,10 +162,21 @@ export default function AdminGalleryFormPage() {
     field: keyof Omit<GalleryAlbum, "description" | "photos">,
     value: any
   ) => {
-    setForm(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setForm(prev => {
+      if (field === "title" && !isEditMode) {
+        const title = String(value ?? "");
+        return {
+          ...prev,
+          title,
+          slug: toSlug(title)
+        };
+      }
+
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
   };
 
   const handleDescriptionChange = (lang: "es" | "pt" | "en", value: string) => {
@@ -191,6 +243,16 @@ export default function AdminGalleryFormPage() {
       }))
     )
       .then(newPhotos => {
+        const now = Date.now();
+        setTempPhotoCreatedAt(prev => {
+          const next = { ...prev };
+          newPhotos.forEach((photo, addedIndex) => {
+            const key = photo.dataUrl || `name:${photo.filename}`;
+            next[key] = now + addedIndex;
+          });
+          return next;
+        });
+
         const allPhotos = [...form.photos, ...newPhotos];
         return updatePhotos(allPhotos);
       })
@@ -220,6 +282,28 @@ export default function AdminGalleryFormPage() {
     setPhotoToRemoveIndex(index);
   };
 
+  const togglePhotoSelection = (index: number) => {
+    setSelectedPhotoIndexes(prev =>
+      prev.includes(index)
+        ? prev.filter(current => current !== index)
+        : [...prev, index]
+    );
+  };
+
+  const confirmBatchRemovePhotos = () => {
+    if (selectedPhotoIndexes.length === 0) return;
+
+    const selectedSet = new Set(selectedPhotoIndexes);
+    setForm(prev => {
+      const nextPhotos = prev.photos.filter((_, index) => !selectedSet.has(index));
+      return normalizeAlbumPhotos(prev, nextPhotos);
+    });
+
+    setBatchRemoveConfirmOpen(false);
+    setSelectedPhotoIndexes([]);
+    setFailedPhotos({});
+  };
+
   const confirmRemovePhoto = async () => {
     if (photoToRemoveIndex === null || !isEditMode || !slug) return;
 
@@ -239,8 +323,32 @@ export default function AdminGalleryFormPage() {
     await persistAlbum(nextAlbum);
   };
 
-  const slides = form.photos.map(photo => ({
-    src: getPhotoUrl(form.slug || slug || "", photo.dataUrl || photo.filename)
+  const adminVisualPhotos = useMemo(() => {
+    return form.photos
+      .map((photo, index) => {
+        const tempKey = photo.dataUrl || `name:${photo.filename}`;
+        const createdAt = tempPhotoCreatedAt[tempKey] ?? 0;
+
+        return {
+          photo,
+          originalIndex: index,
+          createdAt,
+          photoKey: `${photo.filename}-${index}`
+        };
+      })
+      .sort((a, b) => {
+        if (b.createdAt !== a.createdAt) {
+          return b.createdAt - a.createdAt;
+        }
+        return a.originalIndex - b.originalIndex;
+      });
+  }, [form.photos, tempPhotoCreatedAt]);
+
+  const slides = adminVisualPhotos.map(item => ({
+    src: getPhotoUrl(
+      form.slug || slug || "",
+      item.photo.dataUrl || item.photo.filename
+    )
   }));
 
   const handleOpenLightbox = (index: number) => {
@@ -254,10 +362,6 @@ export default function AdminGalleryFormPage() {
     // Validação básica
     if (!form.title.trim()) {
       setError("Título é obrigatório");
-      return;
-    }
-    if (!form.slug.trim()) {
-      setError("Slug é obrigatório");
       return;
     }
     if (form.photoCount < 0) {
@@ -287,7 +391,18 @@ export default function AdminGalleryFormPage() {
         }
       } else {
         // Create new
-        const { error } = await createGallery(form);
+        const autoSlug = toSlug(form.title);
+        if (!autoSlug) {
+          setError("Não foi possível gerar slug a partir do título");
+          return;
+        }
+
+        const albumToCreate: GalleryAlbum = {
+          ...form,
+          slug: autoSlug
+        };
+
+        const { error } = await createGallery(albumToCreate);
         if (error) {
           setError(error);
           showToast(error, "error");
@@ -295,7 +410,7 @@ export default function AdminGalleryFormPage() {
           await log({
             action: "create_gallery_album" as const,
             entity_type: "gallery_album",
-            entity_id: form.slug,
+            entity_id: albumToCreate.slug,
             entity_title: form.title
           });
           showToast("Álbum salvo com sucesso.", "success");
@@ -535,6 +650,28 @@ export default function AdminGalleryFormPage() {
                 </p>
               </div>
 
+              {selectedPhotoIndexes.length > 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50/70 px-3 py-2">
+                  <p className="text-sm font-medium text-blue-900">
+                    {selectedPhotoIndexes.length} {selectedPhotoIndexes.length === 1 ? "imagem selecionada" : "imagens selecionadas"}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPhotoIndexes([])}
+                      className="inline-flex items-center justify-center rounded-lg border border-blue-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors">
+                      Limpar seleção
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBatchRemoveConfirmOpen(true)}
+                      className="inline-flex items-center justify-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700 transition-colors">
+                      Remover selecionadas
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 xl:grid-cols-[repeat(7,minmax(0,1fr))] gap-2">
                 {/* Card de Upload */}
                 <button
@@ -557,8 +694,8 @@ export default function AdminGalleryFormPage() {
                 </button>
 
                 {/* Cards de Fotos */}
-                {form.photos.map((photo, index) => {
-                  const photoKey = `${photo.filename}-${index}`;
+                {adminVisualPhotos.map((item, visualIndex) => {
+                  const { photo, originalIndex, photoKey } = item;
                   const src = getPhotoUrl(
                     form.slug || slug || "",
                     photo.dataUrl || photo.filename
@@ -607,7 +744,7 @@ export default function AdminGalleryFormPage() {
                                 [photoKey]: true
                               }));
                             }}
-                            onClick={() => handleOpenLightbox(index)}
+                            onClick={() => handleOpenLightbox(visualIndex)}
                           />
                         )}
 
@@ -617,12 +754,24 @@ export default function AdminGalleryFormPage() {
                           </span>
                         )}
 
+                        <label
+                          className="absolute top-1 right-1 z-20 inline-flex items-center justify-center rounded bg-white/95 p-1 shadow-sm"
+                          onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={selectedPhotoIndexes.includes(originalIndex)}
+                            onChange={() => togglePhotoSelection(originalIndex)}
+                            className="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            aria-label="Selecionar foto"
+                          />
+                        </label>
+
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                           <button
                             type="button"
                             onClick={e => {
                               e.stopPropagation();
-                              handleOpenLightbox(index);
+                              handleOpenLightbox(visualIndex);
                             }}
                             disabled={saving}
                             title="Visualizar"
@@ -634,7 +783,7 @@ export default function AdminGalleryFormPage() {
                               type="button"
                               onClick={e => {
                                 e.stopPropagation();
-                                handleSetCover(index);
+                                handleSetCover(originalIndex);
                               }}
                               disabled={saving}
                               title="Definir como capa"
@@ -646,7 +795,7 @@ export default function AdminGalleryFormPage() {
                             type="button"
                             onClick={e => {
                               e.stopPropagation();
-                              handleRemovePhoto(index);
+                              handleRemovePhoto(originalIndex);
                             }}
                             disabled={saving}
                             title="Remover foto"
@@ -713,6 +862,18 @@ export default function AdminGalleryFormPage() {
           onConfirm={confirmRemovePhoto}
           onCancel={() => setPhotoToRemoveIndex(null)}
           confirmLabel="Remover"
+          cancelLabel="Cancelar"
+          isDangerous={true}
+        />
+      )}
+
+      {batchRemoveConfirmOpen && (
+        <SimpleConfirmModal
+          title="Remover fotos selecionadas"
+          message={`Tem certeza que deseja remover ${selectedPhotoIndexes.length} ${selectedPhotoIndexes.length === 1 ? "foto" : "fotos"} selecionada${selectedPhotoIndexes.length === 1 ? "" : "s"}?`}
+          onConfirm={confirmBatchRemovePhotos}
+          onCancel={() => setBatchRemoveConfirmOpen(false)}
+          confirmLabel="Remover selecionadas"
           cancelLabel="Cancelar"
           isDangerous={true}
         />

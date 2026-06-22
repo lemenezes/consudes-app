@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LayoutGrid, List, Edit, Trash2, Image } from "lucide-react";
 import { Link } from "react-router-dom";
 import { listGalleries, deleteGallery } from "../../services/galleryService";
@@ -7,20 +7,19 @@ import { useAuth } from "../../context/AuthContext";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useLanguage } from "../../context/LanguageContext";
 import DeleteConfirmModal from "../../components/DeleteConfirmModal";
-import { getPhotoUrl } from "../../data/galleryData";
+import { galleryAlbums, getPhotoUrl } from "../../data/galleryData";
 import type { GalleryAlbum } from "../../data/galleryData";
 
-const TIER_LABELS: Record<string, string> = {
-  T1: "Destaque",
-  T2: "Galeria",
-  T3: "Arquivo"
-};
+const VIEW_MODE_STORAGE_KEY = "admin-gallery-view-mode";
 
-const TIER_COLORS: Record<string, string> = {
-  T1: "bg-consudes-gold text-white",
-  T2: "bg-blue-500 text-white",
-  T3: "bg-gray-500 text-white"
-};
+function getInitialViewMode(): "cards" | "list" {
+  if (typeof window === "undefined") return "cards";
+  const stored = window.localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+  return stored === "list" ? "list" : "cards";
+}
+
+type SortKey = "album" | "category" | "year" | "country" | "photos";
+type SortDirection = "asc" | "desc";
 
 export default function AdminGalleryListPage() {
   const { log } = useAuditLog();
@@ -31,7 +30,145 @@ export default function AdminGalleryListPage() {
   const [error, setError] = useState<string | null>(null);
   const [toDelete, setToDelete] = useState<GalleryAlbum | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"cards" | "list">("list");
+  const [sortState, setSortState] = useState<{
+    key: SortKey;
+    direction: SortDirection;
+  } | null>(null);
+  const [viewMode, setViewMode] = useState<"cards" | "list">(
+    getInitialViewMode
+  );
+
+  const originalOrderBySlug = useMemo(() => {
+    return new Map(galleryAlbums.map((album, index) => [album.slug, index]));
+  }, []);
+
+  const originalAlbumBySlug = useMemo(() => {
+    return new Map(galleryAlbums.map(album => [album.slug, album]));
+  }, []);
+
+  const isEditedOrNewAlbum = (album: GalleryAlbum): boolean => {
+    const original = originalAlbumBySlug.get(album.slug);
+    if (!original) return true;
+    if (typeof album.adminTouchedAt === "number") return true;
+
+    const { adminTouchedAt: _currentTouchedAt, ...currentComparable } = album;
+    const originalComparable = original;
+
+    return (
+      JSON.stringify(currentComparable) !== JSON.stringify(originalComparable)
+    );
+  };
+
+  const displayGalleries = useMemo(() => {
+    const indexBySlug = new Map(
+      galleries.map((album, index) => [album.slug, index])
+    );
+
+    const recentAlbums = galleries.filter(isEditedOrNewAlbum).sort((a, b) => {
+      const touchedA = a.adminTouchedAt ?? -1;
+      const touchedB = b.adminTouchedAt ?? -1;
+      if (touchedA !== touchedB) return touchedB - touchedA;
+
+      // Fallback para dados antigos sem timestamp: mantém novos mais recentes no topo.
+      return (indexBySlug.get(b.slug) ?? -1) - (indexBySlug.get(a.slug) ?? -1);
+    });
+
+    const originalAlbums = galleries
+      .filter(album => !isEditedOrNewAlbum(album))
+      .sort((a, b) => {
+        const orderA = originalOrderBySlug.get(a.slug);
+        const orderB = originalOrderBySlug.get(b.slug);
+
+        if (orderA != null && orderB != null) return orderA - orderB;
+        if (orderA != null) return -1;
+        if (orderB != null) return 1;
+        return (indexBySlug.get(a.slug) ?? 0) - (indexBySlug.get(b.slug) ?? 0);
+      });
+
+    return [...recentAlbums, ...originalAlbums];
+  }, [galleries, originalOrderBySlug, originalAlbumBySlug]);
+
+  const sortedListGalleries = useMemo(() => {
+    if (!sortState) return displayGalleries;
+
+    const directionMultiplier = sortState.direction === "asc" ? 1 : -1;
+    const indexBySlug = new Map(
+      displayGalleries.map((album, index) => [album.slug, index])
+    );
+
+    const sorted = [...displayGalleries].sort((a, b) => {
+      let comparison = 0;
+
+      if (sortState.key === "album") {
+        comparison = a.title.localeCompare(b.title, "pt-BR", {
+          sensitivity: "base"
+        });
+      }
+
+      if (sortState.key === "category") {
+        comparison = getCategoryLabel(a.category).localeCompare(
+          getCategoryLabel(b.category),
+          "pt-BR",
+          { sensitivity: "base" }
+        );
+      }
+
+      if (sortState.key === "year") {
+        const yearA = a.year ?? Number.NEGATIVE_INFINITY;
+        const yearB = b.year ?? Number.NEGATIVE_INFINITY;
+        comparison = yearA - yearB;
+      }
+
+      if (sortState.key === "country") {
+        comparison = (a.country ?? "").localeCompare(b.country ?? "", "pt-BR", {
+          sensitivity: "base"
+        });
+      }
+
+      if (sortState.key === "photos") {
+        comparison = a.photoCount - b.photoCount;
+      }
+
+      if (comparison !== 0) {
+        return comparison * directionMultiplier;
+      }
+
+      return (indexBySlug.get(a.slug) ?? 0) - (indexBySlug.get(b.slug) ?? 0);
+    });
+
+    return sorted;
+  }, [displayGalleries, sortState]);
+
+  const toggleSort = (key: SortKey) => {
+    setSortState(current => {
+      if (!current || current.key !== key) {
+        return { key, direction: "asc" };
+      }
+
+      if (current.direction === "asc") {
+        return { key, direction: "desc" };
+      }
+
+      return null;
+    });
+  };
+
+  const getSortIndicator = (key: SortKey): string => {
+    if (!sortState || sortState.key !== key) return "↑↓";
+    return sortState.direction === "asc" ? "↑" : "↓";
+  };
+
+  const getSortButtonClass = (key: SortKey): string => {
+    const isActive = sortState?.key === key;
+    return `inline-flex items-center gap-1 transition-colors ${
+      isActive ? "text-blue-600" : "text-gray-600 hover:text-gray-900"
+    }`;
+  };
+
+  const getSortIndicatorClass = (key: SortKey): string => {
+    const isActive = sortState?.key === key;
+    return isActive ? "text-[10px] text-blue-600" : "text-[10px] text-gray-400";
+  };
 
   const load = async () => {
     setLoading(true);
@@ -47,6 +184,11 @@ export default function AdminGalleryListPage() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(VIEW_MODE_STORAGE_KEY, viewMode);
+  }, [viewMode]);
 
   // ── Apagar ─────────────────────────────────────────────────────────────
   const handleDeleteConfirm = async (reason: string) => {
@@ -80,7 +222,7 @@ export default function AdminGalleryListPage() {
   };
 
   // ── Helpers para categorias ────────────────────────────────────────────
-  const getCategoryLabel = (category: string): string => {
+  function getCategoryLabel(category: string): string {
     const map: Record<string, string> = {
       interclubes: "Interclubes",
       "juegos-sudamericanos": "Juegos Sudamericanos",
@@ -91,7 +233,7 @@ export default function AdminGalleryListPage() {
       historico: "Histórico"
     };
     return map[category] || category;
-  };
+  }
 
   // ── Card de galeria para admin ──────────────────────────────────────────
   const GalleryCard = ({ album }: { album: GalleryAlbum }) => {
@@ -102,9 +244,9 @@ export default function AdminGalleryListPage() {
       : null;
 
     return (
-      <article className="group relative rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all">
+      <article className="group relative rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
         {/* Thumbnail */}
-        <div className="relative overflow-hidden bg-gray-100 aspect-[4/3]">
+        <div className="relative overflow-hidden bg-gray-100 aspect-[3/2]">
           {!imageFailed && coverUrl ? (
             <>
               {!imageLoaded && (
@@ -131,56 +273,49 @@ export default function AdminGalleryListPage() {
             </div>
           )}
 
-          {/* Overlay com informações */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-            <div className="w-full text-white space-y-1">
-              <p className="text-xs font-semibold truncate">{album.title}</p>
-              <p className="text-[10px] text-white/70">
-                {album.photoCount} foto{album.photoCount !== 1 ? "s" : ""}
-              </p>
-            </div>
-          </div>
-
-          {/* Tier badge */}
-          <div className="absolute top-2 left-2">
-            <span
-              className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${TIER_COLORS[album.tier]}`}>
-              {TIER_LABELS[album.tier]}
+          <div className="absolute bottom-3 right-3">
+            <span className="inline-flex items-center justify-center rounded-full bg-white/90 backdrop-blur px-2.5 py-1 text-[11px] font-semibold text-gray-800 shadow-sm">
+              {album.photoCount} foto{album.photoCount !== 1 ? "s" : ""}
             </span>
           </div>
         </div>
 
         {/* Info */}
-        <div className="p-3 space-y-2">
+        <div className="p-4 space-y-3">
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 truncate mb-0.5">
+            <h3 className="text-base font-semibold text-gray-900 leading-tight line-clamp-2 min-h-[2.5rem]">
               {album.title}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 mt-1">
               {getCategoryLabel(album.category)}
             </p>
           </div>
 
-          {/* Metadados */}
-          <div className="flex items-center gap-2 text-xs text-gray-500">
-            {album.year && <span>{album.year}</span>}
-            {album.year && (album.city || album.country) && <span>·</span>}
-            {album.city ? `${album.city}, ${album.country}` : album.country}
+          {/* Metadados estruturados */}
+          <div className="rounded-xl border border-gray-100 bg-gray-50/70 p-2.5 space-y-1.5">
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-gray-500">Ano / País</span>
+              <span className="text-gray-700 font-medium text-right">
+                {album.year || "—"} · {album.city ? `${album.city}, ` : ""}
+                {album.country || "—"}
+              </span>
+            </div>
           </div>
 
           {/* Ações */}
-          <div className="pt-2 flex gap-1.5">
+          <div className="pt-1 flex gap-2">
             <Link
               to={`/admin/galeria/editar/${album.slug}`}
-              className="flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100 text-[11px] font-semibold transition-colors">
+              className="flex-1 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold transition-colors">
               <Edit size={12} />
               Editar
             </Link>
             <button
               onClick={() => setToDelete(album)}
               disabled={actionLoading === album.slug}
-              className="flex items-center justify-center px-2 py-1.5 rounded-md bg-red-50 text-red-700 hover:bg-red-100 text-[11px] font-semibold transition-colors disabled:opacity-50">
+              className="flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-xs font-semibold transition-colors disabled:opacity-50">
               <Trash2 size={12} />
+              Apagar
             </button>
           </div>
         </div>
@@ -197,71 +332,79 @@ export default function AdminGalleryListPage() {
       : null;
 
     return (
-      <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-        {/* Thumbnail pequeño */}
-        <td className="px-4 py-3">
+      <tr className="group border-b border-gray-100 hover:bg-amber-100/70 transition-colors duration-150">
+        {/* Capa */}
+        <td className="px-2 py-2 align-middle">
           {!imageFailed && coverUrl ? (
-            <img
-              src={coverUrl}
-              alt={album.title}
-              className={`w-12 h-12 rounded-lg object-cover border border-gray-100 ${
-                imageLoaded ? "opacity-100" : "opacity-50"
-              }`}
-              style={{ objectPosition: album.coverPosition ?? "center" }}
-              loading="lazy"
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageFailed(true)}
-            />
+            <div className="w-16 h-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-100">
+              <img
+                src={coverUrl}
+                alt={album.title}
+                className={`w-full h-full object-cover transition-opacity duration-200 ${
+                  imageLoaded ? "opacity-100" : "opacity-0"
+                }`}
+                style={{ objectPosition: album.coverPosition ?? "center" }}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageFailed(true)}
+              />
+            </div>
           ) : (
-            <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-              <Image size={16} className="text-gray-300" />
+            <div className="w-16 h-12 rounded-lg border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center gap-0.5">
+              <Image size={13} className="text-gray-400" />
+              <span className="text-[9px] text-gray-400 leading-none">
+                sem capa
+              </span>
             </div>
           )}
         </td>
 
         {/* Título */}
-        <td className="px-4 py-3">
-          <div>
-            <p className="text-sm font-semibold text-gray-900">{album.title}</p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {getCategoryLabel(album.category)}
-            </p>
-          </div>
+        <td className="px-4 py-2 align-middle max-w-0">
+          <p className="text-sm font-semibold text-gray-900 group-hover:text-gray-950 truncate leading-snug transition-colors duration-150">
+            {album.title}
+          </p>
         </td>
 
-        {/* Tier */}
-        <td className="px-4 py-3">
-          <span
-            className={`inline-flex text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full ${TIER_COLORS[album.tier]}`}>
-            {TIER_LABELS[album.tier]}
-          </span>
+        {/* Categoria */}
+        <td className="px-4 py-2 text-xs text-gray-500 align-middle">
+          {getCategoryLabel(album.category)}
         </td>
 
-        {/* Ano & País */}
-        <td className="px-4 py-3 text-sm text-gray-600">
-          {album.year || "—"} · {album.city ? `${album.city}, ` : ""}
+        {/* Ano */}
+        <td className="px-4 py-3 text-sm text-gray-600 align-middle">
+          {album.year || "—"}
+        </td>
+
+        {/* País */}
+        <td className="px-4 py-3 text-sm text-gray-600 align-middle">
+          {album.city ? `${album.city}, ` : ""}
           {album.country || "—"}
         </td>
 
         {/* Fotos */}
-        <td className="px-4 py-3 text-sm font-medium text-gray-900">
-          {album.photoCount}
+        <td className="pl-4 pr-2 py-3 text-center align-middle">
+          <span className="inline-flex items-center justify-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-800 whitespace-nowrap">
+            {album.photoCount} foto{album.photoCount !== 1 ? "s" : ""}
+          </span>
         </td>
 
         {/* Ações */}
-        <td className="px-4 py-3">
-          <div className="flex items-center gap-2">
+        <td className="pl-2 pr-4 py-2 align-middle">
+          <div className="flex items-center justify-center gap-3">
             <Link
               to={`/admin/galeria/editar/${album.slug}`}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-blue-700 hover:bg-blue-50 transition-colors">
-              <Edit size={14} />
+              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors whitespace-nowrap">
+              <Edit size={12} />
               Editar
             </Link>
+            <span className="text-gray-200 select-none">|</span>
             <button
               onClick={() => setToDelete(album)}
               disabled={actionLoading === album.slug}
-              className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold text-red-700 hover:bg-red-50 transition-colors disabled:opacity-50">
-              <Trash2 size={14} />
+              className="inline-flex items-center gap-1 text-xs font-medium text-gray-400 hover:text-red-600 transition-colors disabled:opacity-40 whitespace-nowrap">
+              <Trash2 size={12} />
+              Apagar
             </button>
           </div>
         </td>
@@ -369,8 +512,8 @@ export default function AdminGalleryListPage() {
         <>
           {/* Cards view */}
           {(viewMode === "cards" || window.innerWidth < 768) && (
-            <div className="grid grid-cols-1 gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {galleries.map(album => (
+            <div className="grid grid-cols-1 gap-4 md:gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              {displayGalleries.map(album => (
                 <GalleryCard key={album.slug} album={album} />
               ))}
             </div>
@@ -379,31 +522,83 @@ export default function AdminGalleryListPage() {
           {/* Lista view (desktop only) */}
           {viewMode === "list" && window.innerWidth >= 768 && (
             <div className="overflow-x-auto border border-gray-200 rounded-lg bg-white">
-              <table className="w-full">
-                <thead className="border-b border-gray-200 bg-gray-50">
+              <table className="w-full table-fixed">
+                <colgroup>
+                  <col style={{ width: "76px" }} />
+                  <col style={{ width: "30%" }} />
+                  <col style={{ width: "170px" }} />
+                  <col style={{ width: "120px" }} />
+                  <col style={{ width: "190px" }} />
+                  <col style={{ width: "100px" }} />
+                  <col style={{ width: "180px" }} />
+                </colgroup>
+                <thead className="border-b border-gray-200 bg-gray-50/80">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="px-2 py-2.5 text-left text-xs font-medium text-gray-500">
                       Capa
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Álbum
+                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort("album")}
+                        className={getSortButtonClass("album")}>
+                        Álbum
+                        <span className={getSortIndicatorClass("album")}>
+                          {getSortIndicator("album")}
+                        </span>
+                      </button>
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Tier
+                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort("category")}
+                        className={getSortButtonClass("category")}>
+                        Categoria
+                        <span className={getSortIndicatorClass("category")}>
+                          {getSortIndicator("category")}
+                        </span>
+                      </button>
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Ano / País
+                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort("year")}
+                        className={getSortButtonClass("year")}>
+                        Ano
+                        <span className={getSortIndicatorClass("year")}>
+                          {getSortIndicator("year")}
+                        </span>
+                      </button>
                     </th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Fotos
+                    <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort("country")}
+                        className={getSortButtonClass("country")}>
+                        País
+                        <span className={getSortIndicatorClass("country")}>
+                          {getSortIndicator("country")}
+                        </span>
+                      </button>
                     </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    <th className="pl-4 pr-2 py-2.5 text-center text-xs font-medium text-gray-500">
+                      <button
+                        type="button"
+                        onClick={() => toggleSort("photos")}
+                        className={getSortButtonClass("photos")}>
+                        Fotos
+                        <span className={getSortIndicatorClass("photos")}>
+                          {getSortIndicator("photos")}
+                        </span>
+                      </button>
+                    </th>
+                    <th className="pl-2 pr-4 py-2.5 text-center text-xs font-medium text-gray-500">
                       Ações
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {galleries.map(album => (
+                  {sortedListGalleries.map(album => (
                     <GalleryListRow key={album.slug} album={album} />
                   ))}
                 </tbody>

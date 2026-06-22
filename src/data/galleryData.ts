@@ -68,6 +68,7 @@ export interface GalleryAlbum {
   photoCount: number; // total incluindo curadoria futura
   photos: GalleryPhoto[]; // fotos já curadas (subset do photoCount)
   featured?: boolean; // destaque principal da página
+  adminTouchedAt?: number; // usado apenas no admin para ordenar recentes
 }
 
 export function getDescription(album: GalleryAlbum, lang: Lang): string {

@@ -112,7 +112,8 @@ export async function updateGallery(
     const updatedAlbum = {
       ...galleryState[index],
       ...updates,
-      slug: galleryState[index].slug // slug nunca muda
+      slug: galleryState[index].slug, // slug nunca muda
+      adminTouchedAt: Date.now()
     };
 
     galleryState[index] = updatedAlbum;
@@ -162,7 +163,7 @@ export async function createGallery(
       return { error: "Álbum com este slug já existe" };
     }
 
-    galleryState.push({ ...album });
+    galleryState.push({ ...album, adminTouchedAt: Date.now() });
     saveGalleryState(galleryState); // Persiste alteração
 
     return { data: { ...album } };
