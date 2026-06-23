@@ -32,7 +32,14 @@ export const ROLE_MODULES: Record<ProfileRole, string[]> = {
     "federacoes",
     "dashboard"
   ],
-  secretaria: ["noticias", "documentos", "calendario", "paginas", "dashboard"],
+  secretaria: [
+    "noticias",
+    "documentos",
+    "calendario",
+    "paginas",
+    "galeria",
+    "dashboard"
+  ],
   diretor_esportes: [
     "esportes",
     "calendario_esportivo",
