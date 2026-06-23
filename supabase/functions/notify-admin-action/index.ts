@@ -14,107 +14,148 @@
  *   ADMIN_JWT_SECRET           → Secret para validar chamadas do frontend (opcional)
  */
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+import { createClient } from "jsr:@supabase/supabase-js@2";
 
-const RESEND_API_KEY   = Deno.env.get('RESEND_API_KEY') ?? '';
-const NOTIFY_EMAIL     = Deno.env.get('NOTIFY_EMAIL') ?? '';
-const FROM_EMAIL       = Deno.env.get('FROM_EMAIL') ?? 'noreply@consudes.org';
-const ADMIN_JWT_SECRET = Deno.env.get('ADMIN_JWT_SECRET') ?? '';
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+const NOTIFY_EMAIL = Deno.env.get("NOTIFY_EMAIL") ?? "";
+const FROM_EMAIL = Deno.env.get("FROM_EMAIL") ?? "noreply@consudes.org";
+const ADMIN_JWT_SECRET = Deno.env.get("ADMIN_JWT_SECRET") ?? "";
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-admin-secret',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-admin-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS"
 };
 
 // Rótulos legíveis para cada ação
 const ACTION_LABELS: Record<string, string> = {
-  create_news:        'Notícia criada',
-  edit_news:          'Notícia editada',
-  publish_news:       'Notícia publicada',
-  unpublish_news:     'Notícia despublicada',
-  delete_news:        'Notícia apagada',
-  upload_image:       'Imagem enviada',
-  delete_image:       'Imagem apagada',
-  create_report:      'Relatório adicionado',
-  delete_report:      'Relatório apagado',
-  create_federation:  'Federação adicionada',
-  edit_federation:    'Federação editada',
-  delete_federation:  'Federação apagada',
+  create_news: "Notícia criada",
+  edit_news: "Notícia editada",
+  publish_news: "Notícia publicada",
+  unpublish_news: "Notícia despublicada",
+  delete_news: "Notícia apagada",
+  upload_image: "Imagem enviada",
+  delete_image: "Imagem apagada",
+  create_report: "Relatório adicionado",
+  delete_report: "Relatório apagado",
+  create_federation: "Federação adicionada",
+  edit_federation: "Federação editada",
+  delete_federation: "Federação apagada"
 };
 
 interface AuditPayload {
-  actor_email:  string;
-  action:       string;
-  entity_type:  string;
-  entity_id?:   string | null;
+  actor_email: string;
+  user_id?: string | null;
+  user_role?: string | null;
+  module?: string | null;
+  action: string;
+  entity_type: string;
+  entity_id?: string | null;
   entity_title?: string | null;
-  reason?:      string | null;
-  metadata?:    Record<string, unknown>;
+  reason?: string | null;
+  metadata?: Record<string, unknown>;
 }
 
 Deno.serve(async (req: Request) => {
   // Responde ao preflight CORS
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers: CORS_HEADERS });
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", {
+      status: 405,
+      headers: CORS_HEADERS
+    });
   }
 
   // Validar secret opcional (ADMIN_JWT_SECRET no header x-admin-secret)
-  if (ADMIN_JWT_SECRET && req.headers.get('x-admin-secret') !== ADMIN_JWT_SECRET) {
-    return new Response('Unauthorized', { status: 401, headers: CORS_HEADERS });
+  if (
+    ADMIN_JWT_SECRET &&
+    req.headers.get("x-admin-secret") !== ADMIN_JWT_SECRET
+  ) {
+    return new Response("Unauthorized", { status: 401, headers: CORS_HEADERS });
   }
 
   let payload: AuditPayload;
   try {
     payload = await req.json();
   } catch {
-    return new Response('Invalid JSON', { status: 400, headers: CORS_HEADERS });
+    return new Response("Invalid JSON", { status: 400, headers: CORS_HEADERS });
   }
 
-  const { actor_email, action, entity_type, entity_id, entity_title, reason, metadata } = payload;
+  const {
+    actor_email,
+    user_id,
+    user_role,
+    module,
+    action,
+    entity_type,
+    entity_id,
+    entity_title,
+    reason,
+    metadata
+  } = payload;
 
   if (!actor_email || !action || !entity_type) {
-    return new Response('Missing required fields: actor_email, action, entity_type', { status: 400, headers: CORS_HEADERS });
+    return new Response(
+      "Missing required fields: actor_email, action, entity_type",
+      { status: 400, headers: CORS_HEADERS }
+    );
   }
+
+  const fallbackModuleByEntityType: Record<string, string> = {
+    news: "noticias",
+    report: "relatorios",
+    federation: "federacoes",
+    calendar_event: "calendario",
+    gallery_album: "galeria",
+    image: "galeria"
+  };
+
+  const resolvedModule =
+    module ?? fallbackModuleByEntityType[entity_type] ?? entity_type;
 
   // ── 1. Inserir no audit log ────────────────────────────────────────────────
   const supabase = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-    { auth: { persistSession: false } },
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    { auth: { persistSession: false } }
   );
 
-  const { error: dbError } = await supabase
-    .from('admin_audit_logs')
-    .insert({
-      actor_email,
-      action,
-      entity_type,
-      entity_id:    entity_id    ?? null,
-      entity_title: entity_title ?? null,
-      reason:       reason       ?? null,
-      metadata:     metadata     ?? {},
-    });
+  const { error: dbError } = await supabase.from("admin_audit_logs").insert({
+    actor_email,
+    user_id: user_id ?? null,
+    user_role: user_role ?? null,
+    module: resolvedModule,
+    action,
+    entity_type,
+    entity_id: entity_id ?? null,
+    entity_title: entity_title ?? null,
+    reason: reason ?? null,
+    metadata: metadata ?? {}
+  });
 
   if (dbError) {
-    console.error('[audit] Erro ao inserir no banco:', dbError.message);
+    console.error("[audit] Erro ao inserir no banco:", dbError.message);
     // Continua mesmo com erro de DB para tentar enviar o e-mail
   }
 
   // ── 2. Enviar notificação por e-mail ──────────────────────────────────────
   if (!RESEND_API_KEY || !NOTIFY_EMAIL) {
-    console.warn('[audit] RESEND_API_KEY ou NOTIFY_EMAIL não configurados. Pulando e-mail.');
+    console.warn(
+      "[audit] RESEND_API_KEY ou NOTIFY_EMAIL não configurados. Pulando e-mail."
+    );
     return new Response(JSON.stringify({ ok: true, email: false }), {
-      headers: { 'Content-Type': 'application/json', ...CORS_HEADERS },
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS }
     });
   }
 
   const actionLabel = ACTION_LABELS[action] ?? action;
-  const dateStr     = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+  const dateStr = new Date().toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo"
+  });
 
   const emailBody = `
 <div style="font-family: Inter, sans-serif; max-width: 560px; margin: 0 auto; color: #1F2937;">
@@ -132,11 +173,15 @@ Deno.serve(async (req: Request) => {
         <td style="padding: 10px 0; color: #6B7280; width: 140px;">Ação</td>
         <td style="padding: 10px 0; font-weight: 500;">${actionLabel}</td>
       </tr>
-      ${entity_title ? `
+      ${
+        entity_title
+          ? `
       <tr style="border-bottom: 1px solid #F3F4F6;">
         <td style="padding: 10px 0; color: #6B7280;">Item</td>
         <td style="padding: 10px 0; font-weight: 500;">${entity_title}</td>
-      </tr>` : ''}
+      </tr>`
+          : ""
+      }
       <tr style="border-bottom: 1px solid #F3F4F6;">
         <td style="padding: 10px 0; color: #6B7280;">Realizada por</td>
         <td style="padding: 10px 0;">${actor_email}</td>
@@ -145,11 +190,15 @@ Deno.serve(async (req: Request) => {
         <td style="padding: 10px 0; color: #6B7280;">Data/hora</td>
         <td style="padding: 10px 0;">${dateStr}</td>
       </tr>
-      ${reason ? `
+      ${
+        reason
+          ? `
       <tr>
         <td style="padding: 10px 0; color: #6B7280; vertical-align: top;">Motivo</td>
         <td style="padding: 10px 0; color: #DC2626;">${reason}</td>
-      </tr>` : ''}
+      </tr>`
+          : ""
+      }
     </table>
   </div>
 
@@ -159,27 +208,26 @@ Deno.serve(async (req: Request) => {
 </div>
   `.trim();
 
-  const resendRes = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
+  const resendRes = await fetch("https://api.resend.com/emails", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RESEND_API_KEY}`
     },
     body: JSON.stringify({
       from: FROM_EMAIL,
-      to:   [NOTIFY_EMAIL],
-      subject: `[CONSUDES Admin] ${actionLabel}${entity_title ? `: ${entity_title}` : ''}`,
-      html: emailBody,
-    }),
+      to: [NOTIFY_EMAIL],
+      subject: `[CONSUDES Admin] ${actionLabel}${entity_title ? `: ${entity_title}` : ""}`,
+      html: emailBody
+    })
   });
 
   if (!resendRes.ok) {
     const errText = await resendRes.text();
-    console.error('[audit] Erro ao enviar e-mail:', errText);
+    console.error("[audit] Erro ao enviar e-mail:", errText);
   }
 
-  return new Response(
-    JSON.stringify({ ok: true, email: resendRes.ok }),
-    { headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } },
-  );
+  return new Response(JSON.stringify({ ok: true, email: resendRes.ok }), {
+    headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+  });
 });

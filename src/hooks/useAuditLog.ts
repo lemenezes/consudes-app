@@ -11,6 +11,16 @@ import type { AuditAction, AuditLogInsert } from "../lib/database.aliases";
  */
 export type AuditEntry = Omit<AuditLogInsert, "actor_email" | "action"> & {
   action: AuditAction;
+  module?: string;
+};
+
+const MODULE_FALLBACK_BY_ENTITY_TYPE: Record<string, string> = {
+  news: "noticias",
+  report: "relatorios",
+  federation: "federacoes",
+  calendar_event: "calendario",
+  gallery_album: "galeria",
+  image: "galeria"
 };
 
 /**
@@ -21,7 +31,7 @@ export type AuditEntry = Omit<AuditLogInsert, "actor_email" | "action"> & {
  *   2. Envia notificação por e-mail ao responsável.
  */
 export function useAuditLog() {
-  const { user, session } = useAuth();
+  const { user, session, profile } = useAuth();
 
   const log = useCallback(
     async (entry: AuditEntry): Promise<void> => {
@@ -31,9 +41,17 @@ export function useAuditLog() {
       if (!supabaseUrl) return;
 
       // Type assertion: o Edge Function aceita AuditAction completo (com ações legadas)
+      const resolvedModule =
+        entry.module ??
+        MODULE_FALLBACK_BY_ENTITY_TYPE[entry.entity_type] ??
+        entry.entity_type;
+
       const payload = {
         ...entry,
-        actor_email: user.email
+        actor_email: user.email,
+        user_id: user.id,
+        user_role: profile?.role ?? null,
+        module: resolvedModule
       } as unknown as AuditLogInsert;
 
       try {
