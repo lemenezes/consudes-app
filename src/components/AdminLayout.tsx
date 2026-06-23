@@ -344,7 +344,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
             <div className="h-10 lg:h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
             <div className="min-w-0">
               <p className="text-sm font-medium tracking-[0.08em] text-white/80 whitespace-nowrap">
-                CONSUDES Admin
+                ADMIN
               </p>
             </div>
           </div>
