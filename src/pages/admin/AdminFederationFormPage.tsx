@@ -440,17 +440,17 @@ export default function AdminFederationFormPage() {
           <Link
             to="/admin/federacoes"
             className="px-4 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-            Cancelar
+            {t.admin.cancel}
           </Link>
           <button
             type="submit"
             disabled={saving}
             className="px-6 py-2.5 rounded-lg bg-[#0057A8] text-white text-sm font-semibold hover:bg-[#004a8f] disabled:opacity-50 transition-colors">
             {saving
-              ? "Salvando…"
+              ? t.admin.saving
               : isEditing
-                ? "Salvar alterações"
-                : "Criar federação"}
+                ? t.admin.saveChanges
+                : t.admin.federationsList.new}
           </button>
         </div>
       </form>

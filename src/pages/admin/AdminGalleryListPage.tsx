@@ -489,10 +489,13 @@ export default function AdminGalleryListPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-            Galeria de Fotos
+            {t.admin.galleryList.pageTitle}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {galleries.length} álbum{galleries.length !== 1 ? "ns" : ""}
+            {galleries.length}{" "}
+            {galleries.length !== 1
+              ? t.admin.galleryList.countPlural
+              : t.admin.galleryList.countSingular}
           </p>
         </div>
         <Link
@@ -510,7 +513,7 @@ export default function AdminGalleryListPage() {
               d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-          Novo álbum
+          {t.admin.galleryList.new}
         </Link>
       </div>
 
@@ -520,10 +523,10 @@ export default function AdminGalleryListPage() {
           <div
             className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm"
             role="group"
-            aria-label="Alternar visualização">
+            aria-label={t.admin.galleryList.toggleView}>
             <button
               onClick={() => setViewMode("cards")}
-              aria-label="Visualização em cards"
+              aria-label={t.admin.galleryList.cardsView}
               aria-pressed={viewMode === "cards"}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                 viewMode === "cards"
@@ -531,11 +534,11 @@ export default function AdminGalleryListPage() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-[#1F2937]"
               }`}>
               <LayoutGrid size={13} aria-hidden="true" />
-              Cards
+              {t.admin.galleryList.cards}
             </button>
             <button
               onClick={() => setViewMode("list")}
-              aria-label="Visualização em lista"
+              aria-label={t.admin.galleryList.listView}
               aria-pressed={viewMode === "list"}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                 viewMode === "list"
@@ -543,7 +546,7 @@ export default function AdminGalleryListPage() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-[#1F2937]"
               }`}>
               <List size={13} aria-hidden="true" />
-              Lista
+              {t.admin.galleryList.list}
             </button>
           </div>
         </div>
@@ -571,10 +574,10 @@ export default function AdminGalleryListPage() {
       {/* Vazio */}
       {!loading && galleries.length === 0 && (
         <div className="text-center py-16 text-gray-400">
-          <p className="text-lg font-medium">Nenhum álbum registrado.</p>
-          <p className="text-sm mt-1">
-            Use o botão acima para adicionar o primeiro.
+          <p className="text-lg font-medium">
+            {t.admin.galleryList.emptyTitle}
           </p>
+          <p className="text-sm mt-1">{t.admin.galleryList.emptyDesc}</p>
         </div>
       )}
 
@@ -606,14 +609,14 @@ export default function AdminGalleryListPage() {
                 <thead className="border-b border-gray-200 bg-gray-50/80">
                   <tr>
                     <th className="px-2 py-2.5 text-left text-xs font-medium text-gray-500">
-                      Capa
+                      {t.admin.galleryList.cover}
                     </th>
                     <th className="px-4 py-2.5 text-left text-xs font-medium text-gray-500">
                       <button
                         type="button"
                         onClick={() => toggleSort("album")}
                         className={getSortButtonClass("album")}>
-                        Álbum
+                        {t.admin.galleryList.album}
                         <span className={getSortIndicatorClass("album")}>
                           {getSortIndicator("album")}
                         </span>
@@ -624,7 +627,7 @@ export default function AdminGalleryListPage() {
                         type="button"
                         onClick={() => toggleSort("category")}
                         className={getSortButtonClass("category")}>
-                        Categoria
+                        {t.admin.galleryList.category}
                         <span className={getSortIndicatorClass("category")}>
                           {getSortIndicator("category")}
                         </span>
@@ -635,7 +638,7 @@ export default function AdminGalleryListPage() {
                         type="button"
                         onClick={() => toggleSort("year")}
                         className={getSortButtonClass("year")}>
-                        Ano
+                        {t.admin.galleryList.year}
                         <span className={getSortIndicatorClass("year")}>
                           {getSortIndicator("year")}
                         </span>
@@ -646,7 +649,7 @@ export default function AdminGalleryListPage() {
                         type="button"
                         onClick={() => toggleSort("country")}
                         className={getSortButtonClass("country")}>
-                        País
+                        {t.admin.galleryList.country}
                         <span className={getSortIndicatorClass("country")}>
                           {getSortIndicator("country")}
                         </span>
@@ -657,14 +660,14 @@ export default function AdminGalleryListPage() {
                         type="button"
                         onClick={() => toggleSort("photos")}
                         className={getSortButtonClass("photos")}>
-                        Fotos
+                        {t.admin.galleryList.photos}
                         <span className={getSortIndicatorClass("photos")}>
                           {getSortIndicator("photos")}
                         </span>
                       </button>
                     </th>
                     <th className="pl-2 pr-4 py-2.5 text-center text-xs font-medium text-gray-500">
-                      Ações
+                      {t.admin.galleryList.actions}
                     </th>
                   </tr>
                 </thead>
@@ -682,7 +685,7 @@ export default function AdminGalleryListPage() {
       {/* Modal de confirmação de delete */}
       {toDelete && (
         <DeleteConfirmModal
-          title="Deletar álbum?"
+          title={t.admin.galleryList.deleteTitle}
           itemLabel={toDelete.title}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setToDelete(null)}

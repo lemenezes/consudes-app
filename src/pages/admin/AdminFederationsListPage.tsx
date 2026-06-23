@@ -72,11 +72,13 @@ export default function AdminFederationsListPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
-            Federações Filiadas
+            {t.admin.federationsList.pageTitle}
           </h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            {federations.length} federação
-            {federations.length !== 1 ? "ões" : ""}
+            {federations.length}{" "}
+            {federations.length !== 1
+              ? t.admin.federationsList.countPlural
+              : t.admin.federationsList.countSingular}
           </p>
         </div>
         <Link
@@ -94,7 +96,7 @@ export default function AdminFederationsListPage() {
               d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-          Nova federação
+          {t.admin.federationsList.new}
         </Link>
       </div>
 
@@ -103,10 +105,10 @@ export default function AdminFederationsListPage() {
           <div
             className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1 shadow-sm"
             role="group"
-            aria-label="Alternar visualização">
+            aria-label={t.admin.federationsList.toggleView}>
             <button
               onClick={() => setViewMode("cards")}
-              aria-label="Visualização em cards"
+              aria-label={t.admin.federationsList.cardsView}
               aria-pressed={viewMode === "cards"}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                 viewMode === "cards"
@@ -114,11 +116,11 @@ export default function AdminFederationsListPage() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-[#1F2937]"
               }`}>
               <LayoutGrid size={13} aria-hidden="true" />
-              Cards
+              {t.admin.federationsList.cards}
             </button>
             <button
               onClick={() => setViewMode("list")}
-              aria-label="Visualização em lista"
+              aria-label={t.admin.federationsList.listView}
               aria-pressed={viewMode === "list"}
               className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                 viewMode === "list"
@@ -126,7 +128,7 @@ export default function AdminFederationsListPage() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-[#1F2937]"
               }`}>
               <List size={13} aria-hidden="true" />
-              Lista
+              {t.admin.federationsList.list}
             </button>
           </div>
         </div>
@@ -154,10 +156,10 @@ export default function AdminFederationsListPage() {
       {/* Lista */}
       {!loading && federations.length === 0 && (
         <div className="text-center py-16 text-gray-400">
-          <p className="text-lg font-medium">Nenhuma federação registrada.</p>
-          <p className="text-sm mt-1">
-            Use o botão acima para adicionar a primeira.
+          <p className="text-lg font-medium">
+            {t.admin.federationsList.emptyTitle}
           </p>
+          <p className="text-sm mt-1">{t.admin.federationsList.emptyDesc}</p>
         </div>
       )}
 
@@ -214,13 +216,13 @@ export default function AdminFederationsListPage() {
                 <Link
                   to={`/admin/federacoes/${fed.id}/editar`}
                   className="flex-1 rounded-lg bg-[#0057A8]/8 px-3 py-1.5 text-center text-[11px] font-semibold text-[#0057A8] transition-colors hover:bg-[#0057A8]/15">
-                  Editar
+                  {t.admin.federationsList.edit}
                 </Link>
                 <button
                   onClick={() => setToDelete(fed)}
                   disabled={actionLoading === fed.id}
                   className="flex-1 rounded-lg bg-red-50 px-3 py-1.5 text-[11px] font-semibold text-red-600 transition-colors hover:bg-red-100 disabled:opacity-40">
-                  Apagar
+                  {t.admin.federationsList.delete}
                 </button>
               </div>
             </article>
@@ -243,13 +245,13 @@ export default function AdminFederationsListPage() {
                   Sigla
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600">
-                  País
+                  {t.admin.federationsList.country}
                 </th>
                 <th className="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">
-                  Nome oficial
+                  {t.admin.federationsList.officialName}
                 </th>
                 <th className="px-4 py-3 text-right font-semibold text-gray-600">
-                  Ações
+                  {t.admin.federationsList.actions}
                 </th>
               </tr>
             </thead>
@@ -290,13 +292,13 @@ export default function AdminFederationsListPage() {
                       <Link
                         to={`/admin/federacoes/${fed.id}/editar`}
                         className="px-3 py-1.5 rounded-lg bg-[#0057A8]/8 text-[#0057A8] text-xs font-semibold hover:bg-[#0057A8]/15 transition-colors">
-                        Editar
+                        {t.admin.federationsList.edit}
                       </Link>
                       <button
                         onClick={() => setToDelete(fed)}
                         disabled={actionLoading === fed.id}
                         className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors disabled:opacity-40">
-                        Apagar
+                        {t.admin.federationsList.delete}
                       </button>
                     </div>
                   </td>
@@ -310,7 +312,10 @@ export default function AdminFederationsListPage() {
       {/* Modal confirmação */}
       {toDelete && (
         <DeleteConfirmModal
-          title={`Apagar ${toDelete.acronym}?`}
+          title={t.admin.federationsList.deleteTitle.replace(
+            "{acronym}",
+            toDelete.acronym ?? ""
+          )}
           itemLabel={toDelete.name_es ?? ""}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setToDelete(null)}

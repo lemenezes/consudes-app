@@ -23,6 +23,7 @@ import {
 } from "../../services/galleryService";
 import { uploadGalleryImage } from "../../services/galleryUploadService";
 import { useAuditLog } from "../../hooks/useAuditLog";
+import { useLanguage } from "../../context/LanguageContext";
 import { useToast } from "../../context/ToastContext";
 import {
   GALLERY_CATEGORIES,
@@ -95,6 +96,7 @@ export default function AdminGalleryFormPage() {
   const navigate = useNavigate();
   const { "*": slugParam } = useParams<{ "*"?: string }>();
   const location = useLocation();
+  const { t } = useLanguage();
   const { log } = useAuditLog();
   const { showToast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -1004,8 +1006,8 @@ export default function AdminGalleryFormPage() {
               <Image className="w-10 h-10 mx-auto text-gray-300 mb-3" />
               <p className="text-sm font-medium text-gray-500">
                 {form.title.trim()
-                  ? "Salve o álbum antes de adicionar fotos."
-                  : "Preencha as informações do álbum antes de adicionar fotos."}
+                  ? t.admin.galleryList.saveAlbumFirst
+                  : t.admin.galleryList.fillAlbumInfoFirst}
               </p>
             </div>
           )}
@@ -1018,7 +1020,7 @@ export default function AdminGalleryFormPage() {
             disabled={saving}
             onClick={() => navigate("/admin/galeria")}
             className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:text-gray-400">
-            Cancelar
+            {t.admin.cancel}
           </button>
           <button
             type="submit"
@@ -1030,36 +1032,43 @@ export default function AdminGalleryFormPage() {
               <Save size={16} />
             )}
             {saving
-              ? "Salvando..."
+              ? t.admin.saving
               : isEditMode
                 ? isDirty
-                  ? "Salvar alterações"
-                  : "Sem alterações"
-                : "Salvar"}
+                  ? t.admin.saveChanges
+                  : t.admin.galleryList.noChanges
+                : t.admin.save}
           </button>
         </div>
       </form>
       {/* Modal de Confirmação de Remoção */}
       {photoToRemoveIndex !== null && (
         <SimpleConfirmModal
-          title="Remover foto"
-          message="Tem certeza que deseja remover esta foto?"
+          title={t.admin.galleryList.removePhotoTitle}
+          message={t.admin.galleryList.removePhotoMessage}
           onConfirm={confirmRemovePhoto}
           onCancel={() => setPhotoToRemoveIndex(null)}
-          confirmLabel="Remover"
-          cancelLabel="Cancelar"
+          confirmLabel={t.admin.galleryList.remove}
+          cancelLabel={t.admin.cancel}
           isDangerous={true}
         />
       )}
 
       {batchRemoveConfirmOpen && (
         <SimpleConfirmModal
-          title="Remover fotos selecionadas"
-          message={`Tem certeza que deseja remover ${selectedPhotoIndexes.length} ${selectedPhotoIndexes.length === 1 ? "foto" : "fotos"} selecionada${selectedPhotoIndexes.length === 1 ? "" : "s"}?`}
+          title={t.admin.galleryList.removeSelectedTitle}
+          message={
+            selectedPhotoIndexes.length === 1
+              ? t.admin.galleryList.removeSelectedMessageSingular
+              : t.admin.galleryList.removeSelectedMessagePlural.replace(
+                  "{count}",
+                  String(selectedPhotoIndexes.length)
+                )
+          }
           onConfirm={confirmBatchRemovePhotos}
           onCancel={() => setBatchRemoveConfirmOpen(false)}
-          confirmLabel="Remover selecionadas"
-          cancelLabel="Cancelar"
+          confirmLabel={t.admin.galleryList.removeSelected}
+          cancelLabel={t.admin.cancel}
           isDangerous={true}
         />
       )}

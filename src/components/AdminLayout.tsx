@@ -155,6 +155,20 @@ const IconExternalLink = () => (
     />
   </svg>
 );
+const IconGlobe = () => (
+  <svg
+    className="w-4 h-4 shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.8}
+    stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m-8.5 9h17"
+    />
+  </svg>
+);
 
 /* ── Tipos de item de nav ────────────────────────────────────────────────── */
 
@@ -182,11 +196,12 @@ function SideNavLink({
   comingSoonLabel: string;
 }) {
   const base =
-    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150";
+    "relative flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200";
 
   if (item.kind === "soon") {
     return (
-      <div className={`${base} text-white/25 cursor-default select-none`}>
+      <div
+        className={`${base} px-3.5 py-3 text-white/25 cursor-default select-none border border-white/5 bg-white/[0.02]`}>
         {item.icon}
         <span>{item.label}</span>
         <span className="ml-auto text-[9px] font-bold tracking-widest uppercase text-white/20 border border-white/15 rounded px-1.5 py-0.5">
@@ -197,26 +212,33 @@ function SideNavLink({
   }
 
   return (
-    <NavLink
-      to={item.to}
-      end={item.end}
-      onClick={onClick}
-      className={({ isActive }) =>
-        `${base} ${
-          isActive
-            ? "bg-[#D9A441]/15 text-[#D9A441] border border-[#D9A441]/25"
-            : "text-white/55 hover:text-white hover:bg-white/8 border border-transparent"
-        }`
-      }>
-      {item.icon}
-      <span>{item.label}</span>
+    <NavLink to={item.to} end={item.end} onClick={onClick}>
+      {({ isActive }) => (
+        <div
+          className={`${base} px-3.5 py-3 border overflow-hidden ${
+            isActive
+              ? "bg-[linear-gradient(135deg,rgba(217,164,65,0.22),rgba(217,164,65,0.08)_35%,rgba(255,255,255,0.06))] text-white border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(0,0,0,0.18)]"
+              : "text-white/62 border-transparent hover:text-white hover:bg-white/7 hover:border-white/8"
+          }`}>
+          {isActive && (
+            <span className="absolute inset-y-2 left-0 w-1 rounded-r-full bg-[#D9A441]" />
+          )}
+          <span
+            className={`relative z-10 ${
+              isActive ? "text-[#D9A441]" : "text-current"
+            }`}>
+            {item.icon}
+          </span>
+          <span className="relative z-10">{item.label}</span>
+        </div>
+      )}
     </NavLink>
   );
 }
 
 /* ── Sidebar content (compartilhado desktop/mobile) ─────────────────────── */
 function SidebarContent({ onNav }: { onNav?: () => void }) {
-  const { user, profile, signOut } = useAuth();
+  const { profile, signOut } = useAuth();
   const { t, lang, setLang } = useLanguage();
   const navigate = useNavigate();
 
@@ -236,7 +258,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
       ]
     },
     {
-      heading: "Conteúdo",
+      heading: t.admin.groups.content,
       items: [
         {
           kind: "link",
@@ -258,20 +280,20 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
           kind: "link",
           to: "/admin/galeria",
           end: false,
-          label: "Galeria",
+          label: t.admin.nav.gallery,
           icon: <IconGallery />,
           module: "galeria"
         }
       ]
     },
     {
-      heading: "Institucional",
+      heading: t.admin.groups.institutional,
       items: [
         {
           kind: "link",
           to: "/admin/transparencia",
           end: false,
-          label: "Transparência",
+          label: t.admin.nav.transparency,
           icon: <IconReports />,
           module: "transparencia"
         },
@@ -279,7 +301,7 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
           kind: "link",
           to: "/admin/federacoes",
           end: false,
-          label: "Federações",
+          label: t.admin.nav.federations,
           icon: <IconFederations />,
           module: "federacoes"
         }
@@ -307,43 +329,41 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col bg-[linear-gradient(180deg,#002D5C_0%,#01264B_100%)] text-white">
       {/* Logo */}
-      <div className="px-5 py-6 border-b border-white/8">
-        <div className="bg-white rounded-xl px-4 py-3 flex justify-center">
-          <img
-            src="/logo-novo-consudes-removebg-preview-1.webp"
-            alt="CONSUDES"
-            className="h-14 w-auto"
-          />
+      <div className="border-b border-white/8 px-5 pb-4 pt-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded-2xl bg-white px-3 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+            <img
+              src="/logo-novo-consudes-removebg-preview-1.webp"
+              alt="CONSUDES"
+              className="h-9 w-auto"
+            />
+          </div>
+          <div className="flex min-w-0 items-center gap-4">
+            <div className="h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium tracking-[0.08em] text-white/80 whitespace-nowrap">
+                ADMIN
+              </p>
+            </div>
+          </div>
         </div>
-        <p className="text-[9px] tracking-[0.2em] uppercase text-white/30 mt-3 text-center font-medium">
-          {t.admin.panelTitle}
-        </p>
-      </div>
-
-      {/* Link para o site público — acima do menu */}
-      <div className="px-3 pt-3 pb-1">
-        <a
-          href="https://www.consudes.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 text-white/55 hover:text-white hover:bg-white/8 border border-transparent">
-          <IconExternalLink />
-          <span>Site público</span>
-        </a>
       </div>
 
       {/* Nav groups */}
-      <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+      <nav className="flex-1 overflow-y-auto px-4 py-4">
         {filteredGroups.map((group, gi) => (
-          <div key={gi}>
+          <div key={gi} className={gi === 0 ? "" : "mt-6"}>
             {group.heading && (
-              <p className="px-3 mb-1.5 text-[9px] font-bold tracking-[0.18em] uppercase text-white/25">
-                {group.heading}
-              </p>
+              <div className="mb-3 flex flex-col px-1">
+                <div className="mb-2.5 h-0.5 w-10 rounded-full bg-[#D9A441]" />
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/56">
+                  {group.heading}
+                </p>
+              </div>
             )}
-            <div className="space-y-0.5">
+            <div className="space-y-1.5">
               {group.items.map((item, ii) => (
                 <SideNavLink
                   key={ii}
@@ -357,28 +377,30 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
         ))}
       </nav>
 
-      {/* Rodapé: usuário + lang + logout */}
-      <div className="px-3 pb-4 pt-3 border-t border-white/8 space-y-3">
-        <div className="px-3">
-          <LangSwitcher lang={lang} setLang={setLang} dark />
+      {/* Rodapé: ações finais */}
+      <div className="border-t border-white/8 px-4 pb-3 pt-2.5">
+        <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-3 py-2">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-white/60">
+              <IconGlobe />
+              <LangSwitcher lang={lang} setLang={setLang} dark />
+            </div>
+            <a
+              href="https://www.consudes.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              <IconExternalLink />
+              <span>{t.admin.publicSite}</span>
+            </a>
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              <IconLogout />
+              <span>{t.admin.logout}</span>
+            </button>
+          </div>
         </div>
-        <div className="px-3 py-2 text-center">
-          {user?.email ? (
-            <span
-              className="text-[10px] text-white/50 truncate block"
-              title={user.email}>
-              {user.email}
-            </span>
-          ) : (
-            <p className="text-[10px] text-white/35 truncate">Usuário</p>
-          )}
-        </div>
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/45 hover:text-white hover:bg-white/8 transition-all border border-transparent">
-          <IconLogout />
-          {t.admin.logout}
-        </button>
       </div>
     </div>
   );
@@ -387,16 +409,17 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
 /* ── Layout principal ────────────────────────────────────────────────────── */
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen bg-[#F0F2F5]">
       {/* ── Sidebar desktop (fixed) ── */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 w-68 bg-[#002D5C] z-30">
+      <aside className="hidden lg:block fixed inset-y-0 left-0 w-60 bg-[#002D5C] shadow-[18px_0_48px_rgba(0,27,54,0.16)] z-30">
         <SidebarContent />
       </aside>
 
       {/* ── Coluna de conteúdo ── */}
-      <div className="lg:pl-68 flex flex-col min-h-screen">
+      <div className="lg:pl-60 flex flex-col min-h-screen">
         {/* Top bar mobile */}
         <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
           <div className="bg-white rounded-lg px-2 py-1">
@@ -408,7 +431,7 @@ export default function AdminLayout() {
           </div>
           <button
             onClick={() => setMobileOpen(v => !v)}
-            aria-label="Menu"
+            aria-label={t.admin.menuLabel}
             className="p-2 text-white/70 hover:text-white">
             {mobileOpen ? (
               <svg

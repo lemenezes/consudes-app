@@ -20,7 +20,7 @@ import type {
   CalendarEventRow,
   ReportRow,
   FederationRow
-} from '../../lib/database.aliases';
+} from "../../lib/database.aliases";
 import type { GalleryAlbum } from "../../data/galleryData";
 
 const COMING_SOON: any[] = [];
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
           {t.admin.panelTitle}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Bem-vindo,{" "}
+          {t.admin.dashboard.welcome},{" "}
           <span className="text-xs text-gray-500 whitespace-nowrap">
             {profile?.display_name || ""}
           </span>
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
 
           <div className="px-6 pb-5">
             <Link to="/admin/noticias" className={CARD_CTA_CLASS}>
-              Ver notícias
+              {t.admin.dashboard.viewNews}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
@@ -139,12 +139,12 @@ export default function AdminDashboard() {
             <p className="text-xs text-gray-400 mt-1.5">
               {loading
                 ? "…"
-                : `${calEvents.filter(e => e.status === "published").length} publicados · ${calEvents.length} total`}
+                : `${calEvents.filter(e => e.status === "published").length} ${t.admin.dashboard.publishedCount} · ${calEvents.length} ${t.admin.dashboard.total}`}
             </p>
           </div>
           <div className="px-6 pb-5">
             <Link to="/admin/calendario" className={CARD_CTA_CLASS}>
-              Ver calendário
+              {t.admin.dashboard.viewCalendar}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
@@ -154,7 +154,9 @@ export default function AdminDashboard() {
         <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>Transparência</span>
+              <span className={CARD_TITLE_CLASS}>
+                {t.admin.nav.transparency}
+              </span>
               <FileText className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
@@ -167,12 +169,12 @@ export default function AdminDashboard() {
             <p className="text-xs text-gray-400 mt-1.5">
               {loading
                 ? "…"
-                : `${reports.filter(r => r.status === "published").length} publicados · ${reports.length} total`}
+                : `${reports.filter(r => r.status === "published").length} ${t.admin.dashboard.publishedCount} · ${reports.length} ${t.admin.dashboard.total}`}
             </p>
           </div>
           <div className="px-6 pb-5">
             <Link to="/admin/transparencia" className={CARD_CTA_CLASS}>
-              Ver transparência
+              {t.admin.dashboard.viewTransparency}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
@@ -182,7 +184,9 @@ export default function AdminDashboard() {
         <div className={`${CARD_CLASS} xl:col-span-2 xl:col-start-2`}>
           <div className="p-6 flex-1">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>Federações</span>
+              <span className={CARD_TITLE_CLASS}>
+                {t.admin.nav.federations}
+              </span>
               <Building2 className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
@@ -195,12 +199,12 @@ export default function AdminDashboard() {
             <p className="text-xs text-gray-400 mt-1.5">
               {loading
                 ? "…"
-                : `${federations.length} filiada${federations.length !== 1 ? "s" : ""}`}
+                : `${federations.length} ${federations.length !== 1 ? t.admin.dashboard.affiliatedPlural : t.admin.dashboard.affiliatedSingular}`}
             </p>
           </div>
           <div className="px-6 pb-5">
             <Link to="/admin/federacoes" className={CARD_CTA_CLASS}>
-              Ver federações
+              {t.admin.dashboard.viewFederations}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
@@ -210,7 +214,7 @@ export default function AdminDashboard() {
         <div className={`${CARD_CLASS} xl:col-span-2`}>
           <div className="p-6 flex-1">
             <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>Galeria</span>
+              <span className={CARD_TITLE_CLASS}>{t.admin.nav.gallery}</span>
               <Images className={CARD_ICON_CLASS} aria-hidden="true" />
             </div>
             {loading ? (
@@ -223,12 +227,12 @@ export default function AdminDashboard() {
             <p className="text-xs text-gray-400 mt-1.5">
               {loading
                 ? "…"
-                : `${galleries.length} álbum${galleries.length !== 1 ? "ns" : ""} · ${galleries.reduce((acc, g) => acc + (g.photoCount || 0), 0)} fotos`}
+                : `${galleries.length} ${galleries.length !== 1 ? t.admin.dashboard.albumPlural : t.admin.dashboard.albumSingular} · ${galleries.reduce((acc, g) => acc + (g.photoCount || 0), 0)} ${t.admin.dashboard.photos}`}
             </p>
           </div>
           <div className="px-6 pb-5">
             <Link to="/admin/galeria" className={CARD_CTA_CLASS}>
-              Ver galeria
+              {t.admin.dashboard.viewGallery}
               <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
           </div>
