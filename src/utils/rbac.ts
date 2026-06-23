@@ -38,6 +38,8 @@ export const ROLE_MODULES: Record<ProfileRole, string[]> = {
     "calendario",
     "paginas",
     "galeria",
+    "transparencia",
+    "relatorios",
     "dashboard"
   ],
   diretor_esportes: [
