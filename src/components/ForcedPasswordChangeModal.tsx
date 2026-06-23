@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 
 interface ForcedPasswordChangeModalProps {
   loading: boolean;
-  onConfirm: (newPassword: string) => Promise<void>;
+  onConfirm: (newPassword: string) => Promise<string | null>;
 }
 
 export default function ForcedPasswordChangeModal({
@@ -14,7 +15,10 @@ export default function ForcedPasswordChangeModal({
   const { t } = useLanguage();
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const newPasswordError = useMemo(() => {
     if (!submitAttempted) return "";
@@ -53,7 +57,11 @@ export default function ForcedPasswordChangeModal({
       return;
     }
 
-    await onConfirm(newPassword);
+    setSubmitError("");
+    const error = await onConfirm(newPassword);
+    if (error) {
+      setSubmitError(error);
+    }
   };
 
   return (
@@ -81,25 +89,41 @@ export default function ForcedPasswordChangeModal({
               className="block text-sm font-medium text-[#1F2937] mb-1.5">
               {t.admin.forcedPassword.newPasswordLabel}
             </label>
-            <input
-              id="new-password"
-              type="password"
-              autoComplete="new-password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              aria-invalid={newPasswordError ? "true" : "false"}
-              aria-describedby={
-                newPasswordError ? "new-password-error" : undefined
-              }
-              className={`w-full rounded-lg border px-3 py-2 text-sm text-[#1F2937] bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
-                newPasswordError
-                  ? "border-red-400 focus:border-red-400 focus:ring-red-200"
-                  : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
-              }`}
-              placeholder={t.admin.forcedPassword.newPasswordPlaceholder}
-              required
-              minLength={8}
-            />
+            <div className="relative">
+              <input
+                id="new-password"
+                type={showNewPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={e => {
+                  setNewPassword(e.target.value);
+                  if (submitError) setSubmitError("");
+                }}
+                aria-invalid={newPasswordError ? "true" : "false"}
+                aria-describedby={
+                  newPasswordError ? "new-password-error" : undefined
+                }
+                className={`w-full rounded-lg border px-3 py-2 pr-10 text-sm text-[#1F2937] bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+                  newPasswordError
+                    ? "border-red-400 focus:border-red-400 focus:ring-red-200"
+                    : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
+                }`}
+                placeholder={t.admin.forcedPassword.newPasswordPlaceholder}
+                required
+                minLength={8}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(v => !v)}
+                aria-label={
+                  showNewPassword
+                    ? t.admin.forcedPassword.actions.hidePassword
+                    : t.admin.forcedPassword.actions.showPassword
+                }
+                className="absolute inset-y-0 right-0 flex items-center justify-center px-3 text-gray-500 hover:text-[#1F2937]">
+                {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
             {newPasswordError && (
               <p
                 id="new-password-error"
@@ -115,24 +139,40 @@ export default function ForcedPasswordChangeModal({
               className="block text-sm font-medium text-[#1F2937] mb-1.5">
               {t.admin.forcedPassword.confirmPasswordLabel}
             </label>
-            <input
-              id="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              aria-invalid={confirmPasswordError ? "true" : "false"}
-              aria-describedby={
-                confirmPasswordError ? "confirm-password-error" : undefined
-              }
-              className={`w-full rounded-lg border px-3 py-2 text-sm text-[#1F2937] bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
-                confirmPasswordError
-                  ? "border-red-400 focus:border-red-400 focus:ring-red-200"
-                  : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
-              }`}
-              placeholder={t.admin.forcedPassword.confirmPasswordPlaceholder}
-              required
-            />
+            <div className="relative">
+              <input
+                id="confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={e => {
+                  setConfirmPassword(e.target.value);
+                  if (submitError) setSubmitError("");
+                }}
+                aria-invalid={confirmPasswordError ? "true" : "false"}
+                aria-describedby={
+                  confirmPasswordError ? "confirm-password-error" : undefined
+                }
+                className={`w-full rounded-lg border px-3 py-2 pr-10 text-sm text-[#1F2937] bg-white placeholder:text-gray-400 focus:outline-none focus:ring-2 transition-colors ${
+                  confirmPasswordError
+                    ? "border-red-400 focus:border-red-400 focus:ring-red-200"
+                    : "border-gray-200 focus:border-[#0057A8] focus:ring-[#0057A8]/25"
+                }`}
+                placeholder={t.admin.forcedPassword.confirmPasswordPlaceholder}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(v => !v)}
+                aria-label={
+                  showConfirmPassword
+                    ? t.admin.forcedPassword.actions.hidePassword
+                    : t.admin.forcedPassword.actions.showPassword
+                }
+                className="absolute inset-y-0 right-0 flex items-center justify-center px-3 text-gray-500 hover:text-[#1F2937]">
+                {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
             {confirmPasswordError && (
               <p
                 id="confirm-password-error"
@@ -141,6 +181,14 @@ export default function ForcedPasswordChangeModal({
               </p>
             )}
           </div>
+
+          {submitError && (
+            <div
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {submitError}
+            </div>
+          )}
 
           <button
             type="submit"

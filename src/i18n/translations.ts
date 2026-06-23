@@ -379,11 +379,17 @@ export const translations = {
         confirmPasswordPlaceholder: "Repite la nueva contraseña",
         submit: "Guardar nueva contraseña",
         submitting: "Actualizando contraseña...",
+        actions: {
+          showPassword: "Mostrar contraseña",
+          hidePassword: "Ocultar contraseña"
+        },
         validation: {
           newRequired: "La nueva contraseña es obligatoria.",
           minLength: "La nueva contraseña debe tener al menos 8 caracteres.",
           confirmRequired: "Confirma la nueva contraseña.",
-          mismatch: "Las contraseñas no coinciden."
+          mismatch: "Las contraseñas no coinciden.",
+          sameAsTemporary:
+            "La nueva contraseña debe ser diferente de la contraseña temporal."
         },
         toast: {
           updateError: "No se pudo actualizar la contraseña.",
@@ -938,11 +944,17 @@ export const translations = {
         confirmPasswordPlaceholder: "Repita a nova senha",
         submit: "Salvar nova senha",
         submitting: "Atualizando senha...",
+        actions: {
+          showPassword: "Exibir senha",
+          hidePassword: "Ocultar senha"
+        },
         validation: {
           newRequired: "A nova senha é obrigatória.",
           minLength: "A nova senha deve ter no mínimo 8 caracteres.",
           confirmRequired: "Confirme a nova senha.",
-          mismatch: "As senhas não coincidem."
+          mismatch: "As senhas não coincidem.",
+          sameAsTemporary:
+            "A nova senha precisa ser diferente da senha temporária."
         },
         toast: {
           updateError: "Não foi possível atualizar a senha.",
@@ -1384,11 +1396,17 @@ export const translations = {
         confirmPasswordPlaceholder: "Repeat the new password",
         submit: "Save new password",
         submitting: "Updating password...",
+        actions: {
+          showPassword: "Show password",
+          hidePassword: "Hide password"
+        },
         validation: {
           newRequired: "New password is required.",
           minLength: "New password must be at least 8 characters.",
           confirmRequired: "Please confirm the new password.",
-          mismatch: "Passwords do not match."
+          mismatch: "Passwords do not match.",
+          sameAsTemporary:
+            "The new password must be different from the temporary password."
         },
         toast: {
           updateError: "Unable to update password.",

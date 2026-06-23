@@ -54,8 +54,10 @@ export default function ProtectedAdminRoute() {
   // Se não for rota de módulo conhecido, libera acesso (ex: dashboard, rotas futuras)
   const canAccess = hasAdminRole && (!module || canAccessModule(role, module));
 
-  const handleForcePasswordChange = async (newPassword: string) => {
-    if (!user) return;
+  const handleForcePasswordChange = async (
+    newPassword: string
+  ): Promise<string | null> => {
+    if (!user) return t.admin.forcedPassword.toast.updateError;
 
     setIsUpdatingPassword(true);
 
@@ -64,30 +66,33 @@ export default function ProtectedAdminRoute() {
     });
 
     if (updatePasswordError) {
-      showToast(t.admin.forcedPassword.toast.updateError, "error");
+      const isSameAsTemporary =
+        updatePasswordError.message ===
+        "New password should be different from the old password.";
+
       setIsUpdatingPassword(false);
-      return;
+      return isSameAsTemporary
+        ? t.admin.forcedPassword.validation.sameAsTemporary
+        : t.admin.forcedPassword.toast.updateError;
     }
 
-    const { error: edgeError } = await supabase.functions.invoke(
-      "complete-password-change"
-    );
+    const { error: edgeError } =
+      await supabase.functions.invoke("complete-password-change");
 
     if (edgeError) {
-      showToast(t.admin.forcedPassword.toast.profileSyncError, "error");
       setIsUpdatingPassword(false);
-      return;
+      return t.admin.forcedPassword.toast.profileSyncError;
     }
 
     const { error: refreshError } = await refreshProfile();
     if (refreshError) {
-      showToast(t.admin.forcedPassword.toast.refreshError, "error");
       setIsUpdatingPassword(false);
-      return;
+      return t.admin.forcedPassword.toast.refreshError;
     }
 
     showToast(t.admin.forcedPassword.toast.success, "success");
     setIsUpdatingPassword(false);
+    return null;
   };
 
   // RETORNOS CONDICIONAIS APÓS HOOKS
