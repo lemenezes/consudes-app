@@ -215,9 +215,9 @@ function SideNavLink({
     <NavLink to={item.to} end={item.end} onClick={onClick}>
       {({ isActive }) => (
         <div
-          className={`${base} px-3.5 py-3 border overflow-hidden ${
+          className={`${base} px-3 py-2.5 lg:px-3.5 lg:py-3 border overflow-hidden ${
             isActive
-              ? "bg-[linear-gradient(135deg,rgba(217,164,65,0.22),rgba(217,164,65,0.08)_35%,rgba(255,255,255,0.06))] text-white border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(0,0,0,0.18)]"
+              ? "bg-white/10 lg:bg-[linear-gradient(135deg,rgba(217,164,65,0.22),rgba(217,164,65,0.08)_35%,rgba(255,255,255,0.06))] text-white border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(0,0,0,0.18)]"
               : "text-white/62 border-transparent hover:text-white hover:bg-white/7 hover:border-white/8"
           }`}>
           {isActive && (
@@ -225,7 +225,7 @@ function SideNavLink({
           )}
           <span
             className={`relative z-10 ${
-              isActive ? "text-[#D9A441]" : "text-current"
+              isActive ? "text-white lg:text-[#D9A441]" : "text-current"
             }`}>
             {item.icon}
           </span>
@@ -331,20 +331,20 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-[linear-gradient(180deg,#002D5C_0%,#01264B_100%)] text-white">
       {/* Logo */}
-      <div className="border-b border-white/8 px-5 pb-4 pt-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-20 shrink-0 items-center justify-center rounded-2xl bg-white px-3 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+      <div className="border-b border-white/8 px-4 pt-4 pb-3 lg:px-5 lg:pt-6 lg:pb-4">
+        <div className="flex items-center gap-3 lg:gap-4">
+          <div className="flex h-14 w-16 lg:h-16 lg:w-20 shrink-0 items-center justify-center rounded-xl lg:rounded-2xl bg-white px-2.5 lg:px-3 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
             <img
               src="/logo-novo-consudes-removebg-preview-1.webp"
               alt="CONSUDES"
-              className="h-9 w-auto"
+              className="h-8 lg:h-9 w-auto"
             />
           </div>
-          <div className="flex min-w-0 items-center gap-4">
-            <div className="h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
+          <div className="flex min-w-0 items-center gap-3 lg:gap-4">
+            <div className="h-10 lg:h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
             <div className="min-w-0">
               <p className="text-sm font-medium tracking-[0.08em] text-white/80 whitespace-nowrap">
-                ADMIN
+                CONSUDES Admin
               </p>
             </div>
           </div>
@@ -352,18 +352,18 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
       </div>
 
       {/* Nav groups */}
-      <nav className="flex-1 overflow-y-auto px-4 py-4">
+      <nav className="flex-1 overflow-y-auto px-4 py-2 lg:py-4">
         {filteredGroups.map((group, gi) => (
-          <div key={gi} className={gi === 0 ? "" : "mt-6"}>
+          <div key={gi} className={gi === 0 ? "" : "mt-4 lg:mt-6"}>
             {group.heading && (
-              <div className="mb-3 flex flex-col px-1">
-                <div className="mb-2.5 h-0.5 w-10 rounded-full bg-[#D9A441]" />
+              <div className="mb-2 lg:mb-3 flex flex-col px-1">
+                <div className="mb-2 h-0.5 w-8 lg:w-10 rounded-full bg-[#D9A441]" />
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/56">
                   {group.heading}
                 </p>
               </div>
             )}
-            <div className="space-y-1.5">
+            <div className="space-y-1 lg:space-y-1.5">
               {group.items.map((item, ii) => (
                 <SideNavLink
                   key={ii}
@@ -378,10 +378,10 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
       </nav>
 
       {/* Rodapé: ações finais */}
-      <div className="border-t border-white/8 px-4 pb-3 pt-2.5">
-        <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-3 py-2">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 rounded-xl px-3 py-1.5 text-white/60">
+      <div className="border-t border-white/8 px-4 pb-2.5 lg:pb-3 pt-2">
+        <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-2.5 lg:px-3 py-1.5 lg:py-2">
+          <div className="space-y-0.5 lg:space-y-1">
+            <div className="flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1 text-white/60">
               <IconGlobe />
               <LangSwitcher lang={lang} setLang={setLang} dark />
             </div>
@@ -389,13 +389,13 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
               href="https://www.consudes.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              className="flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
               <IconExternalLink />
               <span>{t.admin.publicSite}</span>
             </a>
             <button
               onClick={handleSignOut}
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              className="flex w-full items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
               <IconLogout />
               <span>{t.admin.logout}</span>
             </button>
@@ -421,18 +421,11 @@ export default function AdminLayout() {
       {/* ── Coluna de conteúdo ── */}
       <div className="lg:pl-60 flex flex-col min-h-screen">
         {/* Top bar mobile */}
-        <header className="lg:hidden flex items-center justify-between px-4 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
-          <div className="bg-white rounded-lg px-2 py-1">
-            <img
-              src="/logo-novo-consudes-removebg-preview-1.webp"
-              alt="CONSUDES"
-              className="h-8 w-auto"
-            />
-          </div>
+        <header className="lg:hidden flex items-center justify-end px-3 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
           <button
             onClick={() => setMobileOpen(v => !v)}
             aria-label={t.admin.menuLabel}
-            className="p-2 text-white/70 hover:text-white">
+            className="p-2 rounded-md text-white/70 hover:text-white hover:bg-white/10 focus:outline-none">
             {mobileOpen ? (
               <svg
                 className="w-5 h-5"
@@ -472,7 +465,7 @@ export default function AdminLayout() {
               onClick={() => setMobileOpen(false)}
             />
             {/* Drawer */}
-            <div className="lg:hidden fixed top-14 left-0 bottom-0 w-72 bg-[#002D5C] z-30 overflow-y-auto">
+            <div className="lg:hidden fixed top-14 left-0 bottom-0 w-[85vw] max-w-[320px] bg-[#002D5C] z-30 overflow-y-auto">
               <SidebarContent onNav={() => setMobileOpen(false)} />
             </div>
           </>
