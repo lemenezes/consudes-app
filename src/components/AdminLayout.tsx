@@ -364,12 +364,11 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
         </div>
         <div className="px-3 py-2 text-center">
           {user?.email ? (
-            <a
-              href={`mailto:${user.email}`}
-              className="text-[10px] text-white/50 hover:text-white/75 transition-colors truncate block"
+            <span
+              className="text-[10px] text-white/50 truncate block"
               title={user.email}>
               {user.email}
-            </a>
+            </span>
           ) : (
             <p className="text-[10px] text-white/35 truncate">Usuário</p>
           )}
