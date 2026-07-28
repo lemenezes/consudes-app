@@ -1,19 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Calendar, ArrowLeft, Languages } from 'lucide-react';
-import { getPublishedNewsBySlug } from '../services/newsPublicService';
-import { useLanguage } from '../context/LanguageContext';
-import { translatePlain, translateHTML } from '../utils/translateContent';
-import { useSEO } from '../hooks/useSEO';
-import type { NewsRow } from '../lib/database.aliases';
+import { useEffect, useRef, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Calendar, ArrowLeft, Languages } from "lucide-react";
+import { getPublishedNewsBySlug } from "../services/newsPublicService";
+import { useLanguage } from "../context/LanguageContext";
+import { translatePlain, translateHTML } from "../utils/translateContent";
+import { useSEO } from "../hooks/useSEO";
+import ImageLightbox from "../components/ImageLightbox";
+import type { NewsRow } from "../lib/database.aliases";
 
 function formatDate(iso: string | null, locale: string): string {
-  if (!iso) return '';
+  if (!iso) return "";
   const s = new Date(iso).toLocaleDateString(locale, {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
   });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -30,25 +31,49 @@ export default function NewsDetailPage() {
     title: news?.title ?? undefined,
     description: news?.excerpt ?? undefined,
     image: news?.cover_url ?? undefined,
-    url: news ? `/noticias/${news.slug}` : '/noticias',
-    type: 'article',
+    url: news ? `/noticias/${news.slug}` : "/noticias",
+    type: "article"
   });
 
   // ── Tradução automática ────────────────────────────────────────────────────
-  const [displayTitle, setDisplayTitle] = useState('');
-  const [displayContent, setDisplayContent] = useState('');
+  const [displayTitle, setDisplayTitle] = useState("");
+  const [displayContent, setDisplayContent] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   // Cache: chave "newsId:lang" → { title, content }
-  const translationCache = useRef<Map<string, { title: string; content: string }>>(new Map());
+  const translationCache = useRef<
+    Map<string, { title: string; content: string }>
+  >(new Map());
+
+  // ── Detecção de proporção da imagem ────────────────────────────────────────
+  const [imageAspectRatio, setImageAspectRatio] = useState<
+    "horizontal" | "vertical" | "square" | null
+  >(null);
+
+  // ── Lightbox ───────────────────────────────────────────────────────────────
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const handleCoverImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    // Threshold: 0.8 a 1.2 = quadrada, < 0.8 = vertical, > 1.2 = horizontal
+    if (aspectRatio < 0.8) {
+      setImageAspectRatio("vertical");
+    } else if (aspectRatio > 1.2) {
+      setImageAspectRatio("horizontal");
+    } else {
+      setImageAspectRatio("square");
+    }
+  };
 
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
     setError(null);
+    setImageAspectRatio(null);
 
     getPublishedNewsBySlug(slug).then(({ data, error: err }) => {
       if (err || !data) {
-        setError(err ?? 'Noticia no encontrada');
+        setError(err ?? "Noticia no encontrada");
       } else {
         setNews(data);
       }
@@ -60,9 +85,9 @@ export default function NewsDetailPage() {
     if (!news) return;
 
     // Espanhol: exibe original diretamente
-    if (lang === 'es') {
+    if (lang === "es") {
       setDisplayTitle(news.title);
-      setDisplayContent(news.content ?? '');
+      setDisplayContent(news.content ?? "");
       setIsTranslating(false);
       return;
     }
@@ -77,14 +102,14 @@ export default function NewsDetailPage() {
 
     // Exibe o original enquanto traduz
     setDisplayTitle(news.title);
-    setDisplayContent(news.content ?? '');
+    setDisplayContent(news.content ?? "");
     setIsTranslating(true);
 
     let cancelled = false;
     (async () => {
       const [title, content] = await Promise.all([
         translatePlain(news.title, lang),
-        translateHTML(news.content ?? '', lang),
+        translateHTML(news.content ?? "", lang)
       ]);
       if (cancelled) return;
       translationCache.current.set(cacheKey, { title, content });
@@ -93,7 +118,9 @@ export default function NewsDetailPage() {
       setIsTranslating(false);
     })();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [news, lang]);
 
   // ── Carregando ─────────────────────────────────────────────────────────────
@@ -109,8 +136,14 @@ export default function NewsDetailPage() {
             <div className="h-3 bg-white/10 rounded w-56 mx-auto animate-pulse" />
           </div>
           <div className="absolute bottom-0 left-0 right-0 translate-y-[1px]">
-            <svg viewBox="0 0 1440 40" className="w-full text-[#F5F7FA] dark:text-[#0d1624]" preserveAspectRatio="none">
-              <path fill="currentColor" d="M0,40 C480,0 960,40 1440,0 L1440,40 Z" />
+            <svg
+              viewBox="0 0 1440 40"
+              className="w-full text-[#F5F7FA] dark:text-[#0d1624]"
+              preserveAspectRatio="none">
+              <path
+                fill="currentColor"
+                d="M0,40 C480,0 960,40 1440,0 L1440,40 Z"
+              />
             </svg>
           </div>
         </div>
@@ -131,16 +164,24 @@ export default function NewsDetailPage() {
   if (error || !news) {
     return (
       <div className="min-h-screen bg-[#F5F7FA] dark:bg-[#0d1624] flex flex-col items-center justify-center gap-6 px-4 text-center">
-        <svg className="w-14 h-14 text-gray-200 dark:text-white/10" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+        <svg
+          className="w-14 h-14 text-gray-200 dark:text-white/10"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z"
+          />
         </svg>
         <p className="text-[#1F2937]/50 dark:text-white/40 text-sm">
           {t.newsDetail.notFound}
         </p>
         <button
-          onClick={() => navigate('/noticias')}
-          className="inline-flex items-center gap-2 text-[#0057A8] dark:text-[#7ab8f0] text-sm font-semibold hover:underline"
-        >
+          onClick={() => navigate("/noticias")}
+          className="inline-flex items-center gap-2 text-[#0057A8] dark:text-[#7ab8f0] text-sm font-semibold hover:underline">
           <ArrowLeft className="w-4 h-4" />
           {t.newsDetail.backLink}
         </button>
@@ -150,8 +191,8 @@ export default function NewsDetailPage() {
 
   // ── Conteúdo ──────────────────────────────────────────────────────────────
   return (
-    <article className="min-h-screen bg-[#F5F7FA] dark:bg-[#0d1624]">
-
+    <>
+      <article className="min-h-screen bg-[#F5F7FA] dark:bg-[#0d1624]">
       {/* ── Hero institucional da seção (igual PageHero) ───────────────────── */}
       <section className="relative bg-[#003B73] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -171,22 +212,39 @@ export default function NewsDetailPage() {
 
         {/* Onda na base — igual às outras páginas */}
         <div className="absolute bottom-0 left-0 right-0 translate-y-[1px]">
-          <svg viewBox="0 0 1440 40" className="w-full text-[#F5F7FA] dark:text-[#0d1624]" preserveAspectRatio="none">
-            <path fill="currentColor" d="M0,40 C480,0 960,40 1440,0 L1440,40 Z" />
+          <svg
+            viewBox="0 0 1440 40"
+            className="w-full text-[#F5F7FA] dark:text-[#0d1624]"
+            preserveAspectRatio="none">
+            <path
+              fill="currentColor"
+              d="M0,40 C480,0 960,40 1440,0 L1440,40 Z"
+            />
           </svg>
         </div>
       </section>
 
       {/* ── Corpo da matéria ──────────────────────────────────────────────── */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-20">
-
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-[#1F2937]/30 dark:text-white/20 text-[11px] mb-8 flex-wrap" aria-label="Navegación">
-          <Link to="/" className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">{t.newsDetail.home}</Link>
+        <nav
+          className="flex items-center gap-1 text-[#1F2937]/30 dark:text-white/20 text-[11px] mb-8 flex-wrap"
+          aria-label="Navegación">
+          <Link
+            to="/"
+            className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">
+            {t.newsDetail.home}
+          </Link>
           <span>/</span>
-          <Link to="/noticias" className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">{t.nav.news}</Link>
+          <Link
+            to="/noticias"
+            className="hover:text-[#0057A8] dark:hover:text-white/60 transition-colors">
+            {t.nav.news}
+          </Link>
           <span>/</span>
-          <span className="text-[#1F2937]/50 dark:text-white/40 truncate max-w-[200px]">{news.title}</span>
+          <span className="text-[#1F2937]/50 dark:text-white/40 truncate max-w-[200px]">
+            {news.title}
+          </span>
         </nav>
 
         {/* ── Bloco editorial: título + meta + imagem ── */}
@@ -206,28 +264,54 @@ export default function NewsDetailPage() {
                 </time>
               </div>
             )}
-            {lang !== 'es' && (
-              <div className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                isTranslating
-                  ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800'
-                  : 'bg-[#0057A8]/5 dark:bg-[#0057A8]/10 text-[#0057A8]/60 dark:text-[#7ab8f0]/50 border-[#0057A8]/10 dark:border-[#7ab8f0]/10'
-              }`}>
-                <Languages className={`w-3 h-3 shrink-0 ${isTranslating ? 'animate-pulse' : ''}`} />
+            {lang !== "es" && (
+              <div
+                className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                  isTranslating
+                    ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+                    : "bg-[#0057A8]/5 dark:bg-[#0057A8]/10 text-[#0057A8]/60 dark:text-[#7ab8f0]/50 border-[#0057A8]/10 dark:border-[#7ab8f0]/10"
+                }`}>
+                <Languages
+                  className={`w-3 h-3 shrink-0 ${isTranslating ? "animate-pulse" : ""}`}
+                />
                 {isTranslating
-                  ? (lang === 'pt' ? 'Traduzindo…' : 'Translating…')
-                  : (lang === 'pt' ? 'Tradução automática' : 'Auto-translated')
-                }
+                  ? lang === "pt"
+                    ? "Traduzindo…"
+                    : "Translating…"
+                  : lang === "pt"
+                    ? "Tradução automática"
+                    : "Auto-translated"}
               </div>
             )}
           </div>
 
           {/* Imagem de capa — parte do cabeçalho editorial */}
           {news.cover_url && (
-            <figure className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/5">
+            <figure
+              className={`
+                rounded-2xl overflow-hidden shadow-lg ring-1 ring-black/5 dark:ring-white/5 bg-gray-100 dark:bg-gray-900 cursor-zoom-in
+                ${
+                  imageAspectRatio === "vertical"
+                    ? "max-w-[340px] mx-auto"
+                    : imageAspectRatio === "square"
+                      ? "max-w-[600px] mx-auto"
+                      : "w-full"
+                }
+              `}
+              onClick={() => setLightboxOpen(true)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  setLightboxOpen(true);
+                }
+              }}
+              aria-label={`Clique para expandir: ${displayTitle || news.title}`}>
               <img
                 src={news.cover_url}
                 alt={displayTitle || news.title}
-                className="w-full object-cover max-h-[500px]"
+                className="w-full h-auto object-contain"
+                onLoad={handleCoverImageLoad}
               />
             </figure>
           )}
@@ -238,7 +322,8 @@ export default function NewsDetailPage() {
 
         {/* ── Conteúdo da matéria ── */}
         {displayContent ? (
-          <div className="
+          <div
+            className="
             [&_p]:text-[#374151] dark:[&_p]:text-slate-300
               [&_p]:text-[1.0625rem] [&_p]:leading-[1.9] [&_p]:mb-5 [&_p]:last:mb-0
             [&_p.para-small]:text-[0.875rem] [&_p.para-small]:text-[#6B7280] dark:[&_p.para-small]:text-slate-400 [&_p.para-small]:leading-[1.7]
@@ -277,8 +362,7 @@ export default function NewsDetailPage() {
         <div className="mt-16 pt-8 border-t border-gray-200 dark:border-white/10 flex items-center justify-between flex-wrap gap-4">
           <Link
             to="/noticias"
-            className="inline-flex items-center gap-2 text-[#0057A8] dark:text-[#7ab8f0] text-sm font-semibold hover:underline"
-          >
+            className="inline-flex items-center gap-2 text-[#0057A8] dark:text-[#7ab8f0] text-sm font-semibold hover:underline">
             <ArrowLeft className="w-4 h-4" />
             {t.newsDetail.backLink}
           </Link>
@@ -288,8 +372,17 @@ export default function NewsDetailPage() {
             <span className="w-6 h-px bg-[#D9A441]/50" />
           </div>
         </div>
-
       </div>
     </article>
+
+    {/* Lightbox */}
+    {lightboxOpen && news?.cover_url && (
+      <ImageLightbox
+        src={news.cover_url}
+        alt={displayTitle || news.title}
+        onClose={() => setLightboxOpen(false)}
+      />
+    )}
+    </>
   );
 }
