@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Node, mergeAttributes } from '@tiptap/core';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-import Underline from '@tiptap/extension-underline';
-import TextAlign from '@tiptap/extension-text-align';
-import { ResizableImage } from './ResizableImage';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Node, mergeAttributes } from "@tiptap/core";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import { ResizableImage } from "./ResizableImage";
 import {
   Bold,
   Italic,
@@ -21,31 +21,38 @@ import {
   AlignCenter,
   AlignRight,
   Undo2,
-  Redo2,
-} from 'lucide-react';
-import InsertImageModal, { MAX_INLINE_IMAGES } from './InsertImageModal';
-import { useAuditLog } from '../hooks/useAuditLog';
+  Redo2
+} from "lucide-react";
+import InsertImageModal, { MAX_INLINE_IMAGES } from "./InsertImageModal";
+import { useAuditLog } from "../hooks/useAuditLog";
 
 // ─── Parágrafo com suporte a variantes semânticas ──────────────────────────────
 const VariantParagraph = Node.create({
-  name: 'paragraph',
+  name: "paragraph",
   priority: 1000,
-  group: 'block',
-  content: 'inline*',
+  group: "block",
+  content: "inline*",
   addAttributes() {
     return {
       textSize: {
         default: null,
-        parseHTML: (el) => (el as HTMLElement).getAttribute('data-size') || null,
-        renderHTML: (attrs) => attrs.textSize ? { 'data-size': attrs.textSize } : {},
-      },
+        parseHTML: el => (el as HTMLElement).getAttribute("data-size") || null,
+        renderHTML: attrs =>
+          attrs.textSize ? { "data-size": attrs.textSize } : {}
+      }
     };
   },
-  parseHTML() { return [{ tag: 'p' }]; },
-  renderHTML({ HTMLAttributes }) {
-    const size = HTMLAttributes['data-size'];
-    return ['p', mergeAttributes(HTMLAttributes, size ? { class: `para-${size}` } : {}), 0];
+  parseHTML() {
+    return [{ tag: "p" }];
   },
+  renderHTML({ HTMLAttributes }) {
+    const size = HTMLAttributes["data-size"];
+    return [
+      "p",
+      mergeAttributes(HTMLAttributes, size ? { class: `para-${size}` } : {}),
+      0
+    ];
+  }
 });
 
 // ─── Estilos do editor ───────────────────────────────────────────────────────
@@ -133,7 +140,7 @@ function ToolbarBtn({
   onClick,
   active,
   title,
-  children,
+  children
 }: {
   onClick: () => void;
   active?: boolean;
@@ -147,12 +154,12 @@ function ToolbarBtn({
       onClick={onClick}
       className={`
         p-1.5 rounded-md text-sm transition-all
-        ${active
-          ? 'bg-[#0057A8] text-white shadow-sm'
-          : 'text-gray-400 hover:bg-gray-100 hover:text-[#1F2937]'
+        ${
+          active
+            ? "bg-[#0057A8] text-white shadow-sm"
+            : "text-gray-400 hover:bg-gray-100 hover:text-[#1F2937]"
         }
-      `}
-    >
+      `}>
       {children}
     </button>
   );
@@ -160,15 +167,27 @@ function ToolbarBtn({
 
 // ─── Separador visual ────────────────────────────────────────────────────────
 function Divider() {
-  return <span className="w-px h-5 bg-gray-200 mx-0.5 self-center" aria-hidden />;
+  return (
+    <span className="w-px h-5 bg-gray-200 mx-0.5 self-center" aria-hidden />
+  );
 }
 
 // ─── Componente principal ─────────────────────────────────────────────────────
-export default function RichTextEditor({ value, onChange, placeholder, newsId }: Props) {
+export default function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+  newsId
+}: Props) {
   const [showImageModal, setShowImageModal] = useState(false);
   const { log } = useAuditLog();
   // Controla se o conteúdo inicial já foi injetado (evita loop com onUpdate)
-  const initializedRef = useRef(false);
+  //const initializedRef = useRef(false);
+  // Sempre aponta para o onChange mais recente — evita closure stale no onUpdate do TipTap
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   const editor = useEditor({
     extensions: [
@@ -178,58 +197,55 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
         code: false,
         codeBlock: false,
         horizontalRule: false,
-        strike: false,
+        strike: false
       }),
       VariantParagraph,
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' },
+        HTMLAttributes: { rel: "noopener noreferrer", target: "_blank" }
       }),
       Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      ResizableImage,
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      ResizableImage
     ],
-    content: value || '',
+    content: value || "",
     onUpdate({ editor }) {
       const html = editor.getHTML();
       // Normaliza documento vazio para string vazia
-      onChange(html === '<p></p>' ? '' : html);
+      onChangeRef.current(html === "<p></p>" ? "" : html);
     },
     editorProps: {
       attributes: {
-        'data-placeholder': placeholder ?? 'Escreva o conteúdo da notícia…',
-      },
-    },
+        "data-placeholder": placeholder ?? "Escreva o conteúdo da notícia…"
+      }
+    }
   });
 
   // ── Sincroniza conteúdo quando carregado de forma assíncrona ─────────────
   // O Tiptap só usa `content` na montagem — se os dados chegam depois (ex: fetch
   // de edição), o editor precisa ser atualizado manualmente uma única vez.
   useEffect(() => {
-    if (!editor || initializedRef.current) return;
-    if (!value) return;
-    // Só injeta se o editor ainda estiver vazio
+    if (!editor) return;
+
     const current = editor.getHTML();
-    if (current === '' || current === '<p></p>') {
-      // emitUpdate: false evita disparar onUpdate e causar loop
-      editor.commands.setContent(value, { emitUpdate: false });
-      initializedRef.current = true;
-    } else {
-      initializedRef.current = true;
+    const next = value || "<p></p>";
+
+    if (current !== next) {
+      editor.commands.setContent(value || "", { emitUpdate: false });
     }
   }, [editor, value]);
 
   // ── Link ─────────────────────────────────────────────────────────────────
   const handleLink = useCallback(() => {
     if (!editor) return;
-    const current = editor.getAttributes('link').href as string | undefined;
+    const current = editor.getAttributes("link").href as string | undefined;
 
     if (current) {
       editor.chain().focus().unsetLink().run();
       return;
     }
 
-    const url = window.prompt('URL do link:', 'https://');
+    const url = window.prompt("URL do link:", "https://");
     if (!url) return;
 
     // Validação básica de URL
@@ -244,7 +260,7 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
   if (!editor) return null;
 
-  const isLinkActive = editor.isActive('link');
+  const isLinkActive = editor.isActive("link");
 
   // Conta imagens internas no conteúdo atual
   const inlineImageCount = (editor.getHTML().match(/<img/g) ?? []).length;
@@ -252,14 +268,18 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
   // Inserir imagem no cursor após upload/url
   const handleImageInsert = async (url: string) => {
-    editor.chain().focus().insertContent({ type: 'image', attrs: { src: url } }).run();
+    editor
+      .chain()
+      .focus()
+      .insertContent({ type: "image", attrs: { src: url } })
+      .run();
 
     if (newsId) {
       await log({
-        action: 'upload_image',
-        entity_type: 'news',
+        action: "upload_image",
+        entity_type: "news",
         entity_id: newsId,
-        entity_title: `Imagem inline inserida`,
+        entity_title: `Imagem inline inserida`
       });
     }
   };
@@ -270,34 +290,35 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
       <style>{EDITOR_STYLES}</style>
 
       <div className="rounded-xl border border-gray-200 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-[#0057A8]/20 focus-within:border-[#0057A8]/40 transition-all shadow-sm">
-
         {/* ── Toolbar ────────────────────────────────────────────────── */}
         <div className="flex items-center flex-wrap gap-0.5 px-3 py-2 border-b border-gray-100 bg-gray-50/80">
-
           {/* Tipo de texto — dropdown semântico */}
           <select
             value={
-              editor.isActive('heading', { level: 2 }) ? 'h2'
-              : editor.isActive('heading', { level: 3 }) ? 'h3'
-              : editor.getAttributes('paragraph').textSize === 'lead' ? 'lead'
-              : editor.getAttributes('paragraph').textSize === 'small' ? 'small'
-              : 'normal'
+              editor.isActive("heading", { level: 2 })
+                ? "h2"
+                : editor.isActive("heading", { level: 3 })
+                  ? "h3"
+                  : editor.getAttributes("paragraph").textSize === "lead"
+                    ? "lead"
+                    : editor.getAttributes("paragraph").textSize === "small"
+                      ? "small"
+                      : "normal"
             }
-            onChange={(e) => {
+            onChange={e => {
               const v = e.target.value;
-              if (v === 'h2') {
+              if (v === "h2") {
                 editor.chain().focus().setHeading({ level: 2 }).run();
-              } else if (v === 'h3') {
+              } else if (v === "h3") {
                 editor.chain().focus().setHeading({ level: 3 }).run();
               } else {
                 editor.chain().focus().setParagraph().run();
-                editor.commands.updateAttributes('paragraph', {
-                  textSize: v === 'normal' ? null : v,
+                editor.commands.updateAttributes("paragraph", {
+                  textSize: v === "normal" ? null : v
                 });
               }
             }}
-            className="h-7 text-[12px] text-gray-600 bg-white border border-gray-200 rounded-md px-2 pr-6 focus:outline-none focus:ring-1 focus:ring-[#0057A8]/50 cursor-pointer appearance-auto"
-          >
+            className="h-7 text-[12px] text-gray-600 bg-white border border-gray-200 rounded-md px-2 pr-6 focus:outline-none focus:ring-1 focus:ring-[#0057A8]/50 cursor-pointer appearance-auto">
             <option value="normal">Texto normal</option>
             <option value="small">Pequeno</option>
             <option value="lead">Destaque</option>
@@ -310,23 +331,20 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
           {/* Formatação inline */}
           <ToolbarBtn
             title="Negrito (Ctrl+B)"
-            active={editor.isActive('bold')}
-            onClick={() => editor.chain().focus().toggleBold().run()}
-          >
+            active={editor.isActive("bold")}
+            onClick={() => editor.chain().focus().toggleBold().run()}>
             <Bold className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Itálico (Ctrl+I)"
-            active={editor.isActive('italic')}
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-          >
+            active={editor.isActive("italic")}
+            onClick={() => editor.chain().focus().toggleItalic().run()}>
             <Italic className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Sublinhado (Ctrl+U)"
-            active={editor.isActive('underline')}
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-          >
+            active={editor.isActive("underline")}
+            onClick={() => editor.chain().focus().toggleUnderline().run()}>
             <UnderlineIcon className="w-4 h-4" />
           </ToolbarBtn>
 
@@ -335,23 +353,20 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
           {/* Alinhamento */}
           <ToolbarBtn
             title="Alinhar à esquerda"
-            active={editor.isActive({ textAlign: 'left' })}
-            onClick={() => editor.chain().focus().setTextAlign('left').run()}
-          >
+            active={editor.isActive({ textAlign: "left" })}
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}>
             <AlignLeft className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Centralizar"
-            active={editor.isActive({ textAlign: 'center' })}
-            onClick={() => editor.chain().focus().setTextAlign('center').run()}
-          >
+            active={editor.isActive({ textAlign: "center" })}
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}>
             <AlignCenter className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Alinhar à direita"
-            active={editor.isActive({ textAlign: 'right' })}
-            onClick={() => editor.chain().focus().setTextAlign('right').run()}
-          >
+            active={editor.isActive({ textAlign: "right" })}
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}>
             <AlignRight className="w-4 h-4" />
           </ToolbarBtn>
 
@@ -360,25 +375,22 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
           {/* Listas */}
           <ToolbarBtn
             title="Lista com marcadores"
-            active={editor.isActive('bulletList')}
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
-          >
+            active={editor.isActive("bulletList")}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}>
             <List className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Lista numerada"
-            active={editor.isActive('orderedList')}
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
-          >
+            active={editor.isActive("orderedList")}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}>
             <ListOrdered className="w-4 h-4" />
           </ToolbarBtn>
 
           {/* Citação */}
           <ToolbarBtn
             title="Citação / destaque"
-            active={editor.isActive('blockquote')}
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
-          >
+            active={editor.isActive("blockquote")}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}>
             <Quote className="w-4 h-4" />
           </ToolbarBtn>
 
@@ -386,10 +398,9 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
           {/* Link */}
           <ToolbarBtn
-            title={isLinkActive ? 'Remover link' : 'Inserir link'}
+            title={isLinkActive ? "Remover link" : "Inserir link"}
             active={isLinkActive}
-            onClick={handleLink}
-          >
+            onClick={handleLink}>
             {isLinkActive ? (
               <Link2Off className="w-4 h-4" />
             ) : (
@@ -399,11 +410,14 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
 
           {/* Imagem inline */}
           <ToolbarBtn
-            title={atLimit ? `Limite de ${MAX_INLINE_IMAGES} imagens atingido` : 'Inserir imagem no conteúdo'}
+            title={
+              atLimit
+                ? `Limite de ${MAX_INLINE_IMAGES} imagens atingido`
+                : "Inserir imagem no conteúdo"
+            }
             onClick={() => !atLimit && setShowImageModal(true)}
-            active={false}
-          >
-            <ImagePlus className={`w-4 h-4 ${atLimit ? 'opacity-30' : ''}`} />
+            active={false}>
+            <ImagePlus className={`w-4 h-4 ${atLimit ? "opacity-30" : ""}`} />
           </ToolbarBtn>
 
           <Divider />
@@ -411,14 +425,12 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
           {/* Desfazer / Refazer */}
           <ToolbarBtn
             title="Desfazer (Ctrl+Z)"
-            onClick={() => editor.chain().focus().undo().run()}
-          >
+            onClick={() => editor.chain().focus().undo().run()}>
             <Undo2 className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
             title="Refazer (Ctrl+Shift+Z)"
-            onClick={() => editor.chain().focus().redo().run()}
-          >
+            onClick={() => editor.chain().focus().redo().run()}>
             <Redo2 className="w-4 h-4" />
           </ToolbarBtn>
 
@@ -429,8 +441,7 @@ export default function RichTextEditor({ value, onChange, placeholder, newsId }:
             title="Limpar formatação"
             onClick={() =>
               editor.chain().focus().clearNodes().unsetAllMarks().run()
-            }
-          >
+            }>
             <RemoveFormatting className="w-4 h-4" />
           </ToolbarBtn>
         </div>
