@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   listReports,
   setReportStatus,
-  deleteReport,
-} from '../../services/reportsService';
-import { hasPermission } from '../../utils/rbac';
-import { useAuth } from '../../context/AuthContext';
-import { useAuditLog } from '../../hooks/useAuditLog';
-import { useLanguage } from '../../context/LanguageContext';
-import DeleteConfirmModal from '../../components/DeleteConfirmModal';
-import type { ReportRow, PublishStatus } from '../../lib/database.aliases';
+  deleteReport
+} from "../../services/reportsService";
+import { hasPermission } from "../../utils/rbac";
+import { useAuth } from "../../context/AuthContext";
+import { useAuditLog } from "../../hooks/useAuditLog";
+import { useLanguage } from "../../context/LanguageContext";
+import DeleteConfirmModal from "../../components/DeleteConfirmModal";
+import type { ReportRow, PublishStatus } from "../../lib/database.aliases";
 
 const STATUS_COLORS: Record<PublishStatus, string> = {
-  draft:     'bg-gray-100 text-gray-600',
-  published: 'bg-green-100 text-green-700',
-  archived:  'bg-yellow-100 text-yellow-700',
+  draft: "bg-gray-100 text-gray-600",
+  published: "bg-green-100 text-green-700",
+  archived: "bg-yellow-100 text-yellow-700"
 };
 
 export default function AdminReportsListPage() {
@@ -38,18 +38,25 @@ export default function AdminReportsListPage() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   const handleTogglePublish = async (item: ReportRow) => {
-    const nextStatus: PublishStatus = item.status === 'published' ? 'draft' : 'published';
+    const nextStatus: PublishStatus =
+      item.status === "published" ? "draft" : "published";
     setActionLoading(item.id);
     const { error } = await setReportStatus(item.id, nextStatus);
-    if (error) { setError(error); setActionLoading(null); return; }
+    if (error) {
+      setError(error);
+      setActionLoading(null);
+      return;
+    }
     await log({
-      action: nextStatus === 'published' ? 'create_report' : 'create_report',
-      entity_type: 'report',
+      action: nextStatus === "published" ? "create_report" : "create_report",
+      entity_type: "report",
       entity_id: item.id,
-      entity_title: item.title,
+      entity_title: item.title
     });
     await load();
     setActionLoading(null);
@@ -58,19 +65,23 @@ export default function AdminReportsListPage() {
   const handleDeleteConfirm = async (reason: string) => {
     if (!toDelete) return;
     // Proteção RBAC para delete
-    if (!profile || !hasPermission(profile.role, 'relatorios', 'delete')) {
+    if (!profile || !hasPermission(profile.role, "transparencia", "delete")) {
       setError(t.admin.rbac.noPermission);
       setToDelete(null);
       return;
     }
     const { error } = await deleteReport(toDelete.id, toDelete.file_url);
-    if (error) { setError(error); setToDelete(null); return; }
+    if (error) {
+      setError(error);
+      setToDelete(null);
+      return;
+    }
     await log({
-      action: 'delete_report',
-      entity_type: 'report',
+      action: "delete_report",
+      entity_type: "report",
       entity_id: toDelete.id,
       entity_title: toDelete.title,
-      reason,
+      reason
     });
     setToDelete(null);
     await load();
@@ -84,14 +95,25 @@ export default function AdminReportsListPage() {
           <h1 className="text-2xl font-['Cormorant_Garamond'] font-semibold text-[#1F2937]">
             {tr.pageTitle}
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">{reports.length} documento{reports.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {reports.length} documento{reports.length !== 1 ? "s" : ""}
+          </p>
         </div>
         <Link
           to="/admin/transparencia/novo"
-          className="inline-flex items-center gap-2 bg-[#003B73] hover:bg-[#0057A8] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          className="inline-flex items-center gap-2 bg-[#003B73] hover:bg-[#0057A8] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            aria-hidden="true">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
           </svg>
           {tr.newDoc}
         </Link>
@@ -105,11 +127,15 @@ export default function AdminReportsListPage() {
 
       {loading ? (
         <div className="animate-pulse space-y-3">
-          {[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-gray-100 rounded-xl" />)}
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="h-16 bg-gray-100 rounded-xl" />
+          ))}
         </div>
       ) : reports.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
-          <p className="font-['Cormorant_Garamond'] text-2xl mb-2">{tr.emptyTitle}</p>
+          <p className="font-['Cormorant_Garamond'] text-2xl mb-2">
+            {tr.emptyTitle}
+          </p>
           <p className="text-sm">{tr.emptyDesc}</p>
         </div>
       ) : (
@@ -117,30 +143,49 @@ export default function AdminReportsListPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                <th className="text-left px-5 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">{tr.colDoc}</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden md:table-cell">{tr.colCategory}</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden sm:table-cell">{tr.colYear}</th>
-                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">{tr.colStatus}</th>
+                <th className="text-left px-5 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">
+                  {tr.colDoc}
+                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden md:table-cell">
+                  {tr.colCategory}
+                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400 hidden sm:table-cell">
+                  {tr.colYear}
+                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold tracking-widest uppercase text-gray-400">
+                  {tr.colStatus}
+                </th>
                 <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {reports.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50/50 transition-colors">
+              {reports.map(item => (
+                <tr
+                  key={item.id}
+                  className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-4">
-                    <p className="font-medium text-[#1F2937] line-clamp-1">{item.title}</p>
+                    <p className="font-medium text-[#1F2937] line-clamp-1">
+                      {item.title}
+                    </p>
                     {item.description && (
-                      <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{item.description}</p>
+                      <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">
+                        {item.description}
+                      </p>
                     )}
                   </td>
                   <td className="px-4 py-4 hidden md:table-cell">
-                    <span className="text-xs text-gray-500">{catLabels[item.category] ?? item.category}</span>
+                    <span className="text-xs text-gray-500">
+                      {catLabels[item.category] ?? item.category}
+                    </span>
                   </td>
                   <td className="px-4 py-4 hidden sm:table-cell">
-                    <span className="text-xs font-mono text-gray-500">{item.year}</span>
+                    <span className="text-xs font-mono text-gray-500">
+                      {item.year}
+                    </span>
                   </td>
                   <td className="px-4 py-4">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${STATUS_COLORS[item.status as PublishStatus]}`}>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${STATUS_COLORS[item.status as PublishStatus]}`}>
                       {tr.statusLabels[item.status as PublishStatus]}
                     </span>
                   </td>
@@ -152,43 +197,92 @@ export default function AdminReportsListPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Visualizar PDF"
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#003B73] hover:bg-blue-50 transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-[#003B73] hover:bg-blue-50 transition-colors">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth={1.8}
+                            stroke="currentColor"
+                            aria-hidden="true">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                         </a>
                       )}
                       <button
                         onClick={() => handleTogglePublish(item)}
                         disabled={actionLoading === item.id}
-                        title={item.status === 'published' ? tr.tooltipUnpublish : tr.tooltipPublish}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors disabled:opacity-40"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
-                          {item.status === 'published'
-                            ? <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            : <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          }
+                        title={
+                          item.status === "published"
+                            ? tr.tooltipUnpublish
+                            : tr.tooltipPublish
+                        }
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors disabled:opacity-40">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.8}
+                          stroke="currentColor"
+                          aria-hidden="true">
+                          {item.status === "published" ? (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                            />
+                          ) : (
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          )}
                         </svg>
                       </button>
                       <Link
                         to={`/admin/transparencia/${item.id}/editar`}
                         title={tr.tooltipEdit}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-[#003B73] hover:bg-blue-50 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-[#003B73] hover:bg-blue-50 transition-colors">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.8}
+                          stroke="currentColor"
+                          aria-hidden="true">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+                          />
                         </svg>
                       </Link>
                       <button
                         onClick={() => setToDelete(item)}
                         title={tr.tooltipDelete}
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.8}
+                          stroke="currentColor"
+                          aria-hidden="true">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                          />
                         </svg>
                       </button>
                     </div>

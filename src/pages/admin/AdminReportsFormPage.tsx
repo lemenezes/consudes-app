@@ -239,7 +239,7 @@ export default function AdminReportsFormPage() {
 
     // Proteção RBAC para create/update
     const actionType = isEditing ? "update" : "create";
-    if (!profile || !hasPermission(profile.role, "relatorios", actionType)) {
+    if (!profile || !hasPermission(profile.role, "transparencia", actionType)) {
       setError(t.admin.rbac.noPermission);
       return;
     }
