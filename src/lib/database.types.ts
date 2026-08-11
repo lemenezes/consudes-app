@@ -409,41 +409,71 @@ export type Database = {
       news: {
         Row: {
           content: string | null
+          content_en: string | null
+          content_es: string | null
+          content_pt: string | null
           cover_url: string | null
           created_at: string
           excerpt: string | null
+          excerpt_en: string | null
+          excerpt_es: string | null
+          excerpt_pt: string | null
           id: string
           lang: Database["public"]["Enums"]["content_lang"]
+          original_language: Database["public"]["Enums"]["content_lang"]
           published_at: string | null
           slug: string
           status: Database["public"]["Enums"]["publish_status"]
           title: string
+          title_en: string | null
+          title_es: string | null
+          title_pt: string | null
           updated_at: string
         }
         Insert: {
           content?: string | null
+          content_en?: string | null
+          content_es?: string | null
+          content_pt?: string | null
           cover_url?: string | null
           created_at?: string
           excerpt?: string | null
+          excerpt_en?: string | null
+          excerpt_es?: string | null
+          excerpt_pt?: string | null
           id?: string
           lang?: Database["public"]["Enums"]["content_lang"]
+          original_language?: Database["public"]["Enums"]["content_lang"]
           published_at?: string | null
           slug: string
           status?: Database["public"]["Enums"]["publish_status"]
           title: string
+          title_en?: string | null
+          title_es?: string | null
+          title_pt?: string | null
           updated_at?: string
         }
         Update: {
           content?: string | null
+          content_en?: string | null
+          content_es?: string | null
+          content_pt?: string | null
           cover_url?: string | null
           created_at?: string
           excerpt?: string | null
+          excerpt_en?: string | null
+          excerpt_es?: string | null
+          excerpt_pt?: string | null
           id?: string
           lang?: Database["public"]["Enums"]["content_lang"]
+          original_language?: Database["public"]["Enums"]["content_lang"]
           published_at?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["publish_status"]
           title?: string
+          title_en?: string | null
+          title_es?: string | null
+          title_pt?: string | null
           updated_at?: string
         }
         Relationships: []

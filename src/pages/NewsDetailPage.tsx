@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Calendar, ArrowLeft, Languages } from "lucide-react";
+import { Calendar, ArrowLeft } from "lucide-react";
 import { getPublishedNewsBySlug } from "../services/newsPublicService";
 import { useLanguage } from "../context/LanguageContext";
-import { translatePlain, translateHTML } from "../utils/translateContent";
 import { useSEO } from "../hooks/useSEO";
 import ImageLightbox from "../components/ImageLightbox";
 import type { NewsRow } from "../lib/database.aliases";
@@ -35,15 +34,6 @@ export default function NewsDetailPage() {
     type: "article"
   });
 
-  // ── Tradução automática ────────────────────────────────────────────────────
-  const [displayTitle, setDisplayTitle] = useState("");
-  const [displayContent, setDisplayContent] = useState("");
-  const [isTranslating, setIsTranslating] = useState(false);
-  // Cache: chave "newsId:lang" → { title, content }
-  const translationCache = useRef<
-    Map<string, { title: string; content: string }>
-  >(new Map());
-
   // ── Detecção de proporção da imagem ────────────────────────────────────────
   const [imageAspectRatio, setImageAspectRatio] = useState<
     "horizontal" | "vertical" | "square" | null
@@ -71,7 +61,7 @@ export default function NewsDetailPage() {
     setError(null);
     setImageAspectRatio(null);
 
-    getPublishedNewsBySlug(slug).then(({ data, error: err }) => {
+    getPublishedNewsBySlug(slug, lang).then(({ data, error: err }) => {
       if (err || !data) {
         setError(err ?? "Noticia no encontrada");
       } else {
@@ -79,49 +69,7 @@ export default function NewsDetailPage() {
       }
       setLoading(false);
     });
-  }, [slug]);
-
-  useEffect(() => {
-    if (!news) return;
-
-    // Espanhol: exibe original diretamente
-    if (lang === "es") {
-      setDisplayTitle(news.title);
-      setDisplayContent(news.content ?? "");
-      setIsTranslating(false);
-      return;
-    }
-
-    const cacheKey = `${news.id}:${lang}`;
-    const cached = translationCache.current.get(cacheKey);
-    if (cached) {
-      setDisplayTitle(cached.title);
-      setDisplayContent(cached.content);
-      return;
-    }
-
-    // Exibe o original enquanto traduz
-    setDisplayTitle(news.title);
-    setDisplayContent(news.content ?? "");
-    setIsTranslating(true);
-
-    let cancelled = false;
-    (async () => {
-      const [title, content] = await Promise.all([
-        translatePlain(news.title, lang),
-        translateHTML(news.content ?? "", lang)
-      ]);
-      if (cancelled) return;
-      translationCache.current.set(cacheKey, { title, content });
-      setDisplayTitle(title);
-      setDisplayContent(content);
-      setIsTranslating(false);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [news, lang]);
+  }, [slug, lang]);
 
   // ── Carregando ─────────────────────────────────────────────────────────────
   if (loading) {
@@ -251,10 +199,10 @@ export default function NewsDetailPage() {
         <header className="mb-10">
           {/* Título */}
           <h2 className="font-['Cormorant_Garamond'] text-3xl sm:text-4xl lg:text-[2.75rem] font-semibold text-[#1F2937] dark:text-white leading-[1.12] tracking-tight mb-5">
-            {displayTitle || news.title}
+            {news.title}
           </h2>
 
-          {/* Meta: data + banner de tradução */}
+          {/* Meta: data */}
           <div className="flex flex-wrap items-center gap-3 mb-8">
             {news.published_at && (
               <div className="flex items-center gap-1.5 text-[#0057A8] dark:text-[#7ab8f0] text-xs font-medium">
@@ -262,25 +210,6 @@ export default function NewsDetailPage() {
                 <time dateTime={news.published_at}>
                   {formatDate(news.published_at, lang)}
                 </time>
-              </div>
-            )}
-            {lang !== "es" && (
-              <div
-                className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                  isTranslating
-                    ? "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800"
-                    : "bg-[#0057A8]/5 dark:bg-[#0057A8]/10 text-[#0057A8]/60 dark:text-[#7ab8f0]/50 border-[#0057A8]/10 dark:border-[#7ab8f0]/10"
-                }`}>
-                <Languages
-                  className={`w-3 h-3 shrink-0 ${isTranslating ? "animate-pulse" : ""}`}
-                />
-                {isTranslating
-                  ? lang === "pt"
-                    ? "Traduzindo…"
-                    : "Translating…"
-                  : lang === "pt"
-                    ? "Tradução automática"
-                    : "Auto-translated"}
               </div>
             )}
           </div>
@@ -306,10 +235,10 @@ export default function NewsDetailPage() {
                   setLightboxOpen(true);
                 }
               }}
-              aria-label={`Clique para expandir: ${displayTitle || news.title}`}>
+              aria-label={`Clique para expandir: ${news.title}`}>
               <img
                 src={news.cover_url}
-                alt={displayTitle || news.title}
+                alt={news.title}
                 className="w-full h-auto object-contain"
                 onLoad={handleCoverImageLoad}
               />
@@ -321,7 +250,7 @@ export default function NewsDetailPage() {
         <div className="w-12 h-0.5 bg-[#D9A441]/50 mb-10" />
 
         {/* ── Conteúdo da matéria ── */}
-        {displayContent ? (
+        {news.content ? (
           <div
             className="
             [&_p]:text-[#374151] dark:[&_p]:text-slate-300
@@ -350,7 +279,7 @@ export default function NewsDetailPage() {
               [&_li]:text-[1.0625rem] [&_li]:leading-[1.75]
             [&_img]:rounded-xl [&_img]:shadow-sm [&_img]:my-6 [&_img]:w-full
           ">
-            <div dangerouslySetInnerHTML={{ __html: displayContent }} />
+            <div dangerouslySetInnerHTML={{ __html: news.content }} />
           </div>
         ) : (
           <p className="text-[#1F2937]/40 dark:text-white/30 text-sm italic">
@@ -379,7 +308,7 @@ export default function NewsDetailPage() {
     {lightboxOpen && news?.cover_url && (
       <ImageLightbox
         src={news.cover_url}
-        alt={displayTitle || news.title}
+        alt={news.title}
         onClose={() => setLightboxOpen(false)}
       />
     )}

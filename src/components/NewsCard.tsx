@@ -1,14 +1,15 @@
-import { Link } from 'react-router-dom';
-import { Calendar, ArrowRight } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
-import type { NewsListItem } from '../services/newsPublicService';
+import { Link } from "react-router-dom";
+import { Calendar, ArrowRight } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
+import type { NewsListItem } from "../services/newsPublicService";
 
-function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  return new Date(iso).toLocaleDateString('es', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
+function formatDate(iso: string | null, lang: "pt" | "es" | "en"): string {
+  if (!iso) return "";
+  const locale = lang === "pt" ? "pt-BR" : lang === "en" ? "en-US" : "es-AR";
+  return new Date(iso).toLocaleDateString(locale, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
   });
 }
 
@@ -19,7 +20,7 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ news, compact = false }: NewsCardProps) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { title, slug, cover_url, published_at, content } = news;
 
   return (
@@ -31,10 +32,10 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
         shadow-card hover:shadow-raise hover:-translate-y-1
         transition-all duration-300
         focus:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold
-      `}
-    >
+      `}>
       {/* Capa */}
-      <div className={`relative overflow-hidden bg-consudes-surface dark:bg-consudes-dark-body shrink-0 ${compact ? 'h-40' : 'h-48'}`}>
+      <div
+        className={`relative overflow-hidden bg-consudes-surface dark:bg-consudes-dark-body shrink-0 ${compact ? "h-40" : "h-48"}`}>
         {cover_url ? (
           <img
             src={cover_url}
@@ -47,8 +48,17 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
         ) : (
           /* Placeholder sem imagem */
           <div className="w-full h-full flex items-center justify-center">
-            <svg className="w-10 h-10 text-consudes-blue-mid/15 dark:text-white/10" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            <svg
+              className="w-10 h-10 text-consudes-blue-mid/15 dark:text-white/10"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+              />
             </svg>
           </div>
         )}
@@ -62,7 +72,9 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
         {published_at && (
           <div className="flex items-center gap-1.5 text-consudes-blue-mid/70 dark:text-white/40 text-xs">
             <Calendar className="w-3 h-3 shrink-0" />
-            <time dateTime={published_at}>{formatDate(published_at)}</time>
+            <time dateTime={published_at}>
+              {formatDate(published_at, lang)}
+            </time>
           </div>
         )}
 
@@ -74,7 +86,10 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
         {/* Conteúdo truncado — texto puro, sem HTML */}
         {content && (
           <p className="text-consudes-blue-text/65 dark:text-white/50 text-sm leading-relaxed line-clamp-4 flex-1">
-            {content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()}
+            {content
+              .replace(/<[^>]*>/g, " ")
+              .replace(/\s+/g, " ")
+              .trim()}
           </p>
         )}
 

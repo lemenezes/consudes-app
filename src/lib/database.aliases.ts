@@ -19,6 +19,12 @@ export type { Database };
 
 /** Tipos de tabelas — Row (leitura) */
 export type NewsRow = Tables<"news">;
+export type NewsI18nFields = Pick<NewsRow,
+  | "original_language"
+  | "title_pt" | "title_es" | "title_en"
+  | "excerpt_pt" | "excerpt_es" | "excerpt_en"
+  | "content_pt" | "content_es" | "content_en"
+>;
 export type FederationRow = Tables<"federations">;
 export type GalleryRow = Tables<"gallery">;
 export type ChampionshipRow = Tables<"championships">;

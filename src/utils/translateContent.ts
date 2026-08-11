@@ -1,15 +1,18 @@
 // Mapeia os códigos de idioma do app para os códigos aceitos pela MyMemory API
 const LANG_TARGET: Record<string, string> = {
+  es: 'es-ES',
   pt: 'pt-BR',
   en: 'en-US',
 };
 
-async function callMyMemory(text: string, to: string): Promise<string> {
+async function callMyMemory(text: string, from: string, to: string): Promise<string> {
   if (!text.trim()) return text;
+  if (from === to) return text;
+  const source = LANG_TARGET[from] ?? from;
   const target = LANG_TARGET[to] ?? to;
   try {
     const res = await fetch(
-      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=es|${target}`,
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`,
     );
     if (!res.ok) return text;
     const json = (await res.json()) as {
@@ -23,18 +26,26 @@ async function callMyMemory(text: string, to: string): Promise<string> {
   }
 }
 
-/** Traduz uma string de texto simples de es → to */
-export async function translatePlain(text: string, to: string): Promise<string> {
-  if (to === 'es' || !text.trim()) return text;
-  return callMyMemory(text, to);
+/** Traduz uma string de texto simples de from -> to */
+export async function translatePlain(
+  text: string,
+  from: string,
+  to: string,
+): Promise<string> {
+  if (!text.trim() || from === to) return text;
+  return callMyMemory(text, from, to);
 }
 
 /**
- * Traduz conteúdo HTML de es → to.
+ * Traduz conteúdo HTML de from -> to.
  * Preserva toda a estrutura de tags; apenas os nós de texto são modificados.
  */
-export async function translateHTML(html: string, to: string): Promise<string> {
-  if (!html || to === 'es') return html;
+export async function translateHTML(
+  html: string,
+  from: string,
+  to: string,
+): Promise<string> {
+  if (!html || from === to) return html;
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(`<body>${html}</body>`, 'text/html');
@@ -54,7 +65,7 @@ export async function translateHTML(html: string, to: string): Promise<string> {
   for (const node of nodes) {
     const original = node.textContent ?? '';
     if (original.trim()) {
-      node.textContent = await callMyMemory(original, to);
+      node.textContent = await callMyMemory(original, from, to);
     }
   }
 
