@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
-import type { Profile } from "../types";
+import type { Profile, ProfileRole } from "../types";
 
 interface AuthContextValue {
   user: User | null;
@@ -56,11 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return {
       data: {
-        ...(profileData as Omit<Profile, "must_change_password">),
+        id: profileData.id,
+        display_name: profileData.display_name,
+        role: profileData.role as ProfileRole,
         must_change_password: Boolean(
           (profileData as { must_change_password?: boolean })
             .must_change_password
-        )
+        ),
+        created_at: profileData.created_at
       },
       error: null
     };

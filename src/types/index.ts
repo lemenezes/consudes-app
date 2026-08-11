@@ -12,19 +12,12 @@ export type ProfileRole =
   | "diretor_esportes"
   | "financeiro"
   | "editor";
-export type ProfileStatus = "approved" | "suspended";
-
 export interface Profile {
   id: string;
   display_name: string | null;
-  full_name: string | null;
-  email: string | null;
-  block: string | null;
-  apartment: string | null;
   role: ProfileRole;
-  status: ProfileStatus;
   must_change_password: boolean;
-  created_at: string;
+  created_at: string | null;
 }
 
 export interface Listing {

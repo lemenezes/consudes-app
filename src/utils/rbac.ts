@@ -44,6 +44,7 @@ export const ROLE_MODULES: Record<ProfileRole, string[]> = {
     "dashboard"
   ],
   diretor_esportes: [
+    "noticias",
     "esportes",
     "calendario_esportivo",
     "eventos",
