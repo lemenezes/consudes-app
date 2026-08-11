@@ -10,6 +10,7 @@ const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminNewsListPage = lazy(() => import("./pages/admin/AdminNewsListPage"));
 const AdminNewsFormPage = lazy(() => import("./pages/admin/AdminNewsFormPage"));
+const AdminHelpNewsPage = lazy(() => import("./pages/admin/AdminHelpNewsPage"));
 const AdminCalendarListPage = lazy(
   () => import("./pages/admin/AdminCalendarListPage")
 );
@@ -34,6 +35,7 @@ const AdminGalleryListPage = lazy(
 const AdminGalleryFormPage = lazy(
   () => import("./pages/admin/AdminGalleryFormPage")
 );
+const AdminHelpPage = lazy(() => import("./pages/admin/AdminHelpPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const InstitucionalPage = lazy(() => import("./pages/InstitucionalPage"));
 const HistoryPage = lazy(() => import("./pages/HistoryPage"));
@@ -93,6 +95,9 @@ const router = createBrowserRouter([
     element: <ProtectedAdminRoute />,
     children: [
       { index: true, element: <AdminDashboard /> },
+      { path: "ajuda", element: <AdminHelpPage /> },
+      { path: "ajuda/noticias", element: <AdminHelpNewsPage /> },
+      { path: "ajuda", element: <AdminHelpPage /> },
       { path: "noticias", element: <AdminNewsListPage /> },
       { path: "noticias/nova", element: <AdminNewsFormPage /> },
       { path: "noticias/:id/editar", element: <AdminNewsFormPage /> },

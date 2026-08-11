@@ -170,6 +170,22 @@ const IconGlobe = () => (
   </svg>
 );
 
+const IconHelp = () => (
+  <svg
+    className="w-4 h-4 shrink-0"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.8}
+    stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M8.625 9a3.375 3.375 0 116.75 0c0 2.25-3.375 2.25-3.375 4.5M12 17.25h.008v.008H12v-.008z"
+    />
+    <circle cx="12" cy="12" r="9" />
+  </svg>
+);
+
 /* ── Tipos de item de nav ────────────────────────────────────────────────── */
 
 type NavItem =
@@ -376,15 +392,38 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
           </div>
         ))}
       </nav>
-
       {/* Rodapé: ações finais */}
       <div className="border-t border-white/8 px-4 pb-2.5 lg:pb-3 pt-2">
         <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-2.5 lg:px-3 py-1.5 lg:py-2">
           <div className="space-y-0.5 lg:space-y-1">
+            {/* Idioma */}
             <div className="flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1 text-white/60">
               <IconGlobe />
               <LangSwitcher lang={lang} setLang={setLang} dark />
             </div>
+
+            {/* Ajuda */}
+            <NavLink
+              to="/admin/ajuda"
+              onClick={onNav}
+              className={({ isActive }) =>
+                `flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium transition-all duration-150 ${
+                  isActive
+                    ? "bg-white/10 text-white"
+                    : "text-white/60 hover:bg-white/8 hover:text-white"
+                }`
+              }>
+              <IconHelp />
+              <span>
+                {lang === "pt"
+                  ? "Ajuda e Manual"
+                  : lang === "es"
+                    ? "Ayuda y Manual"
+                    : "Help and Manual"}
+              </span>
+            </NavLink>
+
+            {/* Site público */}
             <a
               href="https://www.consudes.com"
               target="_blank"
@@ -393,6 +432,8 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
               <IconExternalLink />
               <span>{t.admin.publicSite}</span>
             </a>
+
+            {/* Sair */}
             <button
               onClick={handleSignOut}
               className="flex w-full items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
