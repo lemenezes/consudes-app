@@ -1,4 +1,5 @@
 import { useLanguage } from "../../context/LanguageContext";
+import { Link } from "react-router-dom";
 
 type HelpModule = {
   key: string;
@@ -234,11 +235,21 @@ export default function AdminHelpPage() {
                   {module.description}
                 </p>
 
-                <button
-                  type="button"
-                  className="mt-4 text-sm font-semibold text-[#0057A8]">
-                  {text.open} →
-                </button>
+                {module.key === "news" ? (
+                  <Link
+                    to="/admin/ajuda/noticias"
+                    className="mt-4 inline-flex text-sm font-semibold text-[#0057A8] hover:underline">
+                    {text.open} →
+                  </Link>
+                ) : (
+                  <span className="mt-4 inline-flex cursor-not-allowed text-sm font-medium text-gray-400">
+                    {lang === "pt"
+                      ? "Em breve"
+                      : lang === "es"
+                        ? "Próximamente"
+                        : "Coming soon"}
+                  </span>
+                )}
               </div>
             </div>
           </div>
