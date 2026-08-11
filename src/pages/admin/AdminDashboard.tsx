@@ -15,6 +15,7 @@ import { listCalendarEvents } from "../../services/calendarService";
 import { listReports } from "../../services/reportsService";
 import { listFederations } from "../../services/federationsService";
 import { listGalleries } from "../../services/galleryService";
+import { canAccessModule } from "../../utils/rbac";
 import type {
   NewsRow,
   CalendarEventRow,
@@ -34,6 +35,13 @@ const CARD_CTA_CLASS =
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const { t } = useLanguage();
+  const role = profile?.role;
+
+  const canViewNews = !!role && canAccessModule(role, "noticias");
+  const canViewCalendar = !!role && canAccessModule(role, "calendario");
+  const canViewTransparency = !!role && canAccessModule(role, "transparencia");
+  const canViewFederations = !!role && canAccessModule(role, "federacoes");
+  const canViewGallery = !!role && canAccessModule(role, "galeria");
 
   const [news, setNews] = useState<NewsRow[]>([]);
   const [calEvents, setCalEvents] = useState<CalendarEventRow[]>([]);
@@ -43,23 +51,43 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      listNews(),
-      listCalendarEvents(),
-      listReports(),
-      listFederations(),
-      listGalleries()
-    ]).then(
-      ([{ data: n }, { data: c }, { data: r }, { data: f }, { data: g }]) => {
-        setNews(n);
-        setCalEvents(c);
-        setReports(r);
-        setFederations(f);
-        setGalleries(g || []);
-        setLoading(false);
-      }
-    );
-  }, []);
+    if (!role) return;
+
+    const loadDashboard = async () => {
+      setLoading(true);
+
+      const [
+        newsResult,
+        calendarResult,
+        reportsResult,
+        federationsResult,
+        galleriesResult
+      ] = await Promise.all([
+        canViewNews ? listNews() : Promise.resolve({ data: [] }),
+        canViewCalendar ? listCalendarEvents() : Promise.resolve({ data: [] }),
+        canViewTransparency ? listReports() : Promise.resolve({ data: [] }),
+        canViewFederations ? listFederations() : Promise.resolve({ data: [] }),
+        canViewGallery ? listGalleries() : Promise.resolve({ data: [] })
+      ]);
+
+      setNews(newsResult.data || []);
+      setCalEvents(calendarResult.data || []);
+      setReports(reportsResult.data || []);
+      setFederations(federationsResult.data || []);
+      setGalleries(galleriesResult.data || []);
+
+      setLoading(false);
+    };
+
+    loadDashboard();
+  }, [
+    role,
+    canViewNews,
+    canViewCalendar,
+    canViewTransparency,
+    canViewFederations,
+    canViewGallery
+  ]);
 
   const total = news.length;
   const published = news.filter(n => n.status === "published").length;
@@ -83,160 +111,168 @@ export default function AdminDashboard() {
       {/* Grid de módulos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-4 mb-10">
         {/* ── Card Notícias ── */}
-        <div className={`${CARD_CLASS} xl:col-span-2`}>
-          <div className="p-6 flex-1">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>{t.admin.nav.news}</span>
-              <Newspaper className={CARD_ICON_CLASS} aria-hidden="true" />
+        {canViewNews && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>{t.admin.nav.news}</span>
+                <Newspaper className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+
+              {/* Número — sans-serif para evitar "1" parecer "I" */}
+              {loading ? (
+                <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+              ) : (
+                <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                  {total}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                {loading
+                  ? "…"
+                  : published === total
+                    ? `${total} ${total !== 1 ? t.admin.dashboard.publishedPlural : t.admin.dashboard.published}`
+                    : `${published} ${published !== 1 ? t.admin.dashboard.publishedPlural : t.admin.dashboard.published} · ${total} ${t.admin.dashboard.total}`}
+              </p>
+
+              {!loading && latest && (
+                <p className="text-xs text-gray-400 mt-4 line-clamp-1 border-t border-gray-100 pt-3">
+                  {t.admin.dashboard.latest}:{" "}
+                  <span className="text-gray-600">{latest.title}</span>
+                </p>
+              )}
             </div>
 
-            {/* Número — sans-serif para evitar "1" parecer "I" */}
-            {loading ? (
-              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
-            ) : (
-              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
-                {total}
-              </p>
-            )}
-            <p className="text-xs text-gray-400 mt-1.5">
-              {loading
-                ? "…"
-                : published === total
-                  ? `${total} ${total !== 1 ? t.admin.dashboard.publishedPlural : t.admin.dashboard.published}`
-                  : `${published} ${published !== 1 ? t.admin.dashboard.publishedPlural : t.admin.dashboard.published} · ${total} ${t.admin.dashboard.total}`}
-            </p>
-
-            {!loading && latest && (
-              <p className="text-xs text-gray-400 mt-4 line-clamp-1 border-t border-gray-100 pt-3">
-                {t.admin.dashboard.latest}:{" "}
-                <span className="text-gray-600">{latest.title}</span>
-              </p>
-            )}
+            <div className="px-6 pb-5">
+              <Link to="/admin/noticias" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewNews}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-
-          <div className="px-6 pb-5">
-            <Link to="/admin/noticias" className={CARD_CTA_CLASS}>
-              {t.admin.dashboard.viewNews}
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-
+        )}
         {/* ── Card Calendário ── */}
-        <div className={`${CARD_CLASS} xl:col-span-2`}>
-          <div className="p-6 flex-1">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>{t.admin.nav.calendar}</span>
-              <CalendarDays className={CARD_ICON_CLASS} aria-hidden="true" />
-            </div>
-            {loading ? (
-              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
-            ) : (
-              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
-                {calEvents.length}
+        {canViewCalendar && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>{t.admin.nav.calendar}</span>
+                <CalendarDays className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              {loading ? (
+                <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+              ) : (
+                <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                  {calEvents.length}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                {loading
+                  ? "…"
+                  : `${calEvents.filter(e => e.status === "published").length} ${t.admin.dashboard.publishedCount} · ${calEvents.length} ${t.admin.dashboard.total}`}
               </p>
-            )}
-            <p className="text-xs text-gray-400 mt-1.5">
-              {loading
-                ? "…"
-                : `${calEvents.filter(e => e.status === "published").length} ${t.admin.dashboard.publishedCount} · ${calEvents.length} ${t.admin.dashboard.total}`}
-            </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/calendario" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewCalendar}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-          <div className="px-6 pb-5">
-            <Link to="/admin/calendario" className={CARD_CTA_CLASS}>
-              {t.admin.dashboard.viewCalendar}
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-
+        )}
         {/* ── Card Transparência ── */}
-        <div className={`${CARD_CLASS} xl:col-span-2`}>
-          <div className="p-6 flex-1">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>
-                {t.admin.nav.transparency}
-              </span>
-              <FileText className={CARD_ICON_CLASS} aria-hidden="true" />
-            </div>
-            {loading ? (
-              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
-            ) : (
-              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
-                {reports.length}
+        {canViewTransparency && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>
+                  {t.admin.nav.transparency}
+                </span>
+                <FileText className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              {loading ? (
+                <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+              ) : (
+                <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                  {reports.length}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                {loading
+                  ? "…"
+                  : `${reports.filter(r => r.status === "published").length} ${t.admin.dashboard.publishedCount} · ${reports.length} ${t.admin.dashboard.total}`}
               </p>
-            )}
-            <p className="text-xs text-gray-400 mt-1.5">
-              {loading
-                ? "…"
-                : `${reports.filter(r => r.status === "published").length} ${t.admin.dashboard.publishedCount} · ${reports.length} ${t.admin.dashboard.total}`}
-            </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/transparencia" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewTransparency}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-          <div className="px-6 pb-5">
-            <Link to="/admin/transparencia" className={CARD_CTA_CLASS}>
-              {t.admin.dashboard.viewTransparency}
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+        )}
 
         {/* ── Card Federações ── */}
-        <div className={`${CARD_CLASS} xl:col-span-2 xl:col-start-2`}>
-          <div className="p-6 flex-1">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>
-                {t.admin.nav.federations}
-              </span>
-              <Building2 className={CARD_ICON_CLASS} aria-hidden="true" />
-            </div>
-            {loading ? (
-              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
-            ) : (
-              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
-                {federations.length}
+        {canViewFederations && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>
+                  {t.admin.nav.federations}
+                </span>
+                <Building2 className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              {loading ? (
+                <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+              ) : (
+                <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                  {federations.length}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                {loading
+                  ? "…"
+                  : `${federations.length} ${federations.length !== 1 ? t.admin.dashboard.affiliatedPlural : t.admin.dashboard.affiliatedSingular}`}
               </p>
-            )}
-            <p className="text-xs text-gray-400 mt-1.5">
-              {loading
-                ? "…"
-                : `${federations.length} ${federations.length !== 1 ? t.admin.dashboard.affiliatedPlural : t.admin.dashboard.affiliatedSingular}`}
-            </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/federacoes" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewFederations}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-          <div className="px-6 pb-5">
-            <Link to="/admin/federacoes" className={CARD_CTA_CLASS}>
-              {t.admin.dashboard.viewFederations}
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+        )}
 
         {/* ── Card Galeria ── */}
-        <div className={`${CARD_CLASS} xl:col-span-2`}>
-          <div className="p-6 flex-1">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className={CARD_TITLE_CLASS}>{t.admin.nav.gallery}</span>
-              <Images className={CARD_ICON_CLASS} aria-hidden="true" />
-            </div>
-            {loading ? (
-              <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
-            ) : (
-              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
-                {galleries.length}
+        {canViewGallery && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>{t.admin.nav.gallery}</span>
+                <Images className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              {loading ? (
+                <div className="h-9 w-10 bg-gray-100 rounded animate-pulse mb-1" />
+              ) : (
+                <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                  {galleries.length}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                {loading
+                  ? "…"
+                  : `${galleries.length} ${galleries.length !== 1 ? t.admin.dashboard.albumPlural : t.admin.dashboard.albumSingular} · ${galleries.reduce((acc, g) => acc + (g.photoCount || 0), 0)} ${t.admin.dashboard.photos}`}
               </p>
-            )}
-            <p className="text-xs text-gray-400 mt-1.5">
-              {loading
-                ? "…"
-                : `${galleries.length} ${galleries.length !== 1 ? t.admin.dashboard.albumPlural : t.admin.dashboard.albumSingular} · ${galleries.reduce((acc, g) => acc + (g.photoCount || 0), 0)} ${t.admin.dashboard.photos}`}
-            </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/galeria" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewGallery}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
-          <div className="px-6 pb-5">
-            <Link to="/admin/galeria" className={CARD_CTA_CLASS}>
-              {t.admin.dashboard.viewGallery}
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
+        )}
 
         {/* ── Cards Em desenvolvimento ── */}
         {COMING_SOON.map(mod => (
