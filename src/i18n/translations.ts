@@ -214,7 +214,8 @@ export const translations = {
       colContent: "Contenido",
       colContact: "Contacto",
       colRecognized: "Afiliada a",
-      adminArea: "Área administrativa"
+      adminArea: "Área administrativa",
+      developedBy: "Desarrollado por Leandro M."
     },
     admin: {
       panelTitle: "Panel Administrativo",
@@ -858,7 +859,8 @@ export const translations = {
       colContent: "Conteúdo",
       colContact: "Contato",
       colRecognized: "Filiada a",
-      adminArea: "Área administrativa"
+      adminArea: "Área administrativa",
+      developedBy: "Desenvolvido por Leandro M."
     },
     admin: {
       panelTitle: "Painel Administrativo",
@@ -1499,7 +1501,8 @@ export const translations = {
       colContent: "Content",
       colContact: "Contact",
       colRecognized: "Member of",
-      adminArea: "Admin area"
+      adminArea: "Admin area",
+      developedBy: "Developed by Leandro M."
     },
     admin: {
       panelTitle: "Admin Panel",
