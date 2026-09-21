@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Download, Eye, FileText, Loader2, TriangleAlert, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  Eye,
+  FileText,
+  Loader2,
+  TriangleAlert,
+  X
+} from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import PageShell from "../components/PageShell";
 import { useSEO } from "../hooks/useSEO";
@@ -25,6 +33,11 @@ const REGULATION_PENDING = {
 };
 const VIEW_BTN = { es: "Visualizar", pt: "Visualizar", en: "View" };
 const DOWNLOAD_BTN = { es: "Descargar", pt: "Baixar", en: "Download" };
+const BACK_TO_MODALITIES = {
+  es: "Volver a Modalidades",
+  pt: "Voltar para Modalidades",
+  en: "Back to Sports Disciplines"
+};
 
 const NOT_FOUND_TITLE = {
   es: "Modalidad no encontrada",
@@ -101,17 +114,31 @@ function RegulationPdfModal({
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-50 gap-4 z-10">
             {!timedOut ? (
               <>
-                <Loader2 className="w-8 h-8 text-[#003B73] animate-spin" aria-hidden="true" />
+                <Loader2
+                  className="w-8 h-8 text-[#003B73] animate-spin"
+                  aria-hidden="true"
+                />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-gray-600">{tp.pdfLoading}</p>
-                  <p className="text-xs text-gray-400 mt-1">{tp.pdfLoadingNote}</p>
+                  <p className="text-sm font-medium text-gray-600">
+                    {tp.pdfLoading}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {tp.pdfLoadingNote}
+                  </p>
                 </div>
               </>
             ) : (
               <div className="text-center px-6 max-w-sm">
-                <TriangleAlert className="w-10 h-10 text-amber-400 mx-auto mb-3" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-700 mb-1">{tp.pdfTimeout}</p>
-                <p className="text-xs text-gray-500 mb-4">{tp.pdfTimeoutDesc}</p>
+                <TriangleAlert
+                  className="w-10 h-10 text-amber-400 mx-auto mb-3"
+                  aria-hidden="true"
+                />
+                <p className="text-sm font-medium text-gray-700 mb-1">
+                  {tp.pdfTimeout}
+                </p>
+                <p className="text-xs text-gray-500 mb-4">
+                  {tp.pdfTimeoutDesc}
+                </p>
                 <a
                   href={url}
                   download
@@ -241,6 +268,16 @@ export default function ModalityDetailPage() {
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Voltar para a listagem de modalidades */}
+          <div>
+            <Link
+              to="/esportes/modalidades"
+              className="inline-flex items-center gap-1.5 text-[#1F2937]/55 dark:text-white/45 hover:text-[#003B73] dark:hover:text-white/80 text-sm font-medium transition-colors">
+              <ArrowLeft size={15} />
+              <span>{BACK_TO_MODALITIES[lang]}</span>
+            </Link>
           </div>
         </div>
       </section>
