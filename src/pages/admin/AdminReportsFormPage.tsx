@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent, ChangeEvent } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import {
@@ -12,10 +12,12 @@ import {
 } from "../../services/reportsService";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { useLanguage } from "../../context/LanguageContext";
+import { useToast } from "../../context/ToastContext";
 import { hasPermission } from "../../utils/rbac";
 import { useAuth } from "../../context/AuthContext";
+import { translatePlain } from "../../utils/translateContent";
 import type { ReportFormData } from "../../services/reportsService";
-import type { PublishStatus } from "../../lib/database.aliases";
+import type { PublishStatus, Lang } from "../../lib/database.aliases";
 
 const EMPTY: ReportFormData = {
   title: "",
@@ -25,8 +27,60 @@ const EMPTY: ReportFormData = {
   year: new Date().getFullYear(),
   doc_date: "",
   file_url: "",
-  status: "draft"
+  status: "draft",
+  lang: "es",
+  title_pt: "",
+  title_es: "",
+  title_en: "",
+  description_pt: "",
+  description_es: "",
+  description_en: ""
 };
+
+type LocalizedField = "title" | "description";
+type LocalizedKey = keyof Pick<
+  ReportFormData,
+  | "title_pt"
+  | "title_es"
+  | "title_en"
+  | "description_pt"
+  | "description_es"
+  | "description_en"
+>;
+
+const LANG_TABS: { code: Lang; label: string }[] = [
+  { code: "es", label: "Español" },
+  { code: "pt", label: "Português" },
+  { code: "en", label: "English" }
+];
+
+const LANG_LABEL_PT: Record<Lang, string> = {
+  es: "Espanhol",
+  pt: "Português",
+  en: "Inglês"
+};
+
+function fieldKey(field: LocalizedField, lang: Lang): LocalizedKey {
+  return `${field}_${lang}` as LocalizedKey;
+}
+
+function getLocalizedValue(
+  form: ReportFormData,
+  field: LocalizedField,
+  lang: Lang
+): string {
+  return form[fieldKey(field, lang)] ?? "";
+}
+
+/** Sincroniza title/description legados com o idioma original, apenas para exibição no formulário. */
+function withLegacyCompatibility(form: ReportFormData): ReportFormData {
+  const source = form.lang;
+  return {
+    ...form,
+    title: getLocalizedValue(form, "title", source),
+    description: getLocalizedValue(form, "description", source)
+  };
+}
 
 const DRAFT_KEY = "admin-report-form-draft";
 
@@ -36,6 +90,7 @@ export default function AdminReportsFormPage() {
   const navigate = useNavigate();
   const { log } = useAuditLog();
   const { t } = useLanguage();
+  const { showToast } = useToast();
   const { profile } = useAuth();
   const tr = t.admin.reports;
   const catLabels = t.transparencyPage.categories as Record<string, string>;
@@ -59,6 +114,32 @@ export default function AdminReportsFormPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [slugEdited, setSlugEdited] = useState(false);
+  const [activeLang, setActiveLang] = useState<Lang>(form.lang);
+  const [translating, setTranslating] = useState(false);
+  const [showUpdateConfirm, setShowUpdateConfirm] = useState(false);
+
+  const effectiveForm = useMemo(() => withLegacyCompatibility(form), [form]);
+  const originalLang = form.lang;
+  const targetLangs = LANG_TABS.map(l => l.code).filter(
+    c => c !== originalLang
+  );
+  const allTargetLangsHaveContent = targetLangs.every(
+    target =>
+      getLocalizedValue(form, "title", target).trim() !== "" &&
+      getLocalizedValue(form, "description", target).trim() !== ""
+  );
+  const isUpdateMode = isEditing && allTargetLangsHaveContent;
+
+  const activeTitleKey = fieldKey("title", activeLang);
+  const activeDescriptionKey = fieldKey("description", activeLang);
+  const activeTitle = getLocalizedValue(form, "title", activeLang);
+  const activeDescription = getLocalizedValue(form, "description", activeLang);
+
+  const hasTranslationData = (lang: Lang): boolean =>
+    Boolean(
+      getLocalizedValue(form, "title", lang).trim() ||
+      getLocalizedValue(form, "description", lang).trim()
+    );
   // Upload PDF UX
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0); // 0-100
@@ -85,6 +166,7 @@ export default function AdminReportsFormPage() {
         setLoading(false);
         return;
       }
+      const lang = data.lang;
       setForm({
         title: data.title,
         slug: data.slug,
@@ -93,8 +175,21 @@ export default function AdminReportsFormPage() {
         year: data.year,
         doc_date: data.doc_date ?? "",
         file_url: data.file_url ?? "",
-        status: data.status as PublishStatus
+        status: data.status as PublishStatus,
+        lang,
+        title_pt: data.title_pt ?? (lang === "pt" ? data.title : ""),
+        title_es: data.title_es ?? (lang === "es" ? data.title : ""),
+        title_en: data.title_en ?? (lang === "en" ? data.title : ""),
+        description_pt:
+          data.description_pt ??
+          (lang === "pt" ? (data.description ?? "") : ""),
+        description_es:
+          data.description_es ??
+          (lang === "es" ? (data.description ?? "") : ""),
+        description_en:
+          data.description_en ?? (lang === "en" ? (data.description ?? "") : "")
       });
+      setActiveLang(lang);
       setSlugEdited(true);
       setLoading(false);
     });
@@ -116,12 +211,151 @@ export default function AdminReportsFormPage() {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const updateLocalizedField = (
+    field: LocalizedField,
+    lang: Lang,
+    value: string
+  ) => {
+    const key = fieldKey(field, lang);
     setForm(prev => {
-      const next = { ...prev, [name]: value };
-      if (name === "title" && !slugEdited) next.slug = slugify(value);
-      if (name === "slug") setSlugEdited(true);
+      const next: ReportFormData = { ...prev, [key]: value };
+      if (field === "title" && lang === prev.lang && !slugEdited) {
+        next.slug = slugify(value);
+      }
       return next;
     });
+  };
+
+  const handleOriginalLanguageChange = (lang: Lang) => {
+    setForm(prev => {
+      const next = { ...prev, lang };
+      if (!slugEdited)
+        next.slug = slugify(getLocalizedValue(next, "title", lang));
+      return next;
+    });
+    setActiveLang(lang);
+  };
+
+  const handleGenerateTranslations = async (forceOverwrite = false) => {
+    const sourceLang = form.lang;
+    const sourceTitle = getLocalizedValue(form, "title", sourceLang).trim();
+    const sourceDescription = getLocalizedValue(
+      form,
+      "description",
+      sourceLang
+    ).trim();
+
+    if (!sourceTitle) {
+      setError(`Complete o título em ${LANG_LABEL_PT[sourceLang]}.`);
+      setActiveLang(sourceLang);
+      return;
+    }
+
+    const targets = LANG_TABS.map(item => item.code).filter(
+      code => code !== sourceLang
+    );
+
+    if (!forceOverwrite) {
+      const hasSomethingToGenerate = targets.some(target => {
+        return (
+          !getLocalizedValue(form, "title", target).trim() ||
+          !getLocalizedValue(form, "description", target).trim()
+        );
+      });
+
+      if (!hasSomethingToGenerate) {
+        showToast(
+          "Todos os idiomas já possuem conteúdo. Nada para gerar.",
+          "success"
+        );
+        return;
+      }
+    }
+
+    setTranslating(true);
+    setError(null);
+
+    try {
+      let generated = 0;
+      let preserved = 0;
+
+      const patches = await Promise.all(
+        targets.map(async target => {
+          const patch: Partial<ReportFormData> = {};
+
+          const currentTitle = getLocalizedValue(form, "title", target);
+          const currentDescription = getLocalizedValue(
+            form,
+            "description",
+            target
+          );
+
+          if (!currentTitle.trim() || forceOverwrite) {
+            patch[fieldKey("title", target)] = await translatePlain(
+              sourceTitle,
+              sourceLang,
+              target
+            );
+            generated += 1;
+          } else {
+            preserved += 1;
+          }
+
+          if (
+            sourceDescription &&
+            (!currentDescription.trim() || forceOverwrite)
+          ) {
+            patch[fieldKey("description", target)] = await translatePlain(
+              sourceDescription,
+              sourceLang,
+              target
+            );
+            generated += 1;
+          } else if (!sourceDescription) {
+            // sem descrição de origem, nada a traduzir
+          } else {
+            preserved += 1;
+          }
+
+          return patch;
+        })
+      );
+
+      setForm(prev => {
+        let next = { ...prev };
+        for (const patch of patches) {
+          next = { ...next, ...patch };
+        }
+        return next;
+      });
+
+      if (forceOverwrite) {
+        showToast("Traduções atualizadas com sucesso.", "success");
+      } else if (generated === 0) {
+        showToast("Nenhum campo vazio encontrado para tradução.", "success");
+      } else if (preserved > 0) {
+        showToast(
+          `Traduções geradas (${generated} campos). ${preserved} campo(s) existente(s) foram mantidos.`,
+          "success"
+        );
+      } else {
+        showToast(
+          `Traduções geradas com sucesso (${generated} campos).`,
+          "success"
+        );
+      }
+    } catch {
+      setError(
+        "Falha ao gerar traduções. Verifique sua conexão e tente novamente."
+      );
+      showToast("Falha ao gerar traduções.", "error");
+    } finally {
+      setTranslating(false);
+      setShowUpdateConfirm(false);
+    }
   };
 
   // ── Upload PDF ─────────────────────────────────────────────────────────
@@ -221,7 +455,8 @@ export default function AdminReportsFormPage() {
 
   // ── Validação ──────────────────────────────────────────────────────────
   const validate = (): string | null => {
-    if (!form.title.trim()) return tr.validTitle;
+    if (!getLocalizedValue(form, "title", form.lang).trim())
+      return tr.validTitle;
     if (!form.slug.trim()) return tr.validSlug;
     if (!/^[a-z0-9-]+$/.test(form.slug)) return tr.validSlugFormat;
     if (!form.year || form.year < 1900 || form.year > 2100) return tr.validYear;
@@ -247,8 +482,10 @@ export default function AdminReportsFormPage() {
     setSaving(true);
     setError(null);
 
+    const payload = effectiveForm;
+
     if (isEditing && id) {
-      const { error } = await updateReport(id, form);
+      const { error } = await updateReport(id, payload);
       if (error) {
         setError(error);
         setSaving(false);
@@ -258,12 +495,12 @@ export default function AdminReportsFormPage() {
         action: "create_report",
         entity_type: "report",
         entity_id: id,
-        entity_title: form.title
+        entity_title: payload.title
       });
       localStorage.removeItem(DRAFT_KEY);
       navigate("/admin/transparencia");
     } else {
-      const { data, error } = await createReport(form);
+      const { data, error } = await createReport(payload);
       if (error) {
         setError(error);
         setSaving(false);
@@ -273,7 +510,7 @@ export default function AdminReportsFormPage() {
         action: "create_report",
         entity_type: "report",
         entity_id: data?.id,
-        entity_title: form.title
+        entity_title: payload.title
       });
       localStorage.removeItem(DRAFT_KEY);
       navigate("/admin/transparencia");
@@ -328,17 +565,137 @@ export default function AdminReportsFormPage() {
           <h2 className="font-['Cormorant_Garamond'] text-lg font-semibold text-[#1F2937]">
             {tr.sectionIdentification}
           </h2>
+
+          {!isEditing ? (
+            <div>
+              <p className={labelCls}>
+                Em qual idioma você vai escrever este documento? *
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {LANG_TABS.map(tab => (
+                  <button
+                    key={tab.code}
+                    type="button"
+                    onClick={() => handleOriginalLanguageChange(tab.code)}
+                    className={`px-4 py-2 rounded-xl border text-sm font-semibold transition-colors ${
+                      tab.code === form.lang
+                        ? "bg-[#003B73] text-white border-[#003B73]"
+                        : "bg-white text-[#374151] border-gray-200 hover:border-[#003B73]/40 hover:text-[#003B73]"
+                    }`}>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <label htmlFor="lang" className={labelCls}>
+                Idioma original *
+              </label>
+              <select
+                id="lang"
+                name="lang"
+                value={form.lang}
+                onChange={e =>
+                  handleOriginalLanguageChange(e.target.value as Lang)
+                }
+                className="px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-white focus:outline-none focus:ring-2 focus:ring-[#003B73]/25 focus:border-[#003B73] transition-colors">
+                {LANG_TABS.map(option => (
+                  <option key={option.code} value={option.code}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            {LANG_TABS.map(tab => {
+              const isActive = tab.code === activeLang;
+              const isOriginal = tab.code === form.lang;
+              const hasData = hasTranslationData(tab.code);
+              return (
+                <button
+                  key={tab.code}
+                  type="button"
+                  onClick={() => setActiveLang(tab.code)}
+                  className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-[#003B73] text-white border-[#003B73]"
+                      : "bg-white text-[#1F2937] border-gray-200 hover:border-[#003B73]/40"
+                  }`}>
+                  {tab.label}
+                  {isOriginal ? " (original)" : ""}
+                  {hasData ? "" : " *"}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-gray-500">
+                {isUpdateMode
+                  ? "Todas as traduções já foram geradas. Você pode forçar a atualização."
+                  : "Edite qualquer idioma manualmente. Gerar tradução só preenche campos vazios."}
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  isUpdateMode
+                    ? setShowUpdateConfirm(true)
+                    : handleGenerateTranslations()
+                }
+                disabled={translating}
+                className="px-4 py-2 rounded-xl text-sm font-semibold bg-[#0B7A4E] text-white hover:bg-[#096440] disabled:opacity-60 disabled:cursor-not-allowed transition-all w-full sm:w-auto">
+                {translating
+                  ? "Gerando..."
+                  : isUpdateMode
+                    ? "Atualizar traduções"
+                    : `Gerar ${LANG_TABS.filter(l => l.code !== form.lang)
+                        .map(l => LANG_LABEL_PT[l.code])
+                        .join(" e ")}`}
+              </button>
+            </div>
+            {showUpdateConfirm && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 space-y-3">
+                <p className="text-sm text-amber-800">
+                  As traduções existentes serão substituídas com base no
+                  conteúdo do idioma original. Alterações manuais poderão ser
+                  perdidas.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowUpdateConfirm(false)}
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleGenerateTranslations(true)}
+                    disabled={translating}
+                    className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-60 transition-colors">
+                    Substituir traduções
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div>
-            <label htmlFor="title" className={labelCls}>
-              {tr.labelTitle} *
+            <label htmlFor={`title_${activeLang}`} className={labelCls}>
+              {tr.labelTitle} {activeLang === form.lang ? "*" : ""}
             </label>
             <input
-              id="title"
-              name="title"
+              id={`title_${activeLang}`}
+              name={activeTitleKey}
               type="text"
-              value={form.title}
-              onChange={handleChange}
-              required
+              value={activeTitle}
+              onChange={e =>
+                updateLocalizedField("title", activeLang, e.target.value)
+              }
+              required={activeLang === form.lang}
               placeholder={tr.placeholderTitle}
               className={inputCls}
             />
@@ -346,14 +703,16 @@ export default function AdminReportsFormPage() {
           {/* Slug — oculto, gerado automaticamente do título */}
           <input type="hidden" name="slug" value={form.slug} />
           <div>
-            <label htmlFor="description" className={labelCls}>
+            <label htmlFor={`description_${activeLang}`} className={labelCls}>
               {tr.labelDesc}
             </label>
             <textarea
-              id="description"
-              name="description"
-              value={form.description}
-              onChange={handleChange}
+              id={`description_${activeLang}`}
+              name={activeDescriptionKey}
+              value={activeDescription}
+              onChange={e =>
+                updateLocalizedField("description", activeLang, e.target.value)
+              }
               rows={2}
               placeholder={tr.placeholderDesc}
               className={`${inputCls} resize-none`}

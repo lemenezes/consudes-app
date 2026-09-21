@@ -1,15 +1,20 @@
 export function slugify(text: string): string {
   return text
     .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 }
-import { supabase } from '../lib/supabase';
-import type { ReportRow, PublishStatus, ReportCategory } from '../lib/database.aliases';
+import { supabase } from "../lib/supabase";
+import type {
+  ReportRow,
+  PublishStatus,
+  ReportCategory,
+  Lang
+} from "../lib/database.aliases";
 
 export interface ReportFormData {
   title: string;
@@ -21,77 +26,126 @@ export interface ReportFormData {
   file_url: string;
   status: PublishStatus;
   // campos removidos: featured, sort_order
+  lang: Lang;
+  title_pt: string;
+  title_es: string;
+  title_en: string;
+  description_pt: string;
+  description_es: string;
+  description_en: string;
+}
+
+function getLocalizedField(
+  form: ReportFormData,
+  field: "title" | "description",
+  lang: Lang
+): string {
+  if (field === "title") {
+    return lang === "pt"
+      ? form.title_pt
+      : lang === "en"
+        ? form.title_en
+        : form.title_es;
+  }
+  return lang === "pt"
+    ? form.description_pt
+    : lang === "en"
+      ? form.description_en
+      : form.description_es;
+}
+
+/** Sincroniza title/description legados com o idioma original, para compatibilidade. */
+function withLegacyCompatibility(form: ReportFormData): ReportFormData {
+  const original = form.lang;
+  return {
+    ...form,
+    title: getLocalizedField(form, "title", original),
+    description: getLocalizedField(form, "description", original)
+  };
 }
 export const REPORT_CATEGORIES: { value: ReportCategory; label: string }[] = [
-    // campos removidos: featured, sort_order
-  { value: 'regulamento',      label: 'Regulamento' },
-  { value: 'ata',              label: 'Ata' },
-  { value: 'prestacao_contas', label: 'Prestação de Contas' },
-  { value: 'documento_oficial', label: 'Documento Oficial' },
+  // campos removidos: featured, sort_order
+  { value: "regulamento", label: "Regulamento" },
+  { value: "ata", label: "Ata" },
+  { value: "prestacao_contas", label: "Prestação de Contas" },
+  { value: "documento_oficial", label: "Documento Oficial" }
 ];
 
 export function categoryLabel(cat: ReportCategory): string {
-  return REPORT_CATEGORIES.find((c) => c.value === cat)?.label ?? cat;
+  return REPORT_CATEGORIES.find(c => c.value === cat)?.label ?? cat;
 }
 
 // ── Admin queries ──────────────────────────────────────────────────────────
-export async function listReports(): Promise<{ data: ReportRow[]; error: string | null }> {
+export async function listReports(): Promise<{
+  data: ReportRow[];
+  error: string | null;
+}> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
-    .from('reports')
-    .select('*')
-    .order('year', { ascending: false })
-    .order('doc_date', { ascending: false })
-    .order('created_at', { ascending: false });
+    .from("reports")
+    .select("*")
+    .order("year", { ascending: false })
+    .order("doc_date", { ascending: false })
+    .order("created_at", { ascending: false });
 
   if (error) return { data: [], error: error.message };
   return { data: (data as ReportRow[]) ?? [], error: null };
 }
 
-export async function getReportById(id: string): Promise<{ data: ReportRow | null; error: string | null }> {
+export async function getReportById(
+  id: string
+): Promise<{ data: ReportRow | null; error: string | null }> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
-    .from('reports')
-    .select('*')
-    .eq('id', id)
+    .from("reports")
+    .select("*")
+    .eq("id", id)
     .single();
 
   if (error) return { data: null, error: error.message };
   return { data: data as ReportRow, error: null };
 }
 
-export async function createReport(form: ReportFormData): Promise<{ data: ReportRow | null; error: string | null }> {
+export async function createReport(
+  form: ReportFormData
+): Promise<{ data: ReportRow | null; error: string | null }> {
+  const payload = withLegacyCompatibility(form);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, error } = await (supabase as any)
-    .from('reports')
+    .from("reports")
     .insert({
-      ...form,
-      year: Number(form.year),
-      doc_date: form.doc_date || null,
-      description: form.description || null,
-      file_url: form.file_url || null,
+      ...payload,
+      year: Number(payload.year),
+      doc_date: payload.doc_date || null,
+      description: payload.description || null,
+      file_url: payload.file_url || null
     })
     .select()
     .single();
 
-  if (error) return { data: null, error: `${error.message}${error.details ? ' — ' + error.details : ''}${error.hint ? ' — ' + error.hint : ''}` };
+  if (error)
+    return {
+      data: null,
+      error: `${error.message}${error.details ? " — " + error.details : ""}${error.hint ? " — " + error.hint : ""}`
+    };
   return { data: data as ReportRow, error: null };
 }
 
 export async function updateReport(
   id: string,
-  form: ReportFormData,
+  form: ReportFormData
 ): Promise<{ data: ReportRow | null; error: string | null }> {
+  const payload = withLegacyCompatibility(form);
   const { data, error } = await (supabase as any)
-    .from('reports')
+    .from("reports")
     .update({
-      ...form,
-      year: Number(form.year),
-      doc_date: form.doc_date || null,
-      description: form.description || null,
-      file_url: form.file_url || null,
+      ...payload,
+      year: Number(payload.year),
+      doc_date: payload.doc_date || null,
+      description: payload.description || null,
+      file_url: payload.file_url || null
     })
-    .eq('id', id)
+    .eq("id", id)
     .select()
     .single();
 
@@ -101,19 +155,19 @@ export async function updateReport(
 
 export async function setReportStatus(
   id: string,
-  status: PublishStatus,
+  status: PublishStatus
 ): Promise<{ error: string | null }> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
-    .from('reports')
+    .from("reports")
     .update({ status })
-    .eq('id', id);
+    .eq("id", id);
   return { error: error?.message ?? null };
 }
 
 export async function deleteReport(
   id: string,
-  fileUrl?: string | null,
+  fileUrl?: string | null
 ): Promise<{ error: string | null }> {
   // Remove o PDF do R2 via Worker se houver URL
   if (fileUrl) {
@@ -121,24 +175,29 @@ export async function deleteReport(
       // Extrai key do CDN
       // Exemplo: https://cdn.consudes.leandrom.com.br/reports/documents/2026/arquivo.pdf
       const url = new URL(fileUrl);
-      const key = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
-      if (key.startsWith('reports/documents/')) {
+      const key = url.pathname.startsWith("/")
+        ? url.pathname.slice(1)
+        : url.pathname;
+      if (key.startsWith("reports/documents/")) {
         const endpoint = import.meta.env.VITE_REPORT_UPLOAD_ENDPOINT as string;
         const delUrl = `${endpoint}?key=${encodeURIComponent(key)}`;
-        const res = await fetch(delUrl, { method: 'DELETE' });
+        const res = await fetch(delUrl, { method: "DELETE" });
         if (!res.ok && res.status !== 204) {
           // Não quebra exclusão, apenas loga
-          console.warn('Falha ao deletar PDF no R2:', await res.text());
+          console.warn("Falha ao deletar PDF no R2:", await res.text());
         }
       }
     } catch (err) {
       // Falha silenciosa — continua excluindo o registro
-      console.warn('Erro ao tentar deletar PDF no R2:', err);
+      console.warn("Erro ao tentar deletar PDF no R2:", err);
     }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any).from('reports').delete().eq('id', id);
+  const { error } = await (supabase as any)
+    .from("reports")
+    .delete()
+    .eq("id", id);
   return { error: error?.message ?? null };
 }
 
@@ -147,12 +206,13 @@ export async function deleteReport(
 const MAX_PDF_SIZE = 20 * 1024 * 1024; // 20 MB
 
 export function validatePdfFile(file: File): string | null {
-  if (file.type !== 'application/pdf') return 'Apenas arquivos PDF são aceitos.';
-  if (file.size > MAX_PDF_SIZE) return 'Arquivo muito grande. Máximo 20 MB.';
+  if (file.type !== "application/pdf")
+    return "Apenas arquivos PDF são aceitos.";
+  if (file.size > MAX_PDF_SIZE) return "Arquivo muito grande. Máximo 20 MB.";
   return null;
 }
 
-import { uploadReportPdfToR2 } from '../lib/uploadReportPdfToR2';
+import { uploadReportPdfToR2 } from "../lib/uploadReportPdfToR2";
 
 export async function uploadReportPdf(
   file: File,
@@ -162,9 +222,13 @@ export async function uploadReportPdf(
   const err = validatePdfFile(file);
   if (err) return { url: null, error: err };
   try {
-    const { url } = await uploadReportPdfToR2(file, year ?? new Date().getFullYear(), slug);
+    const { url } = await uploadReportPdfToR2(
+      file,
+      year ?? new Date().getFullYear(),
+      slug
+    );
     return { url, error: null };
   } catch (e: any) {
-    return { url: null, error: e.message || 'Falha ao enviar PDF' };
+    return { url: null, error: e.message || "Falha ao enviar PDF" };
   }
 }
