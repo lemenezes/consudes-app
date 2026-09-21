@@ -127,6 +127,7 @@ export default function Header() {
       links: [
                 { to: '/calendario',  label: t.nav.calendar },
                 { to: '/interclubes', label: t.nav.interclubs },
+                { to: '/esportes/modalidades', label: t.nav.modalities },
       ],
     },
     { to: '/galeria', label: t.nav.gallery, type: 'standalone' },
