@@ -5,16 +5,13 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 var watermark_gallery_worker_default = {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (request.method !== "GET") {
-      return new Response("Method Not Allowed", { status: 405 });
-    }
-    if (url.pathname === "/") {
+    if (request.method === "GET" && url.pathname === "/") {
       return Response.json({
         ok: true,
         worker: "consudes-watermark-gallery"
       });
     }
-    if (url.pathname === "/list") {
+    if (request.method === "GET" && url.pathname === "/list") {
       const cursor = url.searchParams.get("cursor") || void 0;
       const result = await env.CONSUDES_ASSETS.list({
         prefix: "gallery/",
@@ -32,13 +29,10 @@ var watermark_gallery_worker_default = {
         }))
       });
     }
-    if (url.pathname === "/image") {
+    if (request.method === "GET" && url.pathname === "/image") {
       const key = url.searchParams.get("key");
       if (!key || !key.startsWith("gallery/") || key.includes("..")) {
-        return Response.json(
-          { error: "Chave inv\xE1lida" },
-          { status: 400 }
-        );
+        return Response.json({ error: "Chave inv\xE1lida" }, { status: 400 });
       }
       const object = await env.CONSUDES_ASSETS.get(key);
       if (!object) {
@@ -47,13 +41,45 @@ var watermark_gallery_worker_default = {
           { status: 404 }
         );
       }
-      const headers = new Headers();
-      object.writeHttpMetadata(headers);
-      headers.set(
-        "Content-Type",
-        object.httpMetadata?.contentType || "application/octet-stream"
-      );
-      return new Response(object.body, { headers });
+      const body = await object.arrayBuffer();
+      return new Response(body, {
+        headers: {
+          "Content-Type": object.httpMetadata?.contentType || "application/octet-stream",
+          "Cache-Control": "public, max-age=31536000, immutable"
+        }
+      });
+    }
+    if (request.method === "PUT" && url.pathname === "/watermarked") {
+      const key = url.searchParams.get("key");
+      if (!key || !key.startsWith("gallery-watermarked/") || key.includes("..")) {
+        return Response.json({ error: "Destino inv\xE1lido" }, { status: 400 });
+      }
+      const existing = await env.CONSUDES_ASSETS.head(key);
+      if (existing) {
+        return Response.json(
+          {
+            error: "Arquivo j\xE1 existe",
+            key
+          },
+          { status: 409 }
+        );
+      }
+      const body = await request.arrayBuffer();
+      if (body.byteLength === 0) {
+        return Response.json({ error: "Arquivo vazio" }, { status: 400 });
+      }
+      const contentType = request.headers.get("Content-Type") || "image/webp";
+      await env.CONSUDES_ASSETS.put(key, body, {
+        httpMetadata: {
+          contentType,
+          cacheControl: "public, max-age=31536000, immutable"
+        }
+      });
+      return Response.json({
+        ok: true,
+        key,
+        size: body.byteLength
+      });
     }
     return new Response("Not Found", { status: 404 });
   }
