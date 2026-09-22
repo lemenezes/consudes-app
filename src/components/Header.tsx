@@ -136,13 +136,13 @@ export default function Header() {
     { type: "standalone", to: "/federacoes", label: t.nav.federations },
     { type: "standalone", to: "/transparencia", label: t.nav.transparency },
     { type: "standalone", to: "/noticias", label: t.nav.news },
-    { type: "standalone", to: "/calendario", label: t.nav.calendar },
     {
       type: "dropdown",
       key: "deportes",
       label: t.nav.sports,
       to: "/esportes",
       links: [
+        { to: "/calendario", label: t.nav.calendar },
         { to: "/interclubes", label: t.nav.interclubs },
         { to: "/esportes/modalidades", label: t.nav.modalities }
       ]
