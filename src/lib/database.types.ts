@@ -629,6 +629,7 @@ export type Database = {
         | "upcoming"
         | "registrations_open"
         | "confirmed"
+        | "proposed"
         | "finished";
       calendar_event_type:
         | "championship"

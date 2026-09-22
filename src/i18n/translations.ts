@@ -379,6 +379,7 @@ export const translations = {
           upcoming: "Próximamente",
           registrations_open: "Inscripciones abiertas",
           confirmed: "Confirmado",
+          proposed: "Propuesta",
           finished: "Finalizado"
         },
         federationLabel: "Federación responsable",
@@ -540,6 +541,7 @@ export const translations = {
       eventsLabel: "eventos",
       filterCategory: "Categoría",
       filterStatus: "Estado",
+      filterYear: "Año",
       locationOpen: "Sede abierta · Enviar propuesta",
       noEvents: "Sin eventos",
       noEventsDesc:
@@ -548,10 +550,23 @@ export const translations = {
       clearFilters: "Limpiar filtros",
       monthEvents: "evento",
       monthEventsPlural: "eventos",
+      expandAll: "Expandir todo",
+      collapseAll: "Colapsar todo",
+      viewMore: "Ver más",
+      finishedBadge: "Finalizado",
+      clearSearchLabel: "Limpiar búsqueda",
+      quadrennial: {
+        badge: "Propuesta",
+        period: "2027–2030",
+        title: "Calendario Cuatrienal Propuesto",
+        description:
+          "Propuesta integrada de planificación deportiva de CONSUDES, PANAMDES e ICSD para el ciclo 2027–2030. Los eventos identificados como propuesta están sujetos a discusión, aprobación, definición de sede y organización."
+      },
       statuses: {
         upcoming: "Próximamente",
-        registrationsOpen: "Inscripciones abiertas",
+        registrations_open: "Inscripciones abiertas",
         confirmed: "Confirmado",
+          proposed: "Propuesta",
         finished: "Finalizado"
       }
     },
@@ -1025,6 +1040,7 @@ export const translations = {
           upcoming: "Em breve",
           registrations_open: "Inscrições abertas",
           confirmed: "Confirmado",
+          proposed: "Proposta",
           finished: "Finalizado"
         },
         federationLabel: "Federação responsável",
@@ -1207,6 +1223,7 @@ export const translations = {
       eventsLabel: "eventos",
       filterCategory: "Categoria",
       filterStatus: "Status",
+      filterYear: "Ano",
       locationOpen: "Sede aberta · Enviar proposta",
       noEvents: "Sem eventos",
       noEventsDesc: "Nenhum evento corresponde aos filtros selecionados.",
@@ -1214,10 +1231,23 @@ export const translations = {
       clearFilters: "Limpar filtros",
       monthEvents: "evento",
       monthEventsPlural: "eventos",
+      expandAll: "Expandir tudo",
+      collapseAll: "Recolher tudo",
+      viewMore: "Ver mais",
+      finishedBadge: "Finalizado",
+      clearSearchLabel: "Limpar busca",
+      quadrennial: {
+        badge: "Proposta",
+        period: "2027–2030",
+        title: "Calendário Quadrienal Proposto",
+        description:
+          "Proposta integrada de planejamento esportivo da CONSUDES, PANAMDES e ICSD para o ciclo 2027–2030. Os eventos identificados como proposta estão sujeitos a discussão, aprovação, definição de sede e organização."
+      },
       statuses: {
         upcoming: "Em breve",
-        registrationsOpen: "Inscrições abertas",
+        registrations_open: "Inscrições abertas",
         confirmed: "Confirmado",
+          proposed: "Proposta",
         finished: "Finalizado"
       }
     },
@@ -1708,6 +1738,7 @@ export const translations = {
           upcoming: "Coming soon",
           registrations_open: "Registrations open",
           confirmed: "Confirmed",
+          proposed: "Proposed",
           finished: "Finished"
         },
         federationLabel: "Responsible federation",
@@ -1846,6 +1877,7 @@ export const translations = {
       eventsLabel: "events",
       filterCategory: "Category",
       filterStatus: "Status",
+      filterYear: "Year",
       locationOpen: "Open venue · Send proposal",
       noEvents: "No events",
       noEventsDesc: "No events match the selected filters.",
@@ -1853,10 +1885,23 @@ export const translations = {
       clearFilters: "Clear filters",
       monthEvents: "event",
       monthEventsPlural: "events",
+      expandAll: "Expand all",
+      collapseAll: "Collapse all",
+      viewMore: "View more",
+      finishedBadge: "Finished",
+      clearSearchLabel: "Clear search",
+      quadrennial: {
+        badge: "Proposal",
+        period: "2027–2030",
+        title: "Proposed Four-Year Calendar",
+        description:
+          "Integrated sports planning proposal by CONSUDES, PANAMDES and ICSD for the 2027–2030 cycle. Events identified as proposals are subject to discussion, approval, venue selection and organization."
+      },
       statuses: {
         upcoming: "Coming soon",
-        registrationsOpen: "Registrations open",
+        registrations_open: "Registrations open",
         confirmed: "Confirmed",
+          proposed: "Proposed",
         finished: "Finished"
       }
     },

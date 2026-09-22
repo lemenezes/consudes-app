@@ -25,7 +25,7 @@ import type {
 
 const CATEGORIES: CalendarEventCategory[] = ['interclubes', 'sub21', 'adulto', 'institucional', 'outro'];
 const EVENT_TYPES: CalendarEventType[] = ['championship', 'interclubs', 'congress', 'assembly', 'institutional'];
-const EVENT_STATUSES: CalendarEventStatus[] = ['upcoming', 'registrations_open', 'confirmed', 'finished'];
+const EVENT_STATUSES: CalendarEventStatus[] = ['upcoming', 'registrations_open', 'confirmed', 'proposed', 'finished'];
 const DATE_PRECISIONS: DatePrecision[] = ['full', 'month', 'year'];
 const PUBLISH_STATUSES: PublishStatus[] = ['draft', 'published', 'archived'];
 
