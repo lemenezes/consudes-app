@@ -286,7 +286,6 @@ function YearSection({
   );
 }
 
-
 /* ── Componente principal ─────────────────────────────────────────── */
 export default function CalendarPage() {
   const { t, lang } = useLanguage();
@@ -347,7 +346,9 @@ export default function CalendarPage() {
 
     setOpenYears(
       eventToOpen
-        ? new Set([new Date(eventToOpen.start_date + "T12:00:00").getFullYear()])
+        ? new Set([
+            new Date(eventToOpen.start_date + "T12:00:00").getFullYear()
+          ])
         : new Set()
     );
   }, [events]);
@@ -445,7 +446,15 @@ export default function CalendarPage() {
       }
     });
     return chips;
-  }, [allYears, allCategories, allStatuses, activeYears, activeCategories, activeStatuses, ac]);
+  }, [
+    allYears,
+    allCategories,
+    allStatuses,
+    activeYears,
+    activeCategories,
+    activeStatuses,
+    ac
+  ]);
 
   /* Ao aplicar filtro, expande todos os anos com resultados visíveis */
   useEffect(() => {

@@ -566,7 +566,7 @@ export const translations = {
         upcoming: "Próximamente",
         registrations_open: "Inscripciones abiertas",
         confirmed: "Confirmado",
-          proposed: "Propuesta",
+        proposed: "Propuesta",
         finished: "Finalizado"
       }
     },
@@ -1247,7 +1247,7 @@ export const translations = {
         upcoming: "Em breve",
         registrations_open: "Inscrições abertas",
         confirmed: "Confirmado",
-          proposed: "Proposta",
+        proposed: "Proposta",
         finished: "Finalizado"
       }
     },
@@ -1901,7 +1901,7 @@ export const translations = {
         upcoming: "Coming soon",
         registrations_open: "Registrations open",
         confirmed: "Confirmed",
-          proposed: "Proposed",
+        proposed: "Proposed",
         finished: "Finished"
       }
     },
