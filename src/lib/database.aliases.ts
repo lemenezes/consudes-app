@@ -19,11 +19,18 @@ export type { Database };
 
 /** Tipos de tabelas — Row (leitura) */
 export type NewsRow = Tables<"news">;
-export type NewsI18nFields = Pick<NewsRow,
+export type NewsI18nFields = Pick<
+  NewsRow,
   | "original_language"
-  | "title_pt" | "title_es" | "title_en"
-  | "excerpt_pt" | "excerpt_es" | "excerpt_en"
-  | "content_pt" | "content_es" | "content_en"
+  | "title_pt"
+  | "title_es"
+  | "title_en"
+  | "excerpt_pt"
+  | "excerpt_es"
+  | "excerpt_en"
+  | "content_pt"
+  | "content_es"
+  | "content_en"
 >;
 export type FederationRow = Tables<"federations">;
 export type GalleryRow = Tables<"gallery">;
@@ -93,6 +100,13 @@ export interface CalendarEventRow {
   slug: string;
   description: string | null;
   full_description: string | null;
+  lang: Lang;
+  title_pt: string | null;
+  title_es: string | null;
+  title_en: string | null;
+  description_pt: string | null;
+  description_es: string | null;
+  description_en: string | null;
   start_date: string; // date as YYYY-MM-DD
   end_date: string | null;
   date_precision: DatePrecision;

@@ -1,21 +1,26 @@
-import { calendarEvents as mockEvents } from '../data/calendarData';
-import type { CalendarEventRow, CalendarEventType, CalendarEventStatus, CalendarEventCategory } from '../lib/database.aliases';
+import { calendarEvents as mockEvents } from "../data/calendarData";
+import type {
+  CalendarEventRow,
+  CalendarEventType,
+  CalendarEventStatus,
+  CalendarEventCategory
+} from "../lib/database.aliases";
 
 /**
  * Converte um evento mock para o formato CalendarEventRow (usado como fallback).
  */
 export function mockToRow(m: (typeof mockEvents)[number]): CalendarEventRow {
   const statusMap: Record<string, CalendarEventStatus> = {
-    upcoming: 'upcoming',
-    registrationsOpen: 'registrations_open',
-    confirmed: 'confirmed',
-    finished: 'finished',
+    upcoming: "upcoming",
+    registrationsOpen: "registrations_open",
+    confirmed: "confirmed",
+    finished: "finished"
   };
   const catMap: Record<string, CalendarEventCategory> = {
-    Interclubes: 'interclubes',
-    'Sub-21': 'sub21',
-    Adulto: 'adulto',
-    Institucional: 'institucional',
+    Interclubes: "interclubes",
+    "Sub-21": "sub21",
+    Adulto: "adulto",
+    Institucional: "institucional"
   };
   return {
     id: m.id,
@@ -23,6 +28,13 @@ export function mockToRow(m: (typeof mockEvents)[number]): CalendarEventRow {
     slug: m.id,
     description: m.description ?? null,
     full_description: null,
+    lang: "es",
+    title_pt: null,
+    title_es: m.title,
+    title_en: null,
+    description_pt: null,
+    description_es: m.description ?? null,
+    description_en: null,
     start_date: m.startDate,
     end_date: m.endDate !== m.startDate ? m.endDate : null,
     date_precision: m.datePrecision,
@@ -31,16 +43,18 @@ export function mockToRow(m: (typeof mockEvents)[number]): CalendarEventRow {
     venue: null,
     location_open: m.locationOpen ?? false,
     sport: m.sport,
-    category: (m.category ? (catMap[m.category] ?? 'outro') : 'outro') as CalendarEventCategory,
+    category: (m.category
+      ? (catMap[m.category] ?? "outro")
+      : "outro") as CalendarEventCategory,
     event_type: m.type as CalendarEventType,
-    event_status: statusMap[m.status] ?? 'upcoming',
+    event_status: statusMap[m.status] ?? "upcoming",
     federation: m.federation ?? null,
     link: m.link ?? null,
     cover_url: null,
-    status: 'published',
+    status: "published",
     featured: false,
     sort_order: 0,
-    created_at: '',
-    updated_at: '',
+    created_at: "",
+    updated_at: ""
   };
 }

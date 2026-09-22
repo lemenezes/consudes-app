@@ -79,6 +79,9 @@ export type Database = {
           created_at: string;
           date_precision: Database["public"]["Enums"]["date_precision"];
           description: string | null;
+          description_en: string | null;
+          description_es: string | null;
+          description_pt: string | null;
           end_date: string | null;
           event_status: Database["public"]["Enums"]["calendar_event_status"];
           event_type: Database["public"]["Enums"]["calendar_event_type"];
@@ -86,6 +89,7 @@ export type Database = {
           federation: string | null;
           full_description: string | null;
           id: string;
+          lang: Database["public"]["Enums"]["content_lang"];
           link: string | null;
           location_open: boolean;
           slug: string;
@@ -94,6 +98,9 @@ export type Database = {
           start_date: string;
           status: Database["public"]["Enums"]["publish_status"];
           title: string;
+          title_en: string | null;
+          title_es: string | null;
+          title_pt: string | null;
           updated_at: string;
           venue: string | null;
         };
@@ -105,6 +112,9 @@ export type Database = {
           created_at?: string;
           date_precision?: Database["public"]["Enums"]["date_precision"];
           description?: string | null;
+          description_en?: string | null;
+          description_es?: string | null;
+          description_pt?: string | null;
           end_date?: string | null;
           event_status?: Database["public"]["Enums"]["calendar_event_status"];
           event_type?: Database["public"]["Enums"]["calendar_event_type"];
@@ -112,6 +122,7 @@ export type Database = {
           federation?: string | null;
           full_description?: string | null;
           id?: string;
+          lang?: Database["public"]["Enums"]["content_lang"];
           link?: string | null;
           location_open?: boolean;
           slug: string;
@@ -120,6 +131,9 @@ export type Database = {
           start_date: string;
           status?: Database["public"]["Enums"]["publish_status"];
           title: string;
+          title_en?: string | null;
+          title_es?: string | null;
+          title_pt?: string | null;
           updated_at?: string;
           venue?: string | null;
         };
@@ -131,6 +145,9 @@ export type Database = {
           created_at?: string;
           date_precision?: Database["public"]["Enums"]["date_precision"];
           description?: string | null;
+          description_en?: string | null;
+          description_es?: string | null;
+          description_pt?: string | null;
           end_date?: string | null;
           event_status?: Database["public"]["Enums"]["calendar_event_status"];
           event_type?: Database["public"]["Enums"]["calendar_event_type"];
@@ -138,6 +155,7 @@ export type Database = {
           federation?: string | null;
           full_description?: string | null;
           id?: string;
+          lang?: Database["public"]["Enums"]["content_lang"];
           link?: string | null;
           location_open?: boolean;
           slug?: string;
@@ -146,6 +164,9 @@ export type Database = {
           start_date?: string;
           status?: Database["public"]["Enums"]["publish_status"];
           title?: string;
+          title_en?: string | null;
+          title_es?: string | null;
+          title_pt?: string | null;
           updated_at?: string;
           venue?: string | null;
         };

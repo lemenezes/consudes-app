@@ -359,6 +359,7 @@ export const translations = {
         locationOpenLabel: "Sede abierta a candidaturas",
         sportLabel: "Deporte/Modalidad",
         categoryLabel: "Categoría",
+        yearLabel: "Año",
         categories: {
           interclubes: "Interclubes",
           sub21: "Sub-21",
@@ -1020,6 +1021,7 @@ export const translations = {
         locationOpenLabel: "Sede aberta a candidaturas",
         sportLabel: "Esporte/Modalidade",
         categoryLabel: "Categoria",
+        yearLabel: "Ano",
         categories: {
           interclubes: "Interclubes",
           sub21: "Sub-21",
@@ -1718,6 +1720,7 @@ export const translations = {
         locationOpenLabel: "Open venue (accepting proposals)",
         sportLabel: "Sport/Discipline",
         categoryLabel: "Category",
+        yearLabel: "Year",
         categories: {
           interclubes: "Interclubs",
           sub21: "Under-21",

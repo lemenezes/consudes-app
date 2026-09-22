@@ -13,7 +13,10 @@ import { useLanguage } from "../context/LanguageContext";
 import { useSEO } from "../hooks/useSEO";
 import PageShell from "../components/PageShell";
 import EmptyState from "../components/EmptyState";
-import { listPublishedCalendarEvents } from "../services/calendarService";
+import {
+  listPublishedCalendarEvents,
+  normalizeCalendarEventRow
+} from "../services/calendarService";
 import { calendarEvents as mockEvents } from "../data/calendarData";
 import { mockToRow } from "../utils/calendarMockAdapter";
 import {
@@ -324,11 +327,17 @@ export default function CalendarPage() {
   }
 
   useEffect(() => {
-    listPublishedCalendarEvents().then(({ data, error }) => {
-      setEvents(error ? mockEvents.map(mockToRow) : data);
+    listPublishedCalendarEvents(lang).then(({ data, error }) => {
+      setEvents(
+        error
+          ? mockEvents
+              .map(mockToRow)
+              .map(row => normalizeCalendarEventRow(row, lang))
+          : data
+      );
       setDataLoading(false);
     });
-  }, []);
+  }, [lang]);
 
   /* Abre somente o ano do próximo grupo relevante */
   useEffect(() => {

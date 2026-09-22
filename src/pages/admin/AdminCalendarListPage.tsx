@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  CalendarDays, Eye, EyeOff, Search, SlidersHorizontal,
+  CalendarDays, Eye, EyeOff, Search,
   X, ChevronDown, ChevronUp, ChevronsUpDown,
 } from 'lucide-react';
 import {
@@ -100,13 +100,14 @@ export default function AdminCalendarListPage() {
 
   // ── Filtros e ordenação ──────────────────────────────────────────────
   const [busca, setBusca]                 = useState('');
+  const [filterYear, setFilterYear]       = useState<number | 'all'>('all');
   const [filterStatus, setFilterStatus]   = useState<PublishStatus | 'all'>('all');
   const [filterCategory, setFilterCategory] = useState<CalendarEventCategory | 'all'>('all');
   const [sortKey, setSortKey]             = useState<SortKey>('start_date');
   const [sortDir, setSortDir]             = useState<SortDir>('asc');
-  const [filtersOpen, setFiltersOpen]     = useState(false);
 
   const activeFilterCount = [
+    filterYear !== 'all',
     filterStatus !== 'all',
     filterCategory !== 'all',
   ].filter(Boolean).length;
@@ -115,6 +116,7 @@ export default function AdminCalendarListPage() {
 
   function clearFilters() {
     setBusca('');
+    setFilterYear('all');
     setFilterStatus('all');
     setFilterCategory('all');
   }
@@ -135,6 +137,14 @@ export default function AdminCalendarListPage() {
   useEffect(() => { load(); }, []);
 
   // ── Dados derivados ──────────────────────────────────────────────────
+  const allYears = useMemo(() => {
+    const seen = new Set<number>();
+    events.forEach((e) => {
+      if (e.start_date) seen.add(Number(e.start_date.slice(0, 4)));
+    });
+    return Array.from(seen).sort((a, b) => a - b);
+  }, [events]);
+
   const filteredAndSorted = useMemo(() => {
     let list = events;
     if (busca.trim()) {
@@ -146,10 +156,12 @@ export default function AdminCalendarListPage() {
         (e.sport ?? '').toLowerCase().includes(q)
       );
     }
+    if (filterYear !== 'all')
+      list = list.filter((e) => e.start_date && Number(e.start_date.slice(0, 4)) === filterYear);
     if (filterStatus !== 'all')   list = list.filter((e) => e.status === filterStatus);
     if (filterCategory !== 'all') list = list.filter((e) => e.category === filterCategory);
     return sortEvents(list, sortKey, sortDir);
-  }, [events, busca, filterStatus, filterCategory, sortKey, sortDir]);
+  }, [events, busca, filterYear, filterStatus, filterCategory, sortKey, sortDir]);
 
   const published = events.filter((e) => e.status === 'published').length;
   const drafts    = events.filter((e) => e.status === 'draft').length;
@@ -242,28 +254,29 @@ export default function AdminCalendarListPage() {
               <X size={13} />
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((v) => !v)}
-            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-              filtersOpen || activeFilterCount > 0
-                ? 'bg-[#003B73]/8 text-[#003B73] border-[#003B73]/20'
-                : 'text-gray-500 border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <SlidersHorizontal size={12} />
-            Filtros
-            {activeFilterCount > 0 && (
-              <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-[#0057A8] text-white text-[10px] font-bold">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
         </div>
 
-        {/* Painel de filtros colapsável */}
-        {filtersOpen && (
-          <div className="flex flex-wrap items-center gap-3 px-4 py-3 bg-gray-50/50 border-b border-gray-50">
+        {/* Painel de filtros — sempre visível */}
+        <div className="flex flex-wrap items-center gap-3 px-4 py-3 bg-gray-50/50 border-b border-gray-50">
+            <div className="flex items-center gap-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 shrink-0">
+                {ac.yearLabel}
+              </label>
+              <select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                className={`appearance-none text-xs border rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/20 transition-colors cursor-pointer ${
+                  filterYear !== 'all'
+                    ? 'border-[#0057A8]/40 text-[#003B73] font-semibold bg-blue-50'
+                    : 'border-gray-200 text-gray-600 bg-white'
+                }`}
+              >
+                <option value="all">{ac.filterAll}</option>
+                {allYears.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-2">
               <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 shrink-0">
                 {t.admin.statusLabel}
@@ -313,7 +326,6 @@ export default function AdminCalendarListPage() {
               </button>
             )}
           </div>
-        )}
       </div>
 
       {error && (
