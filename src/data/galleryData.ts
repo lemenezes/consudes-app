@@ -19,8 +19,8 @@ export function getPhotoUrl(albumSlug: string, filename: string): string {
   ) {
     return filename;
   }
-
-  return `${MEDIA_BASE}/gallery/${albumSlug}/${filename}`;
+  // Estrutura R2 para exibição: gallery-watermarked/{albumSlug}/cover.webp | 01.webp | 02.webp …
+  return `${MEDIA_BASE}/gallery-watermarked/${albumSlug}/${filename}`;
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────
