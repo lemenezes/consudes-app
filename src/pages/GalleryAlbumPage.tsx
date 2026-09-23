@@ -31,7 +31,15 @@ function getPaginationPages(totalPages: number, currentPage: number) {
   }
 
   if (currentPage >= totalPages - 3) {
-    return [1, "ellipsis-start", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    return [
+      1,
+      "ellipsis-start",
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages
+    ];
   }
 
   return [
@@ -348,26 +356,29 @@ export default function GalleryAlbumPage() {
               <div className="mt-10 flex flex-col items-center gap-5">
                 <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-consudes-body/60 dark:text-white/50">
                   <p>
-                    {pagePhotos.length}{" "}
-                    {t.galleryPage.photosOf} {album.photos.length}{" "}
-                    {t.galleryPage.photos}
+                    {totalPages > 1
+                      ? `${pagePhotos.length} ${t.galleryPage.photosOf} ${album.photos.length} ${t.galleryPage.photos}`
+                      : `${album.photos.length} ${t.galleryPage.photos}`}
                   </p>
-                  <label className="inline-flex items-center gap-2">
-                    <span>{t.galleryPage.photosPerPage}</span>
-                    <select
-                      value={photosPerPage}
-                      onChange={event => {
-                        setPhotosPerPage(Number(event.target.value));
-                        setCurrentPage(1);
-                      }}
-                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-consudes-blue outline-none transition focus:border-consudes-blue dark:border-white/15 dark:bg-white/5 dark:text-white">
-                      {PHOTO_PAGE_SIZES.map(pageSize => (
-                        <option key={pageSize} value={pageSize}>
-                          {pageSize}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+
+                  {totalPages > 1 && (
+                    <label className="inline-flex items-center gap-2">
+                      <span>{t.galleryPage.photosPerPage}</span>
+                      <select
+                        value={photosPerPage}
+                        onChange={event => {
+                          setPhotosPerPage(Number(event.target.value));
+                          setCurrentPage(1);
+                        }}
+                        className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-consudes-blue outline-none transition focus:border-consudes-blue dark:border-white/15 dark:bg-white/5 dark:text-white">
+                        {PHOTO_PAGE_SIZES.map(pageSize => (
+                          <option key={pageSize} value={pageSize}>
+                            {pageSize}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                 </div>
 
                 {totalPages > 1 && (
@@ -387,7 +398,9 @@ export default function GalleryAlbumPage() {
                           key={page}
                           type="button"
                           onClick={() => setCurrentPage(page)}
-                          aria-current={page === currentPage ? "page" : undefined}
+                          aria-current={
+                            page === currentPage ? "page" : undefined
+                          }
                           className={`min-w-8 rounded-lg border px-2 py-1.5 text-xs font-semibold transition ${
                             page === currentPage
                               ? "border-consudes-blue bg-consudes-blue text-white"
