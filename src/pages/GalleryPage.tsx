@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { SegmentedToggleGroup } from "../components/SegmentedToggleGroup";
 import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
@@ -211,11 +210,11 @@ function AlbumCard({
 export default function GalleryPage() {
   const { t, lang } = useLanguage();
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
-  const [activeCategory, setActiveCategory] = useState<GalleryCategory | null>(
-    null
+  const [activeCategories, setActiveCategories] = useState<GalleryCategory[]>(
+    []
   );
-  const [activeYear, setActiveYear] = useState<number | null>(null);
-  const [activeCountry, setActiveCountry] = useState<string | null>(null);
+  const [activeYears, setActiveYears] = useState<number[]>([]);
+  const [activeCountries, setActiveCountries] = useState<string[]>([]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filtersButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -242,16 +241,116 @@ export default function GalleryPage() {
   ].sort() as string[];
 
   const isFiltered =
-    activeCategory !== null || activeYear !== null || activeCountry !== null;
-  const activeCount = [activeCategory, activeYear, activeCountry].filter(
-    Boolean
-  ).length;
-  const gridAlbums = albums.filter(a => {
-    if (activeCategory && a.category !== activeCategory) return false;
-    if (activeYear && a.year !== activeYear) return false;
-    if (activeCountry && a.country !== activeCountry) return false;
+    activeCategories.length > 0 ||
+    activeYears.length > 0 ||
+    activeCountries.length > 0;
+
+  const activeCount =
+    activeCategories.length + activeYears.length + activeCountries.length;
+
+  const gridAlbums = albums.filter(album => {
+    if (
+      activeCategories.length > 0 &&
+      !activeCategories.includes(album.category)
+    ) {
+      return false;
+    }
+
+    if (
+      activeYears.length > 0 &&
+      (album.year == null || !activeYears.includes(album.year))
+    ) {
+      return false;
+    }
+
+    if (
+      activeCountries.length > 0 &&
+      (album.country == null || !activeCountries.includes(album.country))
+    ) {
+      return false;
+    }
+
     return true;
   });
+
+  const toggleCategory = (category: GalleryCategory) => {
+    setActiveCategories(current =>
+      current.includes(category)
+        ? current.filter(item => item !== category)
+        : [...current, category]
+    );
+  };
+
+  const toggleYear = (year: number) => {
+    setActiveYears(current =>
+      current.includes(year)
+        ? current.filter(item => item !== year)
+        : [...current, year]
+    );
+  };
+
+  const toggleCountry = (country: string) => {
+    setActiveCountries(current =>
+      current.includes(country)
+        ? current.filter(item => item !== country)
+        : [...current, country]
+    );
+  };
+
+  const clearFilters = () => {
+    setActiveCategories([]);
+    setActiveYears([]);
+    setActiveCountries([]);
+  };
+
+  const renderActiveFilterChips = (alignment: string) => {
+    if (!isFiltered) return null;
+
+    return (
+      <div
+        className={`flex flex-wrap items-center ${alignment} gap-2 text-[11px]`}>
+        {activeCategories.map(category => (
+          <button
+            key={category}
+            type="button"
+            onClick={() => toggleCategory(category)}
+            aria-label={`${t.galleryPage.filterCategory}: ${categoryLabel(category, t)}`}
+            className="inline-flex items-center gap-1 rounded-full border border-consudes-blue/20 bg-consudes-blue/5 px-2.5 py-1 font-semibold text-consudes-blue transition-colors hover:bg-consudes-blue/10 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300">
+            {categoryLabel(category, t)}
+            <X className="w-3 h-3" aria-hidden="true" />
+          </button>
+        ))}
+        {activeYears.map(year => (
+          <button
+            key={year}
+            type="button"
+            onClick={() => toggleYear(year)}
+            aria-label={`${t.galleryPage.filterYear}: ${year}`}
+            className="inline-flex items-center gap-1 rounded-full border border-consudes-blue/20 bg-consudes-blue/5 px-2.5 py-1 font-semibold text-consudes-blue transition-colors hover:bg-consudes-blue/10 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300">
+            {year}
+            <X className="w-3 h-3" aria-hidden="true" />
+          </button>
+        ))}
+        {activeCountries.map(country => (
+          <button
+            key={country}
+            type="button"
+            onClick={() => toggleCountry(country)}
+            aria-label={`${t.galleryPage.filterCountry}: ${country}`}
+            className="inline-flex items-center gap-1 rounded-full border border-consudes-blue/20 bg-consudes-blue/5 px-2.5 py-1 font-semibold text-consudes-blue transition-colors hover:bg-consudes-blue/10 dark:border-blue-400/30 dark:bg-blue-400/10 dark:text-blue-300">
+            {country}
+            <X className="w-3 h-3" aria-hidden="true" />
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="inline-flex items-center font-bold text-[#003B73] dark:text-blue-400 hover:underline transition-all whitespace-nowrap">
+          {t.galleryPage.clearAllFilters}
+        </button>
+      </div>
+    );
+  };
 
   return (
     <PageShell
@@ -301,70 +400,63 @@ export default function GalleryPage() {
                 <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
                   {t.galleryPage.filterCategory}
                 </span>
-                <SegmentedToggleGroup
-                  options={[
-                    { value: null, label: t.galleryPage.allAlbums },
-                    ...GALLERY_CATEGORIES.map(cat => ({
-                      value: cat,
-                      label: categoryLabel(cat, t)
-                    }))
-                  ]}
-                  value={activeCategory}
-                  onChange={setActiveCategory}
-                  ariaLabel={t.galleryPage.filterCategory}
-                />
+                <div className="flex flex-wrap gap-2">
+                  <FilterPill
+                    active={activeCategories.length === 0}
+                    onClick={() => setActiveCategories([])}>
+                    {t.galleryPage.allAlbums}
+                  </FilterPill>
+                  {GALLERY_CATEGORIES.map(category => (
+                    <FilterPill
+                      key={category}
+                      active={activeCategories.includes(category)}
+                      onClick={() => toggleCategory(category)}>
+                      {categoryLabel(category, t)}
+                    </FilterPill>
+                  ))}
+                </div>
               </div>
               <div>
                 <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
                   {t.galleryPage.filterYear}
                 </span>
-                <SegmentedToggleGroup
-                  options={[
-                    { value: null, label: t.galleryPage.allYears },
-                    ...availableYears.map(year => ({
-                      value: year,
-                      label: year
-                    }))
-                  ]}
-                  value={activeYear}
-                  onChange={setActiveYear}
-                  ariaLabel={t.galleryPage.filterYear}
-                />
+                <div className="flex flex-wrap gap-2">
+                  <FilterPill
+                    active={activeYears.length === 0}
+                    onClick={() => setActiveYears([])}>
+                    {t.galleryPage.allYears}
+                  </FilterPill>
+                  {availableYears.map(year => (
+                    <FilterPill
+                      key={year}
+                      active={activeYears.includes(year)}
+                      onClick={() => toggleYear(year)}>
+                      {year}
+                    </FilterPill>
+                  ))}
+                </div>
               </div>
               <div>
                 <span className="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">
                   {t.galleryPage.filterCountry}
                 </span>
-                <SegmentedToggleGroup
-                  options={[
-                    { value: null, label: t.galleryPage.allCountries },
-                    ...availableCountries.map(country => ({
-                      value: country,
-                      label: country
-                    }))
-                  ]}
-                  value={activeCountry}
-                  onChange={setActiveCountry}
-                  ariaLabel={t.galleryPage.filterCountry}
-                />
+                <div className="flex flex-wrap gap-2">
+                  <FilterPill
+                    active={activeCountries.length === 0}
+                    onClick={() => setActiveCountries([])}>
+                    {t.galleryPage.allCountries}
+                  </FilterPill>
+                  {availableCountries.map(country => (
+                    <FilterPill
+                      key={country}
+                      active={activeCountries.includes(country)}
+                      onClick={() => toggleCountry(country)}>
+                      {country}
+                    </FilterPill>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center mt-2 gap-2">
-                {isFiltered && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveCategory(null);
-                      setActiveYear(null);
-                      setActiveCountry(null);
-                    }}
-                    className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-semibold text-consudes-blue bg-consudes-gold/10 hover:bg-consudes-gold/20 transition-all">
-                    <X className="w-3 h-3" aria-hidden="true" />
-                    {t.galleryPage.clearFilters}
-                  </button>
-                )}
-                <div className="flex-1" />
-                {/* Botão Aplicar removido: filtragem é automática ao selecionar */}
-              </div>
+              {renderActiveFilterChips("justify-start mt-2")}
             </div>
           </div>
           {/* DESKTOP: Toolbar editorial */}
@@ -377,15 +469,15 @@ export default function GalleryPage() {
                 </span>
                 <div className="flex flex-wrap gap-2">
                   <FilterPill
-                    active={activeCategory === null}
-                    onClick={() => setActiveCategory(null)}>
+                    active={activeCategories.length === 0}
+                    onClick={() => setActiveCategories([])}>
                     {t.galleryPage.allAlbums}
                   </FilterPill>
                   {GALLERY_CATEGORIES.map(cat => (
                     <FilterPill
                       key={cat}
-                      active={activeCategory === cat}
-                      onClick={() => setActiveCategory(cat)}>
+                      active={activeCategories.includes(cat)}
+                      onClick={() => toggleCategory(cat)}>
                       {categoryLabel(cat, t)}
                     </FilterPill>
                   ))}
@@ -398,15 +490,15 @@ export default function GalleryPage() {
                 </span>
                 <div className="flex flex-wrap gap-2">
                   <FilterPill
-                    active={activeYear === null}
-                    onClick={() => setActiveYear(null)}>
+                    active={activeYears.length === 0}
+                    onClick={() => setActiveYears([])}>
                     {t.galleryPage.allYears}
                   </FilterPill>
                   {availableYears.map(year => (
                     <FilterPill
                       key={year}
-                      active={activeYear === year}
-                      onClick={() => setActiveYear(year)}>
+                      active={activeYears.includes(year)}
+                      onClick={() => toggleYear(year)}>
                       {year}
                     </FilterPill>
                   ))}
@@ -419,46 +511,21 @@ export default function GalleryPage() {
                 </span>
                 <div className="flex flex-wrap gap-2 md:flex-1">
                   <FilterPill
-                    active={activeCountry === null}
-                    onClick={() => setActiveCountry(null)}>
+                    active={activeCountries.length === 0}
+                    onClick={() => setActiveCountries([])}>
                     {t.galleryPage.allCountries}
                   </FilterPill>
                   {availableCountries.map(country => (
                     <FilterPill
                       key={country}
-                      active={activeCountry === country}
-                      onClick={() => setActiveCountry(country)}>
+                      active={activeCountries.includes(country)}
+                      onClick={() => toggleCountry(country)}>
                       {country}
                     </FilterPill>
                   ))}
                 </div>
-                {/* Count + Limpar: inline à direita do País — apenas desktop */}
-                {isFiltered && (
-                  <div className="hidden md:flex shrink-0 items-center gap-2">
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500 whitespace-nowrap">
-                      {gridAlbums.length}{" "}
-                      {gridAlbums.length === 1
-                        ? t.galleryPage.albumSingular
-                        : t.galleryPage.albumPlural}
-                    </span>
-                    <span
-                      className="text-slate-300 dark:text-white/15"
-                      aria-hidden="true">
-                      •
-                    </span>
-                    <button
-                      onClick={() => {
-                        setActiveCategory(null);
-                        setActiveYear(null);
-                        setActiveCountry(null);
-                      }}
-                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#003B73] dark:text-blue-400 hover:underline transition-all whitespace-nowrap">
-                      <X className="w-3 h-3" aria-hidden="true" />
-                      {t.galleryPage.clearFilters}
-                    </button>
-                  </div>
-                )}
               </div>
+              {renderActiveFilterChips("justify-end")}
             </div>
           </div>
         </div>

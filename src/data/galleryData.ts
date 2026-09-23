@@ -5,9 +5,10 @@
 // Configurar VITE_MEDIA_BASE_URL em .env.production
 
 import type { Lang } from "../i18n/translations";
+import { museumGalleryAlbums } from "./museumGalleryData";
 
 export const MEDIA_BASE =
-  (import.meta.env as Record<string, string>).VITE_MEDIA_BASE_URL ?? "";
+  (import.meta.env?.VITE_MEDIA_BASE_URL as string | undefined) ?? "";
 
 export function getPhotoUrl(albumSlug: string, filename: string): string {
   if (
@@ -78,6 +79,7 @@ export function getDescription(album: GalleryAlbum, lang: Lang): string {
 // ─── Álbuns ───────────────────────────────────────────────────────────────
 
 export const galleryAlbums: GalleryAlbum[] = [
+  ...museumGalleryAlbums,
   // ════════════════════════════════════════════════════════
   //  TIER 1 — Destaques  (WebP processados — prontos para R2)
   // ════════════════════════════════════════════════════════

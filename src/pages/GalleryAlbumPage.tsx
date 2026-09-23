@@ -18,6 +18,7 @@ import { getGalleryBySlug } from "../services/galleryService";
 
 // ── helpers ───────────────────────────────────────────────────────────────
 
+const PHOTOS_PER_PAGE = 24;
 function AlbumHero({
   album,
   t
@@ -158,12 +159,14 @@ export default function GalleryAlbumPage() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [album, setAlbum] = useState<GalleryAlbum | null>(null);
   const [loading, setLoading] = useState(true);
+  const [visiblePhotos, setVisiblePhotos] = useState(PHOTOS_PER_PAGE);
 
   useEffect(() => {
     let active = true;
 
     const loadAlbum = async () => {
       setLoading(true);
+      setVisiblePhotos(PHOTOS_PER_PAGE);
       const { data } = await getGalleryBySlug(rawSlug || "");
       if (active) {
         setAlbum(data || null);
@@ -289,20 +292,46 @@ export default function GalleryAlbumPage() {
           </div>
 
           {/* ── Photos grid ── */}
+          {/* ── Photos grid ── */}
           {album.photos.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-              {album.photos.map((photo, i) => (
-                <PhotoThumb
-                  key={`${photo.filename}-${i}`}
-                  src={getPhotoUrl(album.slug, photo.dataUrl || photo.filename)}
-                  index={i}
-                  onOpen={handleOpen}
-                  t={t}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+                {album.photos.slice(0, visiblePhotos).map((photo, i) => (
+                  <PhotoThumb
+                    key={`${photo.filename}-${i}`}
+                    src={getPhotoUrl(
+                      album.slug,
+                      photo.dataUrl || photo.filename
+                    )}
+                    index={i}
+                    onOpen={handleOpen}
+                    t={t}
+                  />
+                ))}
+              </div>
+
+              {visiblePhotos < album.photos.length && (
+                <div className="mt-10 flex flex-col items-center gap-3">
+                  <p className="text-sm text-consudes-body/60 dark:text-white/50">
+                    {Math.min(visiblePhotos, album.photos.length)}{" "}
+                    {t.galleryPage.photosOf} {album.photos.length}{" "}
+                    {t.galleryPage.photos}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVisiblePhotos(current =>
+                        Math.min(current + PHOTOS_PER_PAGE, album.photos.length)
+                      )
+                    }
+                    className="inline-flex items-center justify-center rounded-full bg-consudes-blue-mid px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+                    {t.galleryPage.loadMorePhotos}
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
-            /* ── Coming soon state ── */
             <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 py-20 text-center">
               <svg
                 className="w-12 h-12 mx-auto text-gray-300 dark:text-white/20 mb-4"
@@ -316,9 +345,11 @@ export default function GalleryAlbumPage() {
                   d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 9.75h.008M3.75 9.75A.75.75 0 013 9V7.5A2.25 2.25 0 015.25 5.25h13.5A2.25 2.25 0 0121 7.5V9a.75.75 0 01-.75.75H3.75z"
                 />
               </svg>
+
               <p className="text-consudes-blue-text/50 dark:text-white/40 text-sm">
                 {t.galleryPage.albumPhotosComingSoon}
               </p>
+
               <p className="text-consudes-blue-text/30 dark:text-white/25 text-xs mt-1">
                 {album.photoCount} {t.galleryPage.photos} · {album.title}
               </p>
