@@ -14,8 +14,8 @@ fi
 
 TOTAL=$(find "$SOURCE" -type f -name "*.webp" | wc -l | tr -d ' ')
 
-if [ "$TOTAL" -ne 1073 ]; then
-  echo "ERRO: esperávamos 1073 imagens, mas encontramos $TOTAL."
+if [ "$TOTAL" -ne 1062 ]; then
+  echo "ERRO: esperávamos 1062 imagens, mas encontramos $TOTAL."
   echo "Upload cancelado."
   exit 1
 fi

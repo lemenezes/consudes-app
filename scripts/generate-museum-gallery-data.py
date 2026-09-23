@@ -7,23 +7,11 @@ import re
 SOURCE = Path("/Users/lmiglioli/Downloads/Museu-CONSUDES-READY")
 OUTPUT = Path("src/data/museumGalleryData.ts")
 
-EXPECTED_ALBUMS = 13
-EXPECTED_PHOTOS = 1073
+EXPECTED_ALBUMS = 18
+EXPECTED_PHOTOS = 1062
 
 # Metadados que conseguimos afirmar a partir dos nomes dos álbuns.
 ALBUMS = {
-    "acervo-historico-consudes": {
-        "title": "Acervo Histórico CONSUDES",
-        "year": None,
-        "city": None,
-        "country": None,
-        "description": {
-            "pt": "Acervo histórico fotográfico da CONSUDES, reunindo registros preservados e digitalizados de diferentes períodos da história do esporte surdo sul-americano.",
-            "es": "Archivo histórico fotográfico de la CONSUDES, que reúne registros preservados y digitalizados de diferentes períodos de la historia del deporte sordo sudamericano.",
-            "en": "CONSUDES historical photographic archive, bringing together preserved and digitized records from different periods in the history of South American deaf sport.",
-        },
-    },
-
     "album-01-copa-america-09-1995": {
         "title": "Copa América — Setembro de 1995",
         "year": 1995,
@@ -167,6 +155,80 @@ ALBUMS = {
             "en": "Historical photographic record of the South American championship held at Ibirapuera in São Paulo in November 1991.",
         },
     },
+
+    "fotos-do-envelope": {
+        "title": "Fotos do Envelope",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos históricos preservados em envelope.",
+            "es": "Registros fotográficos históricos preservados en un sobre.",
+            "en": "Historical photographic records preserved in an envelope.",
+        },
+    },
+
+    "fichario4": {
+        "title": "Fichário 4",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos históricos preservados no Fichário 4.",
+            "es": "Registros fotográficos históricos preservados en el Fichário 4.",
+            "en": "Historical photographic records preserved in File 4.",
+        },
+    },
+
+    "fichario5": {
+        "title": "Fichário 5",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos históricos preservados no Fichário 5.",
+            "es": "Registros fotográficos históricos preservados en el Fichário 5.",
+            "en": "Historical photographic records preserved in File 5.",
+        },
+    },
+
+    "fichario6": {
+        "title": "Fichário 6",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos históricos preservados no Fichário 6.",
+            "es": "Registros fotográficos históricos preservados en el Fichário 6.",
+            "en": "Historical photographic records preserved in File 6.",
+        },
+    },
+
+    "livros-grandes": {
+        "title": "Livros Grandes",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos históricos preservados nos livros grandes.",
+            "es": "Registros fotográficos históricos preservados en los libros grandes.",
+            "en": "Historical photographic records preserved in the large books.",
+        },
+    },
+
+    "originais": {
+        "title": "Originais",
+        "year": None,
+        "city": None,
+        "country": None,
+        "description": {
+            "pt": "Registros fotográficos originais preservados no acervo histórico.",
+            "es": "Registros fotográficos originales preservados en el archivo histórico.",
+            "en": "Original photographic records preserved in the historical archive.",
+        },
+    },
+
+
 }
 
 
@@ -252,11 +314,7 @@ def main():
         if not photos:
             raise RuntimeError(f"Álbum sem fotos: {slug}")
 
-        # Preserva a capa oficial do Acervo Histórico.
-        if slug == "acervo-historico-consudes":
-            cover = "fichario4-digitalizado-20260818-2130-02.webp"
-        else:
-            cover = photos[0]
+        cover = photos[0]
 
         lines.extend([
             "  {",

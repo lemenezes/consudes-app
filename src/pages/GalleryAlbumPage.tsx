@@ -18,7 +18,33 @@ import { getGalleryBySlug } from "../services/galleryService";
 
 // ── helpers ───────────────────────────────────────────────────────────────
 
-const PHOTOS_PER_PAGE = 24;
+const DEFAULT_PHOTOS_PER_PAGE = 48;
+const PHOTO_PAGE_SIZES = [24, 48, 72, 96];
+
+function getPaginationPages(totalPages: number, currentPage: number) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "ellipsis-end", totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, "ellipsis-start", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [
+    1,
+    "ellipsis-start",
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    "ellipsis-end",
+    totalPages
+  ];
+}
+
 function AlbumHero({
   album,
   t
@@ -159,14 +185,15 @@ export default function GalleryAlbumPage() {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [album, setAlbum] = useState<GalleryAlbum | null>(null);
   const [loading, setLoading] = useState(true);
-  const [visiblePhotos, setVisiblePhotos] = useState(PHOTOS_PER_PAGE);
+  const [photosPerPage, setPhotosPerPage] = useState(DEFAULT_PHOTOS_PER_PAGE);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     let active = true;
 
     const loadAlbum = async () => {
       setLoading(true);
-      setVisiblePhotos(PHOTOS_PER_PAGE);
+      setCurrentPage(1);
       const { data } = await getGalleryBySlug(rawSlug || "");
       if (active) {
         setAlbum(data || null);
@@ -244,6 +271,14 @@ export default function GalleryAlbumPage() {
     src: getPhotoUrl(album.slug, p.dataUrl || p.filename)
   }));
 
+  const totalPages = Math.ceil(album.photos.length / photosPerPage);
+  const firstPhotoIndex = (currentPage - 1) * photosPerPage;
+  const pagePhotos = album.photos.slice(
+    firstPhotoIndex,
+    firstPhotoIndex + photosPerPage
+  );
+  const paginationPages = getPaginationPages(totalPages, currentPage);
+
   const handleOpen = (index: number) => {
     setPhotoIndex(index);
     setLightboxOpen(true);
@@ -296,40 +331,89 @@ export default function GalleryAlbumPage() {
           {album.photos.length > 0 ? (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-                {album.photos.slice(0, visiblePhotos).map((photo, i) => (
+                {pagePhotos.map((photo, index) => (
                   <PhotoThumb
-                    key={`${photo.filename}-${i}`}
+                    key={`${photo.filename}-${firstPhotoIndex + index}`}
                     src={getPhotoUrl(
                       album.slug,
                       photo.dataUrl || photo.filename
                     )}
-                    index={i}
+                    index={firstPhotoIndex + index}
                     onOpen={handleOpen}
                     t={t}
                   />
                 ))}
               </div>
 
-              {visiblePhotos < album.photos.length && (
-                <div className="mt-10 flex flex-col items-center gap-3">
-                  <p className="text-sm text-consudes-body/60 dark:text-white/50">
-                    {Math.min(visiblePhotos, album.photos.length)}{" "}
+              <div className="mt-10 flex flex-col items-center gap-5">
+                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-consudes-body/60 dark:text-white/50">
+                  <p>
+                    {pagePhotos.length}{" "}
                     {t.galleryPage.photosOf} {album.photos.length}{" "}
                     {t.galleryPage.photos}
                   </p>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setVisiblePhotos(current =>
-                        Math.min(current + PHOTOS_PER_PAGE, album.photos.length)
-                      )
-                    }
-                    className="inline-flex items-center justify-center rounded-full bg-consudes-blue-mid px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
-                    {t.galleryPage.loadMorePhotos}
-                  </button>
+                  <label className="inline-flex items-center gap-2">
+                    <span>{t.galleryPage.photosPerPage}</span>
+                    <select
+                      value={photosPerPage}
+                      onChange={event => {
+                        setPhotosPerPage(Number(event.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm font-medium text-consudes-blue outline-none transition focus:border-consudes-blue dark:border-white/15 dark:bg-white/5 dark:text-white">
+                      {PHOTO_PAGE_SIZES.map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                          {pageSize}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
-              )}
+
+                {totalPages > 1 && (
+                  <nav
+                    className="flex flex-wrap items-center justify-center gap-1.5"
+                    aria-label={t.galleryPage.photosPerPage}>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page => page - 1)}
+                      disabled={currentPage === 1}
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-consudes-blue transition hover:border-consudes-blue/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:bg-white/5 dark:text-blue-300">
+                      {t.galleryPage.previousPage}
+                    </button>
+                    {paginationPages.map(page =>
+                      typeof page === "number" ? (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => setCurrentPage(page)}
+                          aria-current={page === currentPage ? "page" : undefined}
+                          className={`min-w-8 rounded-lg border px-2 py-1.5 text-xs font-semibold transition ${
+                            page === currentPage
+                              ? "border-consudes-blue bg-consudes-blue text-white"
+                              : "border-slate-200 bg-white text-consudes-blue hover:border-consudes-blue/40 dark:border-white/15 dark:bg-white/5 dark:text-blue-300"
+                          }`}>
+                          {page}
+                        </button>
+                      ) : (
+                        <span
+                          key={page}
+                          className="px-1 text-sm text-slate-400 dark:text-white/40"
+                          aria-hidden="true">
+                          ...
+                        </span>
+                      )
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(page => page + 1)}
+                      disabled={currentPage === totalPages}
+                      className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-consudes-blue transition hover:border-consudes-blue/40 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:bg-white/5 dark:text-blue-300">
+                      {t.galleryPage.nextPage}
+                    </button>
+                  </nav>
+                )}
+              </div>
             </>
           ) : (
             <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 py-20 text-center">

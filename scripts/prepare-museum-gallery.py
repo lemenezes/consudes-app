@@ -147,12 +147,11 @@ def prepare_image(source_path, destination_path, logo_original):
 # ============================================================
 
 def get_album_name(relative_path):
-    top_directory = relative_path.parts[0]
-
-    if normalize_key(top_directory) in HISTORICAL_ARCHIVE_KEYS:
-        return "Acervo Histórico CONSUDES"
-
-    return top_directory
+    """
+    Cada pasta diretamente dentro de /Museu representa
+    um álbum separado no site.
+    """
+    return relative_path.parts[0]
 
 
 def build_destination(source_path):
@@ -161,19 +160,9 @@ def build_destination(source_path):
     album_name = get_album_name(relative_path)
     album_slug = slugify(album_name)
 
-    #
-    # Incluímos o nome da pasta original no arquivo para evitar
-    # colisões quando Fichário4/Fichário5/etc. possuem arquivos
-    # com nomes iguais.
-    #
-    original_directory = relative_path.parts[0]
-    directory_slug = slugify(original_directory)
-
     filename_slug = slugify(source_path.stem)
 
-    destination_name = (
-        f"{directory_slug}-{filename_slug}.webp"
-    )
+    destination_name = f"{filename_slug}.webp"
 
     return (
         OUTPUT_DIR
