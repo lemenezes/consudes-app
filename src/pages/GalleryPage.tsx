@@ -210,6 +210,7 @@ function AlbumCard({
 export default function GalleryPage() {
   const { t, lang } = useLanguage();
   const [albums, setAlbums] = useState<GalleryAlbum[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategories, setActiveCategories] = useState<GalleryCategory[]>(
     []
   );
@@ -226,11 +227,24 @@ export default function GalleryPage() {
 
   // 🚀 Carrega álbuns do galleryService (que usa localStorage para demo)
   useEffect(() => {
+    let active = true;
+
     const load = async () => {
+      setLoading(true);
+
       const { data } = await listGalleries();
-      setAlbums(data || []);
+
+      if (active) {
+        setAlbums(data || []);
+        setLoading(false);
+      }
     };
+
     load();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const availableYears = [
@@ -532,7 +546,17 @@ export default function GalleryPage() {
 
         {/* ── Grid de álbuns ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-12">
-          {gridAlbums.length > 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div
+                className="w-8 h-8 rounded-full border-2 border-consudes-blue/20 border-t-consudes-blue animate-spin"
+                aria-hidden="true"
+              />
+              <p className="mt-4 text-sm text-consudes-body/60 dark:text-white/50">
+                {t.galleryPage.loading}
+              </p>
+            </div>
+          ) : gridAlbums.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
               {gridAlbums.map(album => (
                 <AlbumCard key={album.slug} album={album} t={t} lang={lang} />
