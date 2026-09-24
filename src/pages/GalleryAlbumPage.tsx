@@ -308,7 +308,7 @@ export default function GalleryAlbumPage() {
 
           {/* ── Description ── */}
           {getDescription(album, lang) && (
-            <p className="mt-6 text-consudes-body dark:text-white/70 text-base max-w-2xl">
+            <p className="mt-6 text-consudes-body dark:text-white/70 text-base text-center">
               {getDescription(album, lang)}
             </p>
           )}
