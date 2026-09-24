@@ -165,7 +165,10 @@ export default function Header() {
         { to: "/calendario", label: t.nav.calendar },
         {
           label: t.nav.competitions,
-          children: [{ to: "/interclubes", label: t.nav.interclubs }]
+          children: [
+            { to: "/interclubes", label: t.nav.interclubs },
+            { to: "/interclubes/resultados", label: t.nav.results }
+          ]
         },
         { to: "/esportes/modalidades", label: t.nav.modalities }
       ]

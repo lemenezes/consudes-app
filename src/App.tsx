@@ -47,6 +47,7 @@ const FederationsPage = lazy(() => import("./pages/FederationsPage"));
 const SportsPage = lazy(() => import("./pages/SportsPage"));
 const ModalitiesPage = lazy(() => import("./pages/ModalitiesPage"));
 const ModalityDetailPage = lazy(() => import("./pages/ModalityDetailPage"));
+const InterclubsHomePage = lazy(() => import("./pages/InterclubsHomePage"));
 const InterclubsPage = lazy(() => import("./pages/InterclubsPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const CalendarPage = lazy(() => import("./pages/CalendarPage"));
@@ -76,7 +77,8 @@ const router = createBrowserRouter([
       { path: "esportes", element: <SportsPage /> },
       { path: "esportes/modalidades", element: <ModalitiesPage /> },
       { path: "esportes/modalidades/:slug", element: <ModalityDetailPage /> },
-      { path: "interclubes", element: <InterclubsPage /> },
+      { path: "interclubes", element: <InterclubsHomePage /> },
+      { path: "interclubes/resultados", element: <InterclubsPage /> },
       { path: "calendario", element: <CalendarPage /> },
       // Outros
       { path: "noticias", element: <NewsPage /> },

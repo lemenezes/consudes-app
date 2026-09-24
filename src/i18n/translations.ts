@@ -20,6 +20,7 @@ export const translations = {
       rankings: "Rankings",
       calendar: "Calendario",
       competitions: "Competições",
+      results: "Resultados",
       news: "Noticias",
       transparency: "Transparencia",
       reports: "Informes",
@@ -209,6 +210,22 @@ export const translations = {
       relato: "Relato",
       fixture: "Fixture",
       sourceNote: "Datos consolidados del sitio anterior."
+    },
+    interclubsHomePage: {
+      title: "Interclubes",
+      subtitle:
+        "Conoce los Interclubes de la CONSUDES organizados por deporte.",
+      sportsTitle: "Interclubes por deporte",
+      futsal: "Interclubes de Futsal",
+      futsalDescription:
+        "Competencias de futsal que reúnen clubes sordos de Sudamérica.",
+      chess: "Interclubes de Ajedrez",
+      chessDescription:
+        "Encuentros de ajedrez entre clubes sordos de Sudamérica.",
+      tableTennis: "Interclubes de Tenis de Mesa",
+      tableTennisDescription:
+        "Competencias de tenis de mesa entre clubes sordos de Sudamérica.",
+      access: "Próximamente"
     },
     footer: {
       rights: "Todos los derechos reservados",
@@ -688,6 +705,7 @@ export const translations = {
       rankings: "Rankings",
       calendar: "Calendário",
       competitions: "Competiciones",
+      results: "Resultados",
       news: "Notícias",
       transparency: "Transparência",
       reports: "Relatórios",
@@ -878,6 +896,21 @@ export const translations = {
       relato: "Relato",
       fixture: "Fixture",
       sourceNote: "Dados consolidados do site anterior."
+    },
+    interclubsHomePage: {
+      title: "Interclubes",
+      subtitle: "Conheça os Interclubes da CONSUDES organizados por esporte.",
+      sportsTitle: "Interclubes por esporte",
+      futsal: "Interclubes de Futsal",
+      futsalDescription:
+        "Competições de futsal que reúnem clubes surdos da América do Sul.",
+      chess: "Interclubes de Xadrez",
+      chessDescription:
+        "Encontros de xadrez entre clubes surdos da América do Sul.",
+      tableTennis: "Interclubes de Tênis de Mesa",
+      tableTennisDescription:
+        "Competições de tênis de mesa entre clubes surdos da América do Sul.",
+      access: "Em breve"
     },
     footer: {
       rights: "Todos os direitos reservados",
@@ -1355,6 +1388,7 @@ export const translations = {
       rankings: "Rankings",
       calendar: "Calendar",
       competitions: "Competitions",
+      results: "Results",
       news: "News",
       transparency: "Transparency",
       reports: "Reports",
@@ -1544,6 +1578,21 @@ export const translations = {
       relato: "Report",
       fixture: "Fixture",
       sourceNote: "Data consolidated from the previous site."
+    },
+    interclubsHomePage: {
+      title: "Interclubs",
+      subtitle: "Discover CONSUDES Interclubs organized by sport.",
+      sportsTitle: "Interclubs by sport",
+      futsal: "Futsal Interclubs",
+      futsalDescription:
+        "Futsal competitions bringing together deaf clubs from South America.",
+      chess: "Chess Interclubs",
+      chessDescription:
+        "Chess events bringing together deaf clubs from South America.",
+      tableTennis: "Table Tennis Interclubs",
+      tableTennisDescription:
+        "Table tennis competitions bringing together deaf clubs from South America.",
+      access: "Coming soon"
     },
     footer: {
       rights: "All rights reserved",
