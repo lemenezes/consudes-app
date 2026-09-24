@@ -14,8 +14,14 @@ const LANGS: { code: Lang; label: string }[] = [
 type DropdownKey = "institucional" | "transparencia" | "deportes" | null;
 
 type DropdownLink =
-  | { to: string; href?: never; label: string }
-  | { href: string; to?: never; label: string };
+  | { to: string; href?: never; label: string; children?: never }
+  | { href: string; to?: never; label: string; children?: never }
+  | {
+      label: string;
+      children: { to: string; label: string }[];
+      to?: never;
+      href?: never;
+    };
 
 type NavItem =
   | {
@@ -27,11 +33,26 @@ type NavItem =
     }
   | { type: "standalone"; to: string; label: string };
 
+function linkHasPath(link: DropdownLink, pathname: string): boolean {
+  if (link.to && (pathname === link.to || pathname.startsWith(link.to + "/"))) {
+    return true;
+  }
+
+  if (link.children) {
+    return link.children.some(child => linkHasPath(child, pathname));
+  }
+
+  return false;
+}
+
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [openDropdowns, setOpenDropdowns] = useState<
-    Set<NonNullable<DropdownKey>>
+    Set<
+      NonNullable<DropdownKey> | `mobile-${NonNullable<DropdownKey>}-${number}`
+    >
   >(new Set());
+  const [competitionOpen, setCompetitionOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
@@ -105,17 +126,16 @@ export default function Header() {
   // Abre automaticamente o dropdown que contém a página ativa ao abrir o menu mobile
   useEffect(() => {
     if (!isOpen) return;
+
     const activeKey = navItems
       .filter(
         (i): i is Extract<NavItem, { type: "dropdown" }> =>
           i.type === "dropdown"
       )
-      .find(i =>
-        i.links.some(
-          l => l.to && (pathname === l.to || pathname.startsWith(l.to + "/"))
-        )
-      );
+      .find(i => i.links.some(link => linkHasPath(link, pathname)));
+
     if (activeKey) setOpenDropdowns(new Set([activeKey.key]));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
@@ -143,7 +163,10 @@ export default function Header() {
       to: "/esportes",
       links: [
         { to: "/calendario", label: t.nav.calendar },
-        { to: "/interclubes", label: t.nav.interclubs },
+        {
+          label: t.nav.competitions,
+          children: [{ to: "/interclubes", label: t.nav.interclubs }]
+        },
         { to: "/esportes/modalidades", label: t.nav.modalities }
       ]
     },
@@ -224,12 +247,13 @@ export default function Header() {
                     key={item.key}
                     className="relative flex items-stretch"
                     onMouseEnter={() => setOpenDropdowns(new Set([item.key]))}
-                    onMouseLeave={() => setOpenDropdowns(new Set())}>
+                    onMouseLeave={() => {
+                      setOpenDropdowns(new Set());
+                      setCompetitionOpen(false);
+                    }}>
                     {(() => {
-                      const hasActiveChild = item.links.some(
-                        l =>
-                          l.to &&
-                          (pathname === l.to || pathname.startsWith(l.to + "/"))
+                      const hasActiveChild = item.links.some(link =>
+                        linkHasPath(link, pathname)
                       );
                       const isOpen = openDropdowns.has(item.key);
                       const showIndicator = isOpen || hasActiveChild;
@@ -266,7 +290,53 @@ export default function Header() {
                     {openDropdowns.has(item.key) && (
                       <div className="absolute top-full left-0 mt-0 min-w-[200px] bg-white dark:bg-consudes-dark-body border border-consudes-navy/10 dark:border-white/8 rounded-b-xl rounded-tr-xl shadow-[0_8px_32px_rgba(0,45,94,0.13)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.40)] py-2 z-50">
                         {item.links.map(link =>
-                          link.href ? (
+                          "children" in link ? (
+                            <div key={link.label}>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setCompetitionOpen(prev => !prev)
+                                }
+                                className={`w-full flex items-center justify-between px-5 py-2.5 text-[13px] font-medium whitespace-nowrap transition-colors ${
+                                  competitionOpen
+                                    ? "text-consudes-blue-mid bg-consudes-blue-mid/5"
+                                    : "text-consudes-blue-text hover:text-consudes-blue-mid hover:bg-consudes-blue-mid/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5"
+                                }`}>
+                                <span>{link.label}</span>
+
+                                <ChevronDown
+                                  size={18}
+                                  strokeWidth={2.5}
+                                  className={`transition-transform duration-200 ${
+                                    competitionOpen ? "rotate-180" : ""
+                                  }`}
+                                />
+                              </button>
+
+                              {competitionOpen && (
+                                <div className="ml-4 border-l-2 border-consudes-gold/40">
+                                  {link.children?.map(child => (
+                                    <NavLink
+                                      key={child.to}
+                                      to={child.to}
+                                      onClick={() => {
+                                        setCompetitionOpen(false);
+                                        setOpenDropdowns(new Set());
+                                      }}
+                                      className={({ isActive }) =>
+                                        `block pl-5 pr-5 py-2.5 text-[13px] font-medium whitespace-nowrap transition-colors ${
+                                          isActive
+                                            ? "text-consudes-blue-mid bg-consudes-blue-mid/5 font-semibold"
+                                            : "text-consudes-blue-text hover:text-consudes-blue-mid hover:bg-consudes-blue-mid/5 dark:text-white/65 dark:hover:text-white dark:hover:bg-white/5"
+                                        }`
+                                      }>
+                                      {child.label}
+                                    </NavLink>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ) : link.href ? (
                             <a
                               key={link.href}
                               href={link.href}
@@ -454,8 +524,58 @@ export default function Header() {
                     openDropdowns.has(item.key) ? "max-h-[400px]" : "max-h-0"
                   }`}>
                   <div className="pb-2 bg-black/20">
-                    {item.links.map(link =>
-                      link.href ? (
+                    {item.links.map((link, index) => {
+                      const submenuKey = `mobile-${item.key}-${index}` as const;
+                      const expanded = openDropdowns.has(submenuKey);
+
+                      return link.children !== undefined ? (
+                        <div key={submenuKey}>
+                          <button
+                            type="button"
+                            aria-expanded={expanded}
+                            aria-controls={submenuKey}
+                            onClick={() =>
+                              setOpenDropdowns(current => {
+                                const next = new Set(current);
+                                if (next.has(submenuKey))
+                                  next.delete(submenuKey);
+                                else next.add(submenuKey);
+                                return next;
+                              })
+                            }
+                            className="w-full flex items-center gap-3 pl-8 pr-5 py-3 text-sm text-white/65 hover:text-white transition-colors">
+                            <span className="w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
+                            <span className="flex-1 text-left">
+                              {link.label}
+                            </span>
+                            <ChevronDown
+                              size={14}
+                              aria-hidden="true"
+                              className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+                            />
+                          </button>
+                          <div
+                            id={submenuKey}
+                            hidden={!expanded}
+                            className="ml-8 border-l border-white/10">
+                            {link.children.map(child => (
+                              <NavLink
+                                key={child.to}
+                                to={child.to}
+                                onClick={close}
+                                className={({ isActive }) =>
+                                  `flex items-center gap-3 pl-5 pr-5 py-3 text-sm transition-colors ${
+                                    isActive
+                                      ? "font-semibold text-white bg-white/5 border-l-2 border-l-consudes-gold"
+                                      : "text-white/65 hover:text-white"
+                                  }`
+                                }>
+                                {child.label}
+                              </NavLink>
+                            ))}
+                          </div>
+                        </div>
+                      ) : link.href !== undefined ? (
                         <a
                           key={link.href}
                           href={link.href}
@@ -469,7 +589,7 @@ export default function Header() {
                       ) : (
                         <NavLink
                           key={link.to}
-                          to={link.to!}
+                          to={link.to}
                           onClick={close}
                           className={({ isActive }) =>
                             `flex items-center gap-3 pl-8 pr-5 py-3 text-sm transition-colors ${
@@ -487,8 +607,8 @@ export default function Header() {
                             </>
                           )}
                         </NavLink>
-                      )
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
