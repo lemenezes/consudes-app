@@ -1,4 +1,4 @@
-import { ArrowRight, Dumbbell, Trophy } from "lucide-react";
+import { Dumbbell, Trophy } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import PageShell from "../components/PageShell";
 import { useSEO } from "../hooks/useSEO";
