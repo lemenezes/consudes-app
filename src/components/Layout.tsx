@@ -1,11 +1,12 @@
-import { Outlet, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import Header from './Header';
+import { Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import Header from "./Header";
 
-import Footer from './Footer';
-import ScrollToTop from './ui/ScrollToTop';
-import AnalyticsTracker from './AnalyticsTracker';
-import ClarityTracker from './ClarityTracker';
+import Footer from "./Footer";
+import ScrollToTop from "./ui/ScrollToTop";
+import AnalyticsTracker from "./AnalyticsTracker";
+import ClarityTracker from "./ClarityTracker";
+import CookieConsentBanner from "./CookieConsentBanner";
 
 function RouteChangeScrollToTop() {
   const { pathname } = useLocation();
@@ -27,6 +28,7 @@ export default function Layout() {
       </main>
       <ScrollToTop />
       <Footer />
+      <CookieConsentBanner />
     </div>
   );
 }

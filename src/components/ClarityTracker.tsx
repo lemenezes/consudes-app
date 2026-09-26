@@ -1,20 +1,18 @@
 import { useEffect } from "react";
+import { useCookieConsent } from "../context/CookieConsentContext";
+import { initClarity } from "../lib/analytics";
 
 /**
- * Integração profissional do Microsoft Clarity para SPA React.
- * Compatível com React StrictMode e evita duplicidade.
- * Usa o pacote oficial @microsoft/clarity.
+ * Carrega o Microsoft Clarity sob demanda, apenas após consentimento
+ * de analytics. O módulo não é importado antes do consentimento.
  */
 export default function ClarityTracker() {
+  const { consent } = useCookieConsent();
+
   useEffect(() => {
-    // Só inicializa se ainda não foi carregado
-    if (!(window as any).__clarity_injected) {
-      import("@microsoft/clarity").then((ClarityModule) => {
-        const Clarity = ClarityModule.default;
-        Clarity.init("wum5ve2eiu");
-        (window as any).__clarity_injected = true;
-      });
-    }
-  }, []);
+    if (!consent.analytics) return;
+    void initClarity();
+  }, [consent.analytics]);
+
   return null;
 }

@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
+import { CookieConsentProvider } from "./context/CookieConsentContext";
 import Layout from "./components/Layout";
 import ProtectedAdminRoute from "./components/ProtectedAdminRoute";
 
@@ -142,9 +143,11 @@ export default function App() {
     <AuthProvider>
       <ThemeProvider>
         <LanguageProvider>
-          <Suspense fallback={null}>
-            <RouterProvider router={router} />
-          </Suspense>
+          <CookieConsentProvider>
+            <Suspense fallback={null}>
+              <RouterProvider router={router} />
+            </Suspense>
+          </CookieConsentProvider>
         </LanguageProvider>
       </ThemeProvider>
     </AuthProvider>

@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Mail, ChevronDown } from "lucide-react";
+import { Mail, ChevronDown, Cookie } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
+import { useCookieConsent } from "../context/CookieConsentContext";
 
 const CONTACT_EMAIL = "contato@consudes.com";
 
 export default function Footer() {
   const { t } = useLanguage();
+  const { openPreferences } = useCookieConsent();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const cols = [
@@ -294,24 +296,38 @@ export default function Footer() {
               </a>
             </span>
           </p>
-          <Link
-            to="/admin/login"
-            className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-white/60 transition-colors duration-150 group">
-            <svg
-              className="w-3 h-3 group-hover:opacity-100 opacity-60 transition-opacity"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.6}
-              stroke="currentColor"
-              aria-hidden="true">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <button
+              type="button"
+              onClick={openPreferences}
+              aria-label={t.cookies.footerLink}
+              className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-[#D4A63A] transition-colors duration-150 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A63A] group">
+              <Cookie
+                size={12}
+                className="opacity-60 group-hover:opacity-100 transition-opacity"
+                aria-hidden="true"
               />
-            </svg>
-            {t.footer.adminArea}
-          </Link>
+              {t.cookies.footerLink}
+            </button>
+            <Link
+              to="/admin/login"
+              className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-white/60 transition-colors duration-150 group">
+              <svg
+                className="w-3 h-3 group-hover:opacity-100 opacity-60 transition-opacity"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.6}
+                stroke="currentColor"
+                aria-hidden="true">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+              {t.footer.adminArea}
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -236,6 +236,26 @@ export const translations = {
       adminArea: "Área administrativa",
       developedBy: "Desarrollado por Leandro M."
     },
+    cookies: {
+      title: "Privacidad y Cookies",
+      description:
+        "Utilizamos cookies y tecnologías similares para garantizar el funcionamiento del sitio y, con su autorización, analizar su uso y mejorar su experiencia.",
+      reject: "Rechazar opcionales",
+      settings: "Configurar",
+      acceptAll: "Aceptar todos",
+      policyLink: "Política de Privacidad y Cookies",
+      settingsTitle: "Preferencias de cookies",
+      close: "Cerrar",
+      necessaryTitle: "Necesarios",
+      necessaryAlwaysOn: "Siempre activo",
+      necessaryDescription:
+        "Imprescindibles para el funcionamiento del sitio, la navegación y la seguridad. No pueden desactivarse.",
+      analyticsTitle: "Analítica",
+      analyticsDescription:
+        "Nos ayudan a entender cómo se usa el sitio para mejorarlo. Incluye Google Analytics y Microsoft Clarity.",
+      save: "Guardar preferencias",
+      footerLink: "Preferencias de Cookies"
+    },
     admin: {
       panelTitle: "Panel Administrativo",
       nav: {
@@ -1078,6 +1098,26 @@ export const translations = {
       adminArea: "Área administrativa",
       developedBy: "Desenvolvido por Leandro M."
     },
+    cookies: {
+      title: "Privacidade e Cookies",
+      description:
+        "Utilizamos cookies e tecnologias semelhantes para garantir o funcionamento do site e, com sua autorização, para analisar o uso e melhorar sua experiência.",
+      reject: "Recusar opcionais",
+      settings: "Configurar",
+      acceptAll: "Aceitar todos",
+      policyLink: "Política de Privacidade e Cookies",
+      settingsTitle: "Preferências de cookies",
+      close: "Fechar",
+      necessaryTitle: "Necessários",
+      necessaryAlwaysOn: "Sempre ativo",
+      necessaryDescription:
+        "Essenciais para o funcionamento do site, a navegação e a segurança. Não podem ser desativados.",
+      analyticsTitle: "Analytics",
+      analyticsDescription:
+        "Ajudam a entender como o site é usado para melhorá-lo. Inclui Google Analytics e Microsoft Clarity.",
+      save: "Salvar preferências",
+      footerLink: "Preferências de Cookies"
+    },
     admin: {
       panelTitle: "Painel Administrativo",
       nav: {
@@ -1916,6 +1956,26 @@ export const translations = {
       colRecognized: "Member of",
       adminArea: "Admin area",
       developedBy: "Developed by Leandro M."
+    },
+    cookies: {
+      title: "Privacy & Cookies",
+      description:
+        "We use cookies and similar technologies to ensure the website works properly and, with your permission, to analyze usage and improve your experience.",
+      reject: "Reject optional",
+      settings: "Settings",
+      acceptAll: "Accept all",
+      policyLink: "Privacy & Cookies Policy",
+      settingsTitle: "Cookie preferences",
+      close: "Close",
+      necessaryTitle: "Necessary",
+      necessaryAlwaysOn: "Always on",
+      necessaryDescription:
+        "Essential for the website to work, including navigation and security. These cannot be disabled.",
+      analyticsTitle: "Analytics",
+      analyticsDescription:
+        "Help us understand how the website is used so we can improve it. Includes Google Analytics and Microsoft Clarity.",
+      save: "Save preferences",
+      footerLink: "Cookie Preferences"
     },
     admin: {
       panelTitle: "Admin Panel",
