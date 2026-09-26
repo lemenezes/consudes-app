@@ -131,9 +131,63 @@ interface Props {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  labels?: RichTextEditorLabels;
+  allowInlineImages?: boolean;
   /** newsId para audit log — opcional, omitir ao criar nova notícia */
   newsId?: string;
 }
+
+export type RichTextEditorLabels = {
+  contentPlaceholder: string;
+  normalText: string;
+  smallText: string;
+  emphasis: string;
+  heading2: string;
+  heading3: string;
+  bold: string;
+  italic: string;
+  underline: string;
+  alignLeft: string;
+  alignCenter: string;
+  alignRight: string;
+  bulletList: string;
+  numberedList: string;
+  quote: string;
+  removeLink: string;
+  insertLink: string;
+  insertImage: string;
+  imageLimitReached: string;
+  undo: string;
+  redo: string;
+  clearFormatting: string;
+  linkUrl: string;
+};
+
+const DEFAULT_LABELS: RichTextEditorLabels = {
+  contentPlaceholder: "Escreva o conteúdo da notícia…",
+  normalText: "Texto normal",
+  smallText: "Pequeno",
+  emphasis: "Destaque",
+  heading2: "Título H2",
+  heading3: "Título H3",
+  bold: "Negrito (Ctrl+B)",
+  italic: "Itálico (Ctrl+I)",
+  underline: "Sublinhado (Ctrl+U)",
+  alignLeft: "Alinhar à esquerda",
+  alignCenter: "Centralizar",
+  alignRight: "Alinhar à direita",
+  bulletList: "Lista com marcadores",
+  numberedList: "Lista numerada",
+  quote: "Citação / destaque",
+  removeLink: "Remover link",
+  insertLink: "Inserir link",
+  insertImage: "Inserir imagem no conteúdo",
+  imageLimitReached: "Limite de imagens atingido",
+  undo: "Desfazer (Ctrl+Z)",
+  redo: "Refazer (Ctrl+Shift+Z)",
+  clearFormatting: "Limpar formatação",
+  linkUrl: "URL do link:"
+};
 
 // ─── Botão da toolbar ────────────────────────────────────────────────────────
 function ToolbarBtn({
@@ -177,6 +231,8 @@ export default function RichTextEditor({
   value,
   onChange,
   placeholder,
+  labels = DEFAULT_LABELS,
+  allowInlineImages = true,
   newsId
 }: Props) {
   const [showImageModal, setShowImageModal] = useState(false);
@@ -216,7 +272,7 @@ export default function RichTextEditor({
     },
     editorProps: {
       attributes: {
-        "data-placeholder": placeholder ?? "Escreva o conteúdo da notícia…"
+        "data-placeholder": placeholder ?? labels.contentPlaceholder
       }
     }
   });
@@ -245,7 +301,7 @@ export default function RichTextEditor({
       return;
     }
 
-    const url = window.prompt("URL do link:", "https://");
+    const url = window.prompt(labels.linkUrl, "https://");
     if (!url) return;
 
     // Validação básica de URL
@@ -256,7 +312,7 @@ export default function RichTextEditor({
     }
 
     editor.chain().focus().setLink({ href: url }).run();
-  }, [editor]);
+  }, [editor, labels.linkUrl]);
 
   if (!editor) return null;
 
@@ -319,30 +375,30 @@ export default function RichTextEditor({
               }
             }}
             className="h-7 text-[12px] text-gray-600 bg-white border border-gray-200 rounded-md px-2 pr-6 focus:outline-none focus:ring-1 focus:ring-[#0057A8]/50 cursor-pointer appearance-auto">
-            <option value="normal">Texto normal</option>
-            <option value="small">Pequeno</option>
-            <option value="lead">Destaque</option>
-            <option value="h2">Título H2</option>
-            <option value="h3">Título H3</option>
+            <option value="normal">{labels.normalText}</option>
+            <option value="small">{labels.smallText}</option>
+            <option value="lead">{labels.emphasis}</option>
+            <option value="h2">{labels.heading2}</option>
+            <option value="h3">{labels.heading3}</option>
           </select>
 
           <Divider />
 
           {/* Formatação inline */}
           <ToolbarBtn
-            title="Negrito (Ctrl+B)"
+            title={labels.bold}
             active={editor.isActive("bold")}
             onClick={() => editor.chain().focus().toggleBold().run()}>
             <Bold className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Itálico (Ctrl+I)"
+            title={labels.italic}
             active={editor.isActive("italic")}
             onClick={() => editor.chain().focus().toggleItalic().run()}>
             <Italic className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Sublinhado (Ctrl+U)"
+            title={labels.underline}
             active={editor.isActive("underline")}
             onClick={() => editor.chain().focus().toggleUnderline().run()}>
             <UnderlineIcon className="w-4 h-4" />
@@ -352,19 +408,19 @@ export default function RichTextEditor({
 
           {/* Alinhamento */}
           <ToolbarBtn
-            title="Alinhar à esquerda"
+            title={labels.alignLeft}
             active={editor.isActive({ textAlign: "left" })}
             onClick={() => editor.chain().focus().setTextAlign("left").run()}>
             <AlignLeft className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Centralizar"
+            title={labels.alignCenter}
             active={editor.isActive({ textAlign: "center" })}
             onClick={() => editor.chain().focus().setTextAlign("center").run()}>
             <AlignCenter className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Alinhar à direita"
+            title={labels.alignRight}
             active={editor.isActive({ textAlign: "right" })}
             onClick={() => editor.chain().focus().setTextAlign("right").run()}>
             <AlignRight className="w-4 h-4" />
@@ -374,13 +430,13 @@ export default function RichTextEditor({
 
           {/* Listas */}
           <ToolbarBtn
-            title="Lista com marcadores"
+            title={labels.bulletList}
             active={editor.isActive("bulletList")}
             onClick={() => editor.chain().focus().toggleBulletList().run()}>
             <List className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Lista numerada"
+            title={labels.numberedList}
             active={editor.isActive("orderedList")}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}>
             <ListOrdered className="w-4 h-4" />
@@ -388,7 +444,7 @@ export default function RichTextEditor({
 
           {/* Citação */}
           <ToolbarBtn
-            title="Citação / destaque"
+            title={labels.quote}
             active={editor.isActive("blockquote")}
             onClick={() => editor.chain().focus().toggleBlockquote().run()}>
             <Quote className="w-4 h-4" />
@@ -398,7 +454,7 @@ export default function RichTextEditor({
 
           {/* Link */}
           <ToolbarBtn
-            title={isLinkActive ? "Remover link" : "Inserir link"}
+            title={isLinkActive ? labels.removeLink : labels.insertLink}
             active={isLinkActive}
             onClick={handleLink}>
             {isLinkActive ? (
@@ -409,27 +465,29 @@ export default function RichTextEditor({
           </ToolbarBtn>
 
           {/* Imagem inline */}
-          <ToolbarBtn
-            title={
-              atLimit
-                ? `Limite de ${MAX_INLINE_IMAGES} imagens atingido`
-                : "Inserir imagem no conteúdo"
-            }
-            onClick={() => !atLimit && setShowImageModal(true)}
-            active={false}>
-            <ImagePlus className={`w-4 h-4 ${atLimit ? "opacity-30" : ""}`} />
-          </ToolbarBtn>
+          {allowInlineImages && (
+            <ToolbarBtn
+              title={
+                atLimit
+                  ? `${labels.imageLimitReached} (${MAX_INLINE_IMAGES})`
+                  : labels.insertImage
+              }
+              onClick={() => !atLimit && setShowImageModal(true)}
+              active={false}>
+              <ImagePlus className={`w-4 h-4 ${atLimit ? "opacity-30" : ""}`} />
+            </ToolbarBtn>
+          )}
 
           <Divider />
 
           {/* Desfazer / Refazer */}
           <ToolbarBtn
-            title="Desfazer (Ctrl+Z)"
+            title={labels.undo}
             onClick={() => editor.chain().focus().undo().run()}>
             <Undo2 className="w-4 h-4" />
           </ToolbarBtn>
           <ToolbarBtn
-            title="Refazer (Ctrl+Shift+Z)"
+            title={labels.redo}
             onClick={() => editor.chain().focus().redo().run()}>
             <Redo2 className="w-4 h-4" />
           </ToolbarBtn>
@@ -438,7 +496,7 @@ export default function RichTextEditor({
 
           {/* Limpar formatação */}
           <ToolbarBtn
-            title="Limpar formatação"
+            title={labels.clearFormatting}
             onClick={() =>
               editor.chain().focus().clearNodes().unsetAllMarks().run()
             }>
@@ -453,7 +511,7 @@ export default function RichTextEditor({
       </div>
 
       {/* Modal de inserção de imagem */}
-      {showImageModal && (
+      {allowInlineImages && showImageModal && (
         <InsertImageModal
           currentCount={inlineImageCount}
           onInsert={handleImageInsert}

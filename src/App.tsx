@@ -58,6 +58,12 @@ const ReportsPage = lazy(() => import("./pages/ReportsPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const GalleryAlbumPage = lazy(() => import("./pages/GalleryAlbumPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AdminOfficialDocumentsPage = lazy(
+  () => import("./pages/admin/AdminOfficialDocumentsPage")
+);
+const AdminOfficialDocumentFormPage = lazy(
+  () => import("./pages/admin/AdminOfficialDocumentFormPage")
+);
 
 const router = createBrowserRouter([
   {
@@ -118,7 +124,13 @@ const router = createBrowserRouter([
       { path: "federacoes/:id/editar", element: <AdminFederationFormPage /> },
       { path: "galeria", element: <AdminGalleryListPage /> },
       { path: "galeria/novo", element: <AdminGalleryFormPage /> },
-      { path: "galeria/editar/*", element: <AdminGalleryFormPage /> }
+      { path: "galeria/editar/*", element: <AdminGalleryFormPage /> },
+      { path: "oficios", element: <AdminOfficialDocumentsPage /> },
+      { path: "oficios/novo", element: <AdminOfficialDocumentFormPage /> },
+      {
+        path: "oficios/:id/editar",
+        element: <AdminOfficialDocumentFormPage />
+      }
     ]
   }
 ]);
