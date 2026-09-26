@@ -112,7 +112,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 text-base sm:text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
                 placeholder="seu@email.com"
               />
             </div>
@@ -131,7 +131,7 @@ export default function AdminLoginPage() {
                   required
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 pr-10 rounded-lg border border-gray-200 text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
+                  className="w-full px-3 py-2 pr-10 rounded-lg border border-gray-200 text-base sm:text-sm text-[#1F2937] bg-[#F5F7FA] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#0057A8]/25 focus:border-[#0057A8] transition-colors"
                   placeholder="••••••••"
                 />
                 <button
