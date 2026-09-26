@@ -69,6 +69,18 @@ export default function Header() {
     setOpenDropdowns(new Set());
   };
 
+  const handleLogoClick = () => {
+    close();
+
+    window.setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth"
+      });
+    }, 0);
+  };
+
   const openMenu = () => {
     const y = window.scrollY;
     document.body.style.cssText = `overflow:hidden;position:fixed;top:-${y}px;width:100%`;
@@ -230,7 +242,7 @@ export default function Header() {
             {/* Logo */}
             <Link
               to="/"
-              onClick={close}
+              onClick={handleLogoClick}
               className="flex-shrink-0 group"
               aria-label="CONSUDES – Página inicial">
               <img
@@ -455,7 +467,10 @@ export default function Header() {
         }`}>
         {/* Cabeçalho do drawer */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 flex-shrink-0">
-          <Link to="/" onClick={close} aria-label="CONSUDES – Página inicial">
+          <Link
+            to="/"
+            onClick={handleLogoClick}
+            aria-label="CONSUDES – Página inicial">
             <div className="bg-white rounded-lg px-3 py-1.5">
               <img
                 src="/logo-novo-consudes-removebg-preview-1.webp"
