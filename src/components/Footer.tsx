@@ -309,6 +309,13 @@ export default function Footer() {
               />
               {t.cookies.footerLink}
             </button>
+
+            <Link
+              to="/politica-de-privacidade"
+              className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-[#D4A63A] transition-colors duration-150 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4A63A]">
+              {t.privacyPolicy.footerLink}
+            </Link>
+
             <Link
               to="/admin/login"
               className="inline-flex items-center gap-1.5 text-[11px] text-white/55 hover:text-white/60 transition-colors duration-150 group">

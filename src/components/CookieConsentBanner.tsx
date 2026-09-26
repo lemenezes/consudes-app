@@ -7,7 +7,7 @@ import { useCookieConsent } from "../context/CookieConsentContext";
  * URL da Política de Privacidade e Cookies.
  * Enquanto a página não existir, o link não é exibido.
  */
-const PRIVACY_POLICY_URL: string = "";
+const PRIVACY_POLICY_URL = "/politica-de-privacidade";
 
 function Toggle({
   checked,

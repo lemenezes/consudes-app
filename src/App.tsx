@@ -60,6 +60,7 @@ const ReportsPage = lazy(() => import("./pages/ReportsPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const GalleryAlbumPage = lazy(() => import("./pages/GalleryAlbumPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const AdminOfficialDocumentsPage = lazy(
   () => import("./pages/admin/AdminOfficialDocumentsPage")
 );
@@ -96,6 +97,7 @@ const router = createBrowserRouter([
       { path: "galeria", element: <GalleryPage /> },
       { path: "galeria/*", element: <GalleryAlbumPage /> },
       { path: "contato", element: <ContactPage /> },
+      { path: "politica-de-privacidade", element: <PrivacyPolicyPage /> },
       { path: "*", element: <NotFoundPage /> }
     ]
   },

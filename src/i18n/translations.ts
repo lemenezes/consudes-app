@@ -860,6 +860,120 @@ export const translations = {
       title: "Página no encontrada",
       subtitle: "La página que buscas no existe o fue eliminada.",
       back: "Volver al inicio"
+    },
+    privacyPolicy: {
+      title: "Política de Privacidad y Cookies",
+      footerLink: "Política de Privacidad",
+      lastUpdated: "Última actualización: 26 de septiembre de 2026",
+
+      intro:
+        "La Confederación Sudamericana Deportiva de Sordos — CONSUDES respeta la privacidad de los usuarios y trata los datos personales de forma transparente, segura y compatible con las legislaciones aplicables de protección de datos personales y privacidad en los países en los que actúa, incluida, en Brasil, la Lei Geral de Proteção de Dados Pessoais — LGPD.",
+
+      aboutTitle: "1. Sobre esta Política",
+      aboutText:
+        "Esta Política explica cómo los datos personales y la información relacionada con la navegación pueden ser recopilados, utilizados, almacenados, compartidos y protegidos durante el uso del sitio web de CONSUDES. Se aplica a las páginas públicas del sitio y a las interacciones realizadas por los usuarios mediante los canales ofrecidos por la Confederación.",
+
+      dataTitle: "2. Qué datos pueden ser tratados",
+      dataIntro:
+        "Dependiendo de la forma de utilización del sitio y de los servicios disponibles, podrán tratarse datos como:",
+      dataItems: [
+        "información proporcionada voluntariamente por el usuario en contactos, solicitudes o formularios;",
+        "nombre, dirección de correo electrónico y demás información proporcionada en comunicaciones con CONSUDES;",
+        "información técnica de navegación, como navegador, tipo de dispositivo, sistema operativo, páginas visitadas, duración de la sesión e interacciones con el sitio;",
+        "información aproximada de ubicación cuando sea proporcionada por herramientas de análisis a partir de datos técnicos de conexión;",
+        "preferencias relacionadas con idioma, tema, interfaz y consentimiento de cookies;",
+        "datos necesarios para autenticación, seguridad y funcionamiento de las áreas administrativas del sitio."
+      ],
+
+      collectionTitle: "3. Cómo se obtienen los datos",
+      collectionItems: [
+        "directamente del usuario, cuando se pone en contacto con CONSUDES o proporciona información voluntariamente;",
+        "automáticamente durante la navegación, mediante tecnologías necesarias para el funcionamiento, seguridad y mantenimiento de preferencias del sitio;",
+        "mediante herramientas de análisis, exclusivamente cuando el usuario autoriza tecnologías opcionales de Analytics;",
+        "mediante servicios tecnológicos utilizados para alojamiento, autenticación, base de datos, almacenamiento y seguridad."
+      ],
+
+      purposeTitle: "4. Finalidades del tratamiento",
+      purposeItems: [
+        "permitir el funcionamiento adecuado y seguro del sitio;",
+        "responder solicitudes, contactos y comunicaciones dirigidas a CONSUDES;",
+        "mantener preferencias de navegación, idioma, tema e interfaz;",
+        "administrar áreas restringidas y autenticar usuarios autorizados;",
+        "mejorar la experiencia, accesibilidad y usabilidad del sitio;",
+        "comprender de forma agregada cómo se utilizan las páginas y funcionalidades;",
+        "identificar problemas técnicos, dificultades de navegación y oportunidades de mejora;",
+        "analizar el rendimiento, estabilidad y seguridad del sitio;",
+        "cumplir obligaciones legales, regulatorias o institucionales aplicables;",
+        "proteger los derechos de CONSUDES, sus usuarios y terceros."
+      ],
+
+      cookiesTitle: "5. Cookies y tecnologías similares",
+      cookiesIntro:
+        "El sitio utiliza cookies, almacenamiento local y tecnologías similares para permitir funciones esenciales y, con autorización del usuario, para analizar el uso y mejorar la experiencia.",
+
+      necessaryTitle: "Necesarias",
+      necessaryText:
+        "Se utilizan para funciones esenciales o preferencias solicitadas por el usuario, como autenticación, seguridad, idioma, tema, preferencias de interfaz y almacenamiento de la elección de consentimiento. Estos recursos pueden permanecer activos cuando sean necesarios para el funcionamiento o para funciones solicitadas por el propio usuario.",
+
+      analyticsTitle: "Analytics",
+      analyticsText:
+        "Con autorización del usuario, CONSUDES utiliza herramientas de análisis para comprender cómo se utiliza el sitio e identificar oportunidades de mejora. Estas tecnologías opcionales permanecen desactivadas hasta que el usuario autorice expresamente la categoría de Analytics.",
+
+      googleAnalytics:
+        "Google Analytics 4 — utilizado para métricas de navegación, páginas visitadas, sesiones, dispositivos, origen aproximado de los accesos e información agregada sobre el uso del sitio.",
+
+      microsoftClarity:
+        "Microsoft Clarity — utilizado para métricas de interacción, mapas de calor, patrones de navegación y análisis de sesiones con el objetivo de mejorar la experiencia e identificar dificultades de uso.",
+
+      sharingTitle: "6. Compartición con terceros",
+      sharingText:
+        "Para ofrecer, proteger y operar el sitio, determinada información puede ser tratada por proveedores de tecnología utilizados por CONSUDES, incluidos servicios de alojamiento e infraestructura, base de datos, autenticación, almacenamiento de archivos, Google Analytics y Microsoft Clarity. Estos proveedores podrán tratar información de acuerdo con sus respectivas políticas, contratos, configuraciones de privacidad y obligaciones legales aplicables.",
+
+      internationalTransfersTitle: "7. Transferencias internacionales de datos",
+      internationalTransfersText:
+        "Algunos proveedores de tecnología utilizados por CONSUDES pueden operar infraestructura, servidores o servicios ubicados en otros países. En estos casos, los datos personales y la información técnica podrán ser tratados o almacenados fuera del país de origen del usuario, de acuerdo con las legislaciones aplicables y las medidas de protección adoptadas por los respectivos proveedores.",
+
+      securityTitle: "8. Almacenamiento y seguridad",
+      securityText:
+        "CONSUDES adopta medidas técnicas y organizativas destinadas a proteger los datos personales contra accesos no autorizados, pérdida, alteración, divulgación o tratamiento inadecuado. Entre estas medidas pueden incluirse autenticación, controles de acceso, restricciones de permisos, protección de áreas administrativas, mecanismos de seguridad proporcionados por los proveedores de infraestructura y registro de actividades relevantes. Sin embargo, ningún sistema conectado a Internet puede ofrecer una garantía absoluta frente a todos los riesgos de seguridad.",
+
+      retentionTitle: "9. Conservación y eliminación",
+      retentionText:
+        "Los datos se conservan durante el período necesario para cumplir las finalidades para las que fueron tratados, atender obligaciones legales, regulatorias o institucionales, resolver solicitudes, prevenir fraudes o proteger derechos. Los plazos pueden variar según el tipo de información y la finalidad del tratamiento. Cuando ya no exista necesidad o fundamento para conservarlos, los datos podrán ser eliminados, anonimizados o mantenerse únicamente cuando exista una obligación o autorización legal aplicable.",
+
+      rightsTitle: "10. Derechos de los titulares",
+      rightsIntro:
+        "De acuerdo con la legislación aplicable en el país del titular, pueden existir derechos relacionados con sus datos personales, entre ellos, cuando corresponda:",
+      rightsItems: [
+        "confirmación de la existencia de tratamiento de datos personales;",
+        "acceso a los datos personales tratados;",
+        "corrección de datos incompletos, inexactos o desactualizados;",
+        "eliminación, anonimización o bloqueo de datos cuando esté previsto por la legislación aplicable;",
+        "información sobre la compartición de datos con terceros;",
+        "oposición a determinados tratamientos cuando esté prevista por la legislación aplicable;",
+        "revocación del consentimiento cuando el tratamiento dependa de dicha autorización;",
+        "solicitud de eliminación de datos tratados con base en el consentimiento cuando corresponda legalmente."
+      ],
+
+      brazilTitle: "11. Usuarios ubicados en Brasil",
+      brazilText:
+        "Para usuarios ubicados en Brasil, se aplican, cuando corresponda, los derechos y demás disposiciones previstas en la Lei Geral de Proteção de Dados Pessoais — LGPD. Las solicitudes relacionadas con los derechos previstos en la legislación brasileña podrán enviarse mediante el canal de contacto indicado en esta Política.",
+
+      preferencesTitle: "12. Preferencias de Cookies",
+      preferencesText:
+        "En la primera visita, el usuario puede aceptar todos los recursos opcionales, rechazarlos o configurar individualmente la categoría de Analytics. La elección se almacena en el navegador utilizado y puede modificarse posteriormente mediante la opción “Preferencias de Cookies”, disponible en el pie de página del sitio. El cambio de preferencia no modifica tratamientos realizados anteriormente de forma válida.",
+
+      minorsTitle: "13. Datos de niños y adolescentes",
+      minorsText:
+        "Cuando sea necesario tratar datos personales de niños o adolescentes en actividades institucionales, deportivas o administrativas de CONSUDES, deberán observarse las legislaciones aplicables y medidas de protección adecuadas a la naturaleza de dichos datos y a la situación del titular.",
+
+      contactTitle: "14. Contacto sobre privacidad",
+      contactText:
+        "Para dudas sobre esta Política, solicitudes relacionadas con el tratamiento de datos personales o el ejercicio de derechos previstos en la legislación aplicable, póngase en contacto con CONSUDES mediante el canal oficial indicado a continuación:",
+
+      updatesTitle: "15. Actualizaciones de esta Política",
+      updatesText:
+        "Esta Política podrá actualizarse periódicamente para reflejar cambios legales, regulatorios, tecnológicos, operativos o modificaciones en los servicios utilizados por CONSUDES. La versión vigente permanecerá disponible en esta página junto con la fecha de su última actualización."
     }
   },
 
@@ -1720,6 +1834,120 @@ export const translations = {
       catHistorico: "Histórico",
       noAlbumsFound: "Nenhum álbum encontrado para os filtros selecionados.",
       filters: "Filtros"
+    },
+    privacyPolicy: {
+      title: "Política de Privacidade e Cookies",
+      footerLink: "Política de Privacidade",
+      lastUpdated: "Última atualização: 26 de setembro de 2026",
+
+      intro:
+        "A Confederação Sul-Americana Desportiva de Surdos — CONSUDES respeita a privacidade dos usuários e trata dados pessoais de forma transparente, segura e compatível com as legislações aplicáveis de proteção de dados pessoais e privacidade nos países em que atua, incluindo, no Brasil, a Lei Geral de Proteção de Dados Pessoais — LGPD.",
+
+      aboutTitle: "1. Sobre esta Política",
+      aboutText:
+        "Esta Política explica como dados pessoais e informações relacionadas à navegação podem ser coletados, utilizados, armazenados, compartilhados e protegidos durante o uso do site da CONSUDES. Ela se aplica às páginas públicas do site e às interações realizadas pelos usuários por meio dos canais disponibilizados pela Confederação.",
+
+      dataTitle: "2. Quais dados podem ser tratados",
+      dataIntro:
+        "Dependendo da forma de utilização do site e dos serviços disponibilizados, poderão ser tratados dados como:",
+      dataItems: [
+        "informações fornecidas voluntariamente pelo usuário em contatos, solicitações ou formulários;",
+        "nome, endereço de e-mail e demais informações fornecidas em comunicações com a CONSUDES;",
+        "informações técnicas de navegação, como navegador, tipo de dispositivo, sistema operacional, páginas acessadas, duração da sessão e interações com o site;",
+        "informações aproximadas de localização, quando fornecidas por ferramentas de análise com base em dados técnicos de conexão;",
+        "preferências relacionadas a idioma, tema, interface e consentimento de cookies;",
+        "dados necessários para autenticação, segurança e funcionamento das áreas administrativas do site."
+      ],
+
+      collectionTitle: "3. Como os dados são obtidos",
+      collectionItems: [
+        "diretamente do usuário, quando ele entra em contato com a CONSUDES ou fornece informações voluntariamente;",
+        "automaticamente durante a navegação, por meio de tecnologias necessárias ao funcionamento, segurança e manutenção de preferências do site;",
+        "por ferramentas de análise, exclusivamente quando o usuário autoriza o uso de tecnologias opcionais de Analytics;",
+        "por serviços tecnológicos utilizados para hospedagem, autenticação, banco de dados, armazenamento e segurança."
+      ],
+
+      purposeTitle: "4. Finalidades do tratamento",
+      purposeItems: [
+        "permitir o funcionamento adequado e seguro do site;",
+        "responder solicitações, contatos e comunicações enviadas à CONSUDES;",
+        "manter preferências de navegação, idioma, tema e interface;",
+        "administrar áreas restritas e autenticar usuários autorizados;",
+        "melhorar a experiência, a acessibilidade e a usabilidade do site;",
+        "compreender de forma agregada como páginas e funcionalidades são utilizadas;",
+        "identificar problemas técnicos, falhas de navegação e oportunidades de melhoria;",
+        "analisar desempenho, estabilidade e segurança do site;",
+        "cumprir obrigações legais, regulatórias ou institucionais aplicáveis;",
+        "proteger direitos da CONSUDES, de seus usuários e de terceiros."
+      ],
+
+      cookiesTitle: "5. Cookies e tecnologias semelhantes",
+      cookiesIntro:
+        "O site utiliza cookies, armazenamento local e tecnologias semelhantes para permitir funcionalidades essenciais e, mediante autorização do usuário, para análise de uso e melhoria da experiência.",
+
+      necessaryTitle: "Necessários",
+      necessaryText:
+        "São utilizados para funções essenciais ou preferências solicitadas pelo usuário, como autenticação, segurança, idioma, tema, preferências de interface e armazenamento da escolha de consentimento. Esses recursos podem permanecer ativos por serem necessários ao funcionamento ou à prestação de funcionalidades solicitadas pelo próprio usuário.",
+
+      analyticsTitle: "Analytics",
+      analyticsText:
+        "Com autorização do usuário, a CONSUDES utiliza ferramentas de análise para compreender como o site é utilizado e identificar oportunidades de melhoria. Essas tecnologias opcionais permanecem desativadas até que o usuário autorize expressamente a categoria de Analytics.",
+
+      googleAnalytics:
+        "Google Analytics 4 — utilizado para métricas de navegação, páginas acessadas, sessões, dispositivos, origem aproximada de acessos e informações agregadas sobre o uso do site.",
+
+      microsoftClarity:
+        "Microsoft Clarity — utilizado para métricas de interação, mapas de calor, padrões de navegação e análise de sessões, com o objetivo de melhorar a experiência e identificar dificuldades de uso.",
+
+      sharingTitle: "6. Compartilhamento com terceiros",
+      sharingText:
+        "Para disponibilizar, proteger e operar o site, determinadas informações podem ser tratadas por fornecedores de tecnologia utilizados pela CONSUDES, incluindo serviços de hospedagem e infraestrutura, banco de dados, autenticação, armazenamento de arquivos, Google Analytics e Microsoft Clarity. Esses fornecedores poderão tratar informações de acordo com suas respectivas políticas, contratos, configurações de privacidade e obrigações legais aplicáveis.",
+
+      internationalTransfersTitle: "7. Transferências internacionais de dados",
+      internationalTransfersText:
+        "Alguns fornecedores de tecnologia utilizados pela CONSUDES podem operar infraestrutura, servidores ou serviços localizados em outros países. Nesses casos, dados pessoais e informações técnicas poderão ser tratados ou armazenados fora do país de origem do usuário, observadas as legislações aplicáveis e as medidas de proteção adotadas pelos respectivos fornecedores.",
+
+      securityTitle: "8. Armazenamento e segurança",
+      securityText:
+        "A CONSUDES adota medidas técnicas e organizacionais destinadas a proteger dados pessoais contra acesso não autorizado, perda, alteração, divulgação ou tratamento inadequado. Entre essas medidas podem estar autenticação, controles de acesso, restrições de permissões, proteção de áreas administrativas, mecanismos de segurança oferecidos pelos fornecedores de infraestrutura e registro de atividades relevantes. Nenhum sistema conectado à internet, entretanto, pode oferecer garantia absoluta contra todos os riscos de segurança.",
+
+      retentionTitle: "9. Retenção e eliminação",
+      retentionText:
+        "Os dados são mantidos pelo período necessário para cumprir as finalidades para as quais foram tratados, atender obrigações legais, regulatórias ou institucionais, resolver solicitações, prevenir fraudes ou resguardar direitos. Os prazos podem variar conforme o tipo de informação e a finalidade do tratamento. Quando não houver mais necessidade ou fundamento para sua manutenção, os dados poderão ser eliminados, anonimizados ou mantidos apenas quando houver obrigação ou autorização legal aplicável.",
+
+      rightsTitle: "10. Direitos dos titulares",
+      rightsIntro:
+        "De acordo com a legislação aplicável no país do titular, poderão existir direitos relacionados aos seus dados pessoais, incluindo, quando cabível:",
+      rightsItems: [
+        "confirmação da existência de tratamento de dados pessoais;",
+        "acesso aos dados pessoais tratados;",
+        "correção de dados incompletos, inexatos ou desatualizados;",
+        "eliminação, anonimização ou bloqueio de dados, quando previsto pela legislação aplicável;",
+        "informações sobre compartilhamento de dados com terceiros;",
+        "oposição a determinados tratamentos, quando prevista pela legislação aplicável;",
+        "revogação do consentimento quando o tratamento depender dessa autorização;",
+        "solicitação de eliminação de dados tratados com base no consentimento, quando legalmente aplicável."
+      ],
+
+      brazilTitle: "11. Usuários localizados no Brasil",
+      brazilText:
+        "Para usuários localizados no Brasil, aplicam-se, quando cabíveis, os direitos e demais disposições previstos na Lei Geral de Proteção de Dados Pessoais — LGPD. Solicitações relacionadas aos direitos previstos na legislação brasileira poderão ser encaminhadas por meio do canal de contato indicado nesta Política.",
+
+      preferencesTitle: "12. Preferências de Cookies",
+      preferencesText:
+        "Na primeira visita, o usuário pode aceitar todos os recursos opcionais, recusá-los ou configurar individualmente a categoria de Analytics. A escolha fica armazenada no navegador utilizado e pode ser alterada posteriormente por meio da opção “Preferências de Cookies”, disponível no rodapé do site. A alteração da preferência não modifica tratamentos realizados anteriormente de forma válida.",
+
+      minorsTitle: "13. Dados de crianças e adolescentes",
+      minorsText:
+        "Caso seja necessário tratar dados pessoais de crianças ou adolescentes em atividades institucionais, esportivas ou administrativas da CONSUDES, deverão ser observadas as legislações aplicáveis e medidas de proteção adequadas à natureza desses dados e à situação do titular.",
+
+      contactTitle: "14. Contato sobre privacidade",
+      contactText:
+        "Para dúvidas sobre esta Política, solicitações relacionadas ao tratamento de dados pessoais ou exercício de direitos previstos na legislação aplicável, entre em contato com a CONSUDES pelo canal oficial abaixo:",
+
+      updatesTitle: "15. Atualizações desta Política",
+      updatesText:
+        "Esta Política poderá ser atualizada periodicamente para refletir alterações legais, regulatórias, tecnológicas, operacionais ou mudanças nos serviços utilizados pela CONSUDES. A versão vigente permanecerá disponível nesta página, acompanhada da data de sua última atualização."
     }
   },
 
@@ -2573,6 +2801,120 @@ export const translations = {
       catHistorico: "Historical",
       noAlbumsFound: "No albums found for the selected filters.",
       filters: "Filters"
+    },
+    privacyPolicy: {
+      title: "Privacy & Cookies Policy",
+      footerLink: "Privacy Policy",
+      lastUpdated: "Last updated: September 26, 2026",
+
+      intro:
+        "The South American Deaf Sports Confederation — CONSUDES respects users' privacy and processes personal data in a transparent and secure manner, in accordance with applicable personal data protection and privacy laws in the countries where it operates, including, in Brazil, the Lei Geral de Proteção de Dados Pessoais — LGPD.",
+
+      aboutTitle: "1. About this Policy",
+      aboutText:
+        "This Policy explains how personal data and browsing-related information may be collected, used, stored, shared and protected while using the CONSUDES website. It applies to the public pages of the website and to interactions carried out by users through channels provided by the Confederation.",
+
+      dataTitle: "2. Data that may be processed",
+      dataIntro:
+        "Depending on how the website and its available services are used, the following data may be processed:",
+      dataItems: [
+        "information voluntarily provided by users through contacts, requests or forms;",
+        "name, email address and other information provided in communications with CONSUDES;",
+        "technical browsing information such as browser, device type, operating system, pages visited, session duration and interactions with the website;",
+        "approximate location information when provided by analytics tools based on technical connection data;",
+        "preferences related to language, theme, interface and cookie consent;",
+        "data required for authentication, security and operation of administrative areas of the website."
+      ],
+
+      collectionTitle: "3. How data is collected",
+      collectionItems: [
+        "directly from users when they contact CONSUDES or voluntarily provide information;",
+        "automatically while browsing through technologies required for website operation, security and preference management;",
+        "through analytics tools exclusively when users authorize optional Analytics technologies;",
+        "through technology services used for hosting, authentication, databases, storage and security."
+      ],
+
+      purposeTitle: "4. Purposes of processing",
+      purposeItems: [
+        "ensure the proper and secure operation of the website;",
+        "respond to requests, contacts and communications sent to CONSUDES;",
+        "store browsing, language, theme and interface preferences;",
+        "manage restricted areas and authenticate authorized users;",
+        "improve website experience, accessibility and usability;",
+        "understand in aggregate how pages and features are used;",
+        "identify technical issues, navigation difficulties and opportunities for improvement;",
+        "analyze website performance, stability and security;",
+        "comply with applicable legal, regulatory or institutional obligations;",
+        "protect the rights of CONSUDES, its users and third parties."
+      ],
+
+      cookiesTitle: "5. Cookies and similar technologies",
+      cookiesIntro:
+        "The website uses cookies, local storage and similar technologies to provide essential functions and, with the user's permission, to analyze usage and improve the website experience.",
+
+      necessaryTitle: "Necessary",
+      necessaryText:
+        "These technologies are used for essential functions or preferences requested by the user, such as authentication, security, language, theme, interface preferences and storage of the user's consent choice. These resources may remain active when required for website operation or for features requested by the user.",
+
+      analyticsTitle: "Analytics",
+      analyticsText:
+        "With the user's permission, CONSUDES uses analytics tools to understand how the website is used and identify opportunities for improvement. These optional technologies remain disabled until the user expressly authorizes the Analytics category.",
+
+      googleAnalytics:
+        "Google Analytics 4 — used for browsing metrics, pages visited, sessions, devices, approximate traffic origin and aggregated information about website usage.",
+
+      microsoftClarity:
+        "Microsoft Clarity — used for interaction metrics, heatmaps, browsing patterns and session analysis in order to improve the user experience and identify usability difficulties.",
+
+      sharingTitle: "6. Sharing with third parties",
+      sharingText:
+        "To provide, protect and operate the website, certain information may be processed by technology providers used by CONSUDES, including hosting and infrastructure services, databases, authentication, file storage, Google Analytics and Microsoft Clarity. These providers may process information according to their respective policies, contracts, privacy settings and applicable legal obligations.",
+
+      internationalTransfersTitle: "7. International data transfers",
+      internationalTransfersText:
+        "Some technology providers used by CONSUDES may operate infrastructure, servers or services located in other countries. In these cases, personal data and technical information may be processed or stored outside the user's country of origin, subject to applicable laws and the protection measures adopted by the respective providers.",
+
+      securityTitle: "8. Storage and security",
+      securityText:
+        "CONSUDES adopts technical and organizational measures intended to protect personal data against unauthorized access, loss, alteration, disclosure or improper processing. These measures may include authentication, access controls, permission restrictions, protection of administrative areas, security mechanisms provided by infrastructure providers and logging of relevant activities. However, no internet-connected system can provide an absolute guarantee against every security risk.",
+
+      retentionTitle: "9. Retention and deletion",
+      retentionText:
+        "Data is retained for as long as necessary to fulfill the purposes for which it was processed, comply with legal, regulatory or institutional obligations, resolve requests, prevent fraud or protect rights. Retention periods may vary depending on the type of information and purpose of processing. When there is no longer a need or legal basis for retention, data may be deleted, anonymized or retained only where an applicable legal obligation or authorization exists.",
+
+      rightsTitle: "10. Data subject rights",
+      rightsIntro:
+        "Depending on the legislation applicable in the data subject's country, rights related to personal data may include, where applicable:",
+      rightsItems: [
+        "confirmation that personal data processing is taking place;",
+        "access to personal data being processed;",
+        "correction of incomplete, inaccurate or outdated data;",
+        "deletion, anonymization or blocking of data where provided by applicable law;",
+        "information about sharing of data with third parties;",
+        "objection to certain processing activities where provided by applicable law;",
+        "withdrawal of consent where processing depends on that authorization;",
+        "request for deletion of data processed on the basis of consent where legally applicable."
+      ],
+
+      brazilTitle: "11. Users located in Brazil",
+      brazilText:
+        "For users located in Brazil, the rights and other provisions of the Lei Geral de Proteção de Dados Pessoais — LGPD apply where applicable. Requests related to rights established by Brazilian law may be submitted through the contact channel identified in this Policy.",
+
+      preferencesTitle: "12. Cookie Preferences",
+      preferencesText:
+        "On the first visit, users may accept all optional technologies, reject them or individually configure the Analytics category. The choice is stored in the browser being used and can later be changed through the “Cookie Preferences” option available in the website footer. Changing a preference does not affect processing that was previously carried out lawfully.",
+
+      minorsTitle: "13. Children's and adolescents' data",
+      minorsText:
+        "Where it is necessary to process personal data relating to children or adolescents in institutional, sporting or administrative activities of CONSUDES, applicable laws and appropriate safeguards must be observed according to the nature of the data and the circumstances of the data subject.",
+
+      contactTitle: "14. Privacy contact",
+      contactText:
+        "For questions about this Policy, requests related to personal data processing or the exercise of rights provided by applicable law, contact CONSUDES through the official channel below:",
+
+      updatesTitle: "15. Updates to this Policy",
+      updatesText:
+        "This Policy may be updated periodically to reflect legal, regulatory, technological or operational changes, or changes to services used by CONSUDES. The current version will remain available on this page together with the date of its latest update."
     }
   }
 } satisfies Record<Lang, unknown>;
