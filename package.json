@@ -16,6 +16,7 @@
   "dependencies": {
     "@microsoft/clarity": "^1.0.2",
     "@supabase/supabase-js": "^2.105.3",
+    "@svg-maps/world": "^2.0.0",
     "@tailwindcss/vite": "^4.2.4",
     "@tiptap/extension-image": "^3.23.1",
     "@tiptap/extension-link": "^3.23.1",
