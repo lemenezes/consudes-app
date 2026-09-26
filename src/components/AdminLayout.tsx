@@ -1,10 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { canAccessModule } from "../utils/rbac";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useTheme } from "../context/ThemeContext";
 import type { Lang } from "../i18n/translations";
-import { Wallet } from "lucide-react";
+import { ChevronLeft, ChevronRight, Moon, Sun, Wallet } from "lucide-react";
 
 const LANGS: { code: Lang; label: string }[] = [
   { code: "es", label: "ES" },
@@ -12,22 +14,27 @@ const LANGS: { code: Lang; label: string }[] = [
   { code: "en", label: "EN" }
 ];
 
+const SIDEBAR_STORAGE_KEY = "consudes-admin-sidebar-collapsed";
+
 function LangSwitcher({
   lang,
   setLang,
-  dark = false
+  dark = false,
+  compact = false
 }: {
   lang: Lang;
   setLang: (l: Lang) => void;
   dark?: boolean;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-1">
+    <div
+      className={`flex items-center ${compact ? "flex-col gap-0.5" : "gap-1"}`}>
       {LANGS.map(({ code, label }) => (
         <button
           key={code}
           onClick={() => setLang(code)}
-          className={`px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+          className={`${compact ? "px-1.5 py-0.5 text-[10px] leading-4" : "px-2.5 py-1 text-xs"} rounded-md font-semibold transition-colors ${
             lang === code
               ? dark
                 ? "bg-[#D9A441] text-[#1F2937]"
@@ -221,11 +228,17 @@ type NavGroup = { heading: string; items: NavItem[] };
 function SideNavLink({
   item,
   onClick,
-  comingSoonLabel
+  comingSoonLabel,
+  collapsed = false,
+  showTooltip,
+  hideTooltip
 }: {
   item: NavItem;
   onClick?: () => void;
   comingSoonLabel: string;
+  collapsed?: boolean;
+  showTooltip?: (label: string, element: HTMLElement) => void;
+  hideTooltip?: () => void;
 }) {
   const base =
     "relative flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200";
@@ -233,21 +246,42 @@ function SideNavLink({
   if (item.kind === "soon") {
     return (
       <div
-        className={`${base} px-3.5 py-3 text-white/25 cursor-default select-none border border-white/5 bg-white/[0.02]`}>
+        onMouseEnter={event =>
+          collapsed && showTooltip?.(item.label, event.currentTarget)
+        }
+        onMouseLeave={hideTooltip}
+        className={`${base} ${collapsed ? "justify-center px-0 py-3" : "px-3.5 py-3"} text-white/25 cursor-default select-none border border-white/5 bg-white/[0.02]`}>
         {item.icon}
-        <span>{item.label}</span>
-        <span className="ml-auto text-[9px] font-bold tracking-widest uppercase text-white/20 border border-white/15 rounded px-1.5 py-0.5">
-          {comingSoonLabel}
-        </span>
+        {!collapsed && <span>{item.label}</span>}
+        {!collapsed && (
+          <span className="ml-auto text-[9px] font-bold tracking-widest uppercase text-white/20 border border-white/15 rounded px-1.5 py-0.5">
+            {comingSoonLabel}
+          </span>
+        )}
       </div>
     );
   }
 
   return (
-    <NavLink to={item.to} end={item.end} onClick={onClick}>
+    <NavLink
+      to={item.to}
+      end={item.end}
+      aria-label={collapsed ? item.label : undefined}
+      onMouseEnter={event =>
+        collapsed && showTooltip?.(item.label, event.currentTarget)
+      }
+      onMouseLeave={hideTooltip}
+      onFocus={event =>
+        collapsed && showTooltip?.(item.label, event.currentTarget)
+      }
+      onBlur={hideTooltip}
+      onClick={() => {
+        hideTooltip?.();
+        onClick?.();
+      }}>
       {({ isActive }) => (
         <div
-          className={`${base} px-3 py-2.5 lg:px-3.5 lg:py-3 border overflow-hidden ${
+          className={`${base} ${collapsed ? "justify-center px-0 py-3" : "px-3 py-2.5 lg:px-3.5 lg:py-3"} border overflow-hidden ${
             isActive
               ? "bg-white/10 lg:bg-[linear-gradient(135deg,rgba(217,164,65,0.22),rgba(217,164,65,0.08)_35%,rgba(255,255,255,0.06))] text-white border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] lg:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(0,0,0,0.18)]"
               : "text-white/62 border-transparent hover:text-white hover:bg-white/7 hover:border-white/8"
@@ -261,7 +295,7 @@ function SideNavLink({
             }`}>
             {item.icon}
           </span>
-          <span className="relative z-10">{item.label}</span>
+          {!collapsed && <span className="relative z-10">{item.label}</span>}
         </div>
       )}
     </NavLink>
@@ -269,10 +303,44 @@ function SideNavLink({
 }
 
 /* ── Sidebar content (compartilhado desktop/mobile) ─────────────────────── */
-function SidebarContent({ onNav }: { onNav?: () => void }) {
+function SidebarContent({
+  onNav,
+  collapsed = false
+}: {
+  onNav?: () => void;
+  collapsed?: boolean;
+}) {
   const { profile, signOut } = useAuth();
   const { t, lang, setLang } = useLanguage();
+  const { theme, toggle } = useTheme();
   const navigate = useNavigate();
+  const [tooltip, setTooltip] = useState<{
+    label: string;
+    top: number;
+    left: number;
+    themeAction?: boolean;
+  } | null>(null);
+  const showTooltip = (
+    label: string,
+    element: HTMLElement,
+    themeAction = false
+  ) => {
+    const bounds = element.getBoundingClientRect();
+    setTooltip({
+      label,
+      top: bounds.top + bounds.height / 2,
+      left: bounds.right + 10,
+      themeAction
+    });
+  };
+  const hideTooltip = () => setTooltip(null);
+  const themeLabel = theme === "dark" ? t.admin.lightMode : t.admin.darkMode;
+  const helpLabel =
+    lang === "pt"
+      ? "Ajuda e Manual"
+      : lang === "es"
+        ? "Ayuda y Manual"
+        : "Help and Manual";
 
   // Mapeamento de módulos para cada item do menu
   const NAV_GROUPS: NavGroup[] = [
@@ -368,18 +436,17 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
   ];
 
   // Filtra menus conforme permissão do perfil
-  const filteredGroups = useMemo(() => {
-    if (!profile?.role) return NAV_GROUPS;
-    return NAV_GROUPS.map(group => ({
-      ...group,
-      items: group.items.filter(item => {
-        if (item.kind === "soon") return true;
-        // Se não houver módulo mapeado, mostra apenas para super_admin
-        if (!("module" in item)) return profile.role === "super_admin";
-        return canAccessModule(profile.role, item.module!);
-      })
-    })).filter(group => group.items.length > 0);
-  }, [profile?.role, NAV_GROUPS]);
+  const filteredGroups = !profile?.role
+    ? NAV_GROUPS
+    : NAV_GROUPS.map(group => ({
+        ...group,
+        items: group.items.filter(item => {
+          if (item.kind === "soon") return true;
+          // Se não houver módulo mapeado, mostra apenas para super_admin
+          if (!("module" in item)) return profile.role === "super_admin";
+          return canAccessModule(profile.role, item.module!);
+        })
+      })).filter(group => group.items.length > 0);
 
   const handleSignOut = async () => {
     await signOut();
@@ -389,31 +456,43 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
   return (
     <div className="flex h-full flex-col bg-[linear-gradient(180deg,#002D5C_0%,#01264B_100%)] text-white">
       {/* Logo */}
-      <div className="border-b border-white/8 px-4 pt-4 pb-3 lg:px-5 lg:pt-6 lg:pb-4">
-        <div className="flex items-center gap-3 lg:gap-4">
-          <div className="flex h-14 w-16 lg:h-16 lg:w-20 shrink-0 items-center justify-center rounded-xl lg:rounded-2xl bg-white px-2.5 lg:px-3 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+      <div
+        className={`border-b border-white/8 ${collapsed ? "px-2 pt-4 pb-10" : "px-4 pt-4 pb-3 lg:px-5 lg:pt-6 lg:pb-4"}`}>
+        <div
+          className={`flex items-center ${collapsed ? "justify-center" : "gap-3 lg:gap-4"}`}>
+          <div
+            className={`flex shrink-0 items-center justify-center bg-white shadow-[0_8px_24px_rgba(0,0,0,0.14)] ${collapsed ? "h-12 w-12 rounded-xl p-1.5" : "h-14 w-16 lg:h-16 lg:w-20 rounded-xl lg:rounded-2xl px-2.5 lg:px-3"}`}>
             <img
               src="/logo-novo-consudes-removebg-preview-1.webp"
               alt="CONSUDES"
-              className="h-8 lg:h-9 w-auto"
+              className={
+                collapsed
+                  ? "max-h-full max-w-full object-contain"
+                  : "h-8 lg:h-9 w-auto"
+              }
             />
           </div>
-          <div className="flex min-w-0 items-center gap-3 lg:gap-4">
-            <div className="h-10 lg:h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
-            <div className="min-w-0">
-              <p className="text-sm font-medium tracking-[0.08em] text-white/80 whitespace-nowrap">
-                ADMIN
-              </p>
+          {!collapsed && (
+            <div className="flex min-w-0 items-center gap-3 lg:gap-4">
+              <div className="h-10 lg:h-12 w-px bg-gradient-to-b from-transparent via-[#D9A441]/70 to-transparent" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium tracking-[0.08em] text-white/80 whitespace-nowrap">
+                  ADMIN
+                </p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
       {/* Nav groups */}
-      <nav className="flex-1 overflow-y-auto px-4 py-2 lg:py-4">
+      <nav
+        className={`min-h-0 flex-1 overflow-y-auto py-2 lg:py-4 ${collapsed ? "px-2" : "px-4"}`}>
         {filteredGroups.map((group, gi) => (
-          <div key={gi} className={gi === 0 ? "" : "mt-4 lg:mt-6"}>
-            {group.heading && (
+          <div
+            key={gi}
+            className={gi === 0 ? "" : collapsed ? "mt-3" : "mt-4 lg:mt-6"}>
+            {group.heading && !collapsed && (
               <div className="mb-2 lg:mb-3 flex flex-col px-1">
                 <div className="mb-2 h-0.5 w-8 lg:w-10 rounded-full bg-[#D9A441]" />
                 <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/56">
@@ -428,6 +507,9 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
                   item={item}
                   onClick={onNav}
                   comingSoonLabel={t.admin.dashboard.comingSoon}
+                  collapsed={collapsed}
+                  showTooltip={showTooltip}
+                  hideTooltip={hideTooltip}
                 />
               ))}
             </div>
@@ -435,34 +517,63 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
         ))}
       </nav>
       {/* Rodapé: ações finais */}
-      <div className="border-t border-white/8 px-4 pb-2.5 lg:pb-3 pt-2">
-        <div className="rounded-[16px] border border-white/8 bg-white/[0.03] px-2.5 lg:px-3 py-1.5 lg:py-2">
+      <div
+        className={`border-t border-white/8 pb-2.5 lg:pb-3 pt-2 ${collapsed ? "px-2" : "px-4"}`}>
+        <div
+          className={`rounded-[16px] border border-white/8 bg-white/[0.03] py-1.5 lg:py-2 ${collapsed ? "px-1" : "px-2.5 lg:px-3"}`}>
           <div className="space-y-0.5 lg:space-y-1">
             {/* Idioma */}
-            <div className="flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1 text-white/60">
+            <div
+              className={`flex items-center gap-2 rounded-xl py-1 text-white/60 ${collapsed ? "flex-col px-1" : "px-2.5 lg:px-3"}`}>
               <IconGlobe />
-              <LangSwitcher lang={lang} setLang={setLang} dark />
+              <LangSwitcher
+                lang={lang}
+                setLang={setLang}
+                dark
+                compact={collapsed}
+              />
             </div>
+
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={themeLabel}
+              title={collapsed ? undefined : themeLabel}
+              onMouseEnter={event =>
+                collapsed && showTooltip(themeLabel, event.currentTarget, true)
+              }
+              onMouseLeave={hideTooltip}
+              onFocus={event =>
+                collapsed && showTooltip(themeLabel, event.currentTarget, true)
+              }
+              onBlur={hideTooltip}
+              className={`flex w-full items-center gap-2 rounded-xl text-sm font-medium text-white/80 transition-all duration-150 hover:bg-white/8 hover:text-[#D9A441] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D9A441] ${collapsed ? "justify-center px-0 py-2" : "px-2.5 lg:px-3 py-1.5 lg:py-2"}`}>
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              {!collapsed && <span>{themeLabel}</span>}
+            </button>
 
             {/* Ajuda */}
             <NavLink
               to="/admin/ajuda"
               onClick={onNav}
+              aria-label={collapsed ? helpLabel : undefined}
+              onMouseEnter={event =>
+                collapsed && showTooltip(helpLabel, event.currentTarget)
+              }
+              onMouseLeave={hideTooltip}
+              onFocus={event =>
+                collapsed && showTooltip(helpLabel, event.currentTarget)
+              }
+              onBlur={hideTooltip}
               className={({ isActive }) =>
-                `flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium transition-all duration-150 ${
+                `flex items-center gap-2 rounded-xl ${collapsed ? "justify-center px-0 py-2" : "px-2.5 lg:px-3 py-1.5 lg:py-2"} text-sm font-medium transition-all duration-150 ${
                   isActive
                     ? "bg-white/10 text-white"
                     : "text-white/60 hover:bg-white/8 hover:text-white"
                 }`
               }>
               <IconHelp />
-              <span>
-                {lang === "pt"
-                  ? "Ajuda e Manual"
-                  : lang === "es"
-                    ? "Ayuda y Manual"
-                    : "Help and Manual"}
-              </span>
+              {!collapsed && <span>{helpLabel}</span>}
             </NavLink>
 
             {/* Site público */}
@@ -470,21 +581,52 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
               href="https://www.consudes.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              aria-label={collapsed ? t.admin.publicSite : undefined}
+              onMouseEnter={event =>
+                collapsed &&
+                showTooltip(t.admin.publicSite, event.currentTarget)
+              }
+              onMouseLeave={hideTooltip}
+              onFocus={event =>
+                collapsed &&
+                showTooltip(t.admin.publicSite, event.currentTarget)
+              }
+              onBlur={hideTooltip}
+              className={`flex items-center gap-2 rounded-xl ${collapsed ? "justify-center px-0 py-2" : "px-2.5 lg:px-3 py-1.5 lg:py-2"} text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white`}>
               <IconExternalLink />
-              <span>{t.admin.publicSite}</span>
+              {!collapsed && <span>{t.admin.publicSite}</span>}
             </a>
 
             {/* Sair */}
             <button
               onClick={handleSignOut}
-              className="flex w-full items-center gap-2 rounded-xl px-2.5 lg:px-3 py-1.5 lg:py-2 text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white">
+              aria-label={collapsed ? t.admin.logout : undefined}
+              onMouseEnter={event =>
+                collapsed && showTooltip(t.admin.logout, event.currentTarget)
+              }
+              onMouseLeave={hideTooltip}
+              onFocus={event =>
+                collapsed && showTooltip(t.admin.logout, event.currentTarget)
+              }
+              onBlur={hideTooltip}
+              className={`flex w-full items-center gap-2 rounded-xl ${collapsed ? "justify-center px-0 py-2" : "px-2.5 lg:px-3 py-1.5 lg:py-2"} text-sm font-medium text-white/60 transition-all duration-150 hover:bg-white/8 hover:text-white`}>
               <IconLogout />
-              <span>{t.admin.logout}</span>
+              {!collapsed && <span>{t.admin.logout}</span>}
             </button>
           </div>
         </div>
       </div>
+      {collapsed &&
+        tooltip &&
+        createPortal(
+          <div
+            role="tooltip"
+            className="pointer-events-none fixed z-50 -translate-y-1/2 whitespace-nowrap rounded-md bg-[#172033] px-3 py-1.5 text-xs font-medium text-white shadow-lg"
+            style={{ top: tooltip.top, left: tooltip.left }}>
+            {tooltip.themeAction ? themeLabel : tooltip.label}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
@@ -492,17 +634,82 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
 /* ── Layout principal ────────────────────────────────────────────────────── */
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return (
+        typeof window !== "undefined" &&
+        window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true"
+      );
+    } catch {
+      return false;
+    }
+  });
   const { t } = useLanguage();
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        SIDEBAR_STORAGE_KEY,
+        String(sidebarCollapsed)
+      );
+    } catch {
+      return;
+    }
+  }, [sidebarCollapsed]);
+
   return (
-    <div className="min-h-screen bg-[#F0F2F5]">
+    <div className="min-h-screen bg-[#F0F2F5] dark:bg-consudes-dark-body">
+      <style>{`
+        .dark .admin-main [class~="text-[#172033]"],
+        .dark .admin-main [class~="text-[#1F2937]"] {
+          color: #f1f5f9;
+        }
+        .dark .admin-main :is(.border-gray-100, .border-gray-200, .border-gray-300, .border-slate-100, .border-slate-200, .border-slate-300) {
+          border-color: rgb(148 163 184 / 0.12);
+        }
+        .dark .admin-main :is(.ring-gray-100, .ring-slate-100) {
+          --tw-ring-color: rgb(148 163 184 / 0.08);
+        }
+        .dark .admin-main thead {
+          background-color: #1c293a;
+          border-color: rgb(148 163 184 / 0.12);
+        }
+        .dark .admin-main thead th {
+          color: #a8b6c8;
+        }
+        .dark .admin-main :is(.divide-y, .divide-y-reverse) > :not(:last-child) {
+          border-color: rgb(148 163 184 / 0.1);
+        }
+        .dark .admin-main tbody tr:hover {
+          background-color: rgb(255 255 255 / 0.035);
+        }
+        .dark .admin-main :is(.text-gray-400, .text-gray-500, .text-slate-400, .text-slate-500) {
+          color: #9aa9bb;
+        }
+      `}</style>
       {/* ── Sidebar desktop (fixed) ── */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 w-60 bg-[#002D5C] shadow-[18px_0_48px_rgba(0,27,54,0.16)] z-30">
-        <SidebarContent />
+      <aside
+        className={`hidden lg:block fixed inset-y-0 left-0 ${sidebarCollapsed ? "w-20" : "w-60"} bg-[#002D5C] shadow-[18px_0_48px_rgba(0,27,54,0.16)] z-30 transition-[width] duration-300`}>
+        <SidebarContent collapsed={sidebarCollapsed} />
+        <button
+          type="button"
+          onClick={() => setSidebarCollapsed(previous => !previous)}
+          aria-label={
+            sidebarCollapsed ? t.admin.expandMenu : t.admin.collapseMenu
+          }
+          title={sidebarCollapsed ? t.admin.expandMenu : t.admin.collapseMenu}
+          className={`absolute z-10 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D9A441] ${sidebarCollapsed ? "top-[76px] left-1/2 flex h-8 w-8 -translate-x-1/2 items-center justify-center text-white/45 hover:bg-white/5 hover:text-white/85" : "right-2 top-4 p-2 text-white/60 hover:bg-white/10 hover:text-white"}`}>
+          {sidebarCollapsed ? (
+            <ChevronRight size={18} />
+          ) : (
+            <ChevronLeft size={18} />
+          )}
+        </button>
       </aside>
 
       {/* ── Coluna de conteúdo ── */}
-      <div className="lg:pl-60 flex flex-col min-h-screen">
+      <div
+        className={`${sidebarCollapsed ? "lg:pl-20" : "lg:pl-60"} flex flex-col min-h-screen transition-[padding] duration-300`}>
         {/* Top bar mobile */}
         <header className="lg:hidden flex items-center justify-end px-3 h-14 bg-[#002D5C] text-white fixed top-0 inset-x-0 z-30">
           <button
@@ -555,7 +762,7 @@ export default function AdminLayout() {
         )}
 
         {/* Conteúdo principal */}
-        <main className="flex-1 p-6 lg:p-8 pt-[calc(1.5rem+3.5rem)] lg:pt-8">
+        <main className="admin-main flex-1 p-6 lg:p-8 pt-[calc(1.5rem+3.5rem)] lg:pt-8 dark:text-slate-200 dark:[&_.bg-white]:bg-[#172333] dark:[&_.bg-gray-50]:bg-[#1c2c40] dark:[&_.bg-slate-50]:bg-[#1c2c40] dark:[&_.bg-gray-100]:bg-[#243449] dark:[&_.bg-slate-100]:bg-[#243449] dark:[&_.text-gray-500]:text-slate-400 dark:[&_.text-gray-600]:text-slate-300 dark:[&_.text-slate-500]:text-slate-400 dark:[&_.text-slate-600]:text-slate-300 dark:[&_.text-slate-700]:text-slate-200 dark:[&_.text-slate-800]:text-slate-100 dark:[&_h1]:text-slate-100 dark:[&_h2]:text-slate-100 dark:[&_h3]:text-slate-100 dark:[&_input]:text-slate-100 dark:[&_select]:text-slate-100 dark:[&_.border-gray-200]:border-white/10 dark:[&_.border-slate-200]:border-white/10">
           <Outlet />
         </main>
       </div>

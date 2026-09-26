@@ -4,9 +4,13 @@ import {
   ArrowRight,
   Building2,
   CalendarDays,
+  Eye,
+  EyeOff,
   FileText,
+  Files,
   Images,
-  Newspaper
+  Newspaper,
+  Wallet
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
@@ -31,10 +35,11 @@ const CARD_TITLE_CLASS = "text-base font-semibold text-[#1F2937]";
 const CARD_ICON_CLASS = "w-4 h-4 text-[#0057A8]/35";
 const CARD_CTA_CLASS =
   "inline-flex items-center gap-1.5 text-sm font-semibold text-[#0057A8] hover:text-[#004a8f] transition-colors";
+const BALANCE_HIDDEN_KEY = "consudes-admin-finance-balance-hidden";
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const role = profile?.role;
 
   const canViewNews = !!role && canAccessModule(role, "noticias");
@@ -42,6 +47,8 @@ export default function AdminDashboard() {
   const canViewTransparency = !!role && canAccessModule(role, "transparencia");
   const canViewFederations = !!role && canAccessModule(role, "federacoes");
   const canViewGallery = !!role && canAccessModule(role, "galeria");
+  const canViewDocuments = !!role && canAccessModule(role, "documentos");
+  const canViewFinance = !!role && canAccessModule(role, "financeiro");
 
   const [news, setNews] = useState<NewsRow[]>([]);
   const [calEvents, setCalEvents] = useState<CalendarEventRow[]>([]);
@@ -49,6 +56,25 @@ export default function AdminDashboard() {
   const [federations, setFederations] = useState<FederationRow[]>([]);
   const [galleries, setGalleries] = useState<GalleryAlbum[]>([]);
   const [loading, setLoading] = useState(true);
+  const [balanceHidden, setBalanceHidden] = useState(() => {
+    if (typeof window === "undefined") return true;
+    try {
+      const saved = window.localStorage.getItem(BALANCE_HIDDEN_KEY);
+      return saved === null || saved === "true";
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleBalance = () => {
+    const next = !balanceHidden;
+    setBalanceHidden(next);
+    try {
+      window.localStorage.setItem(BALANCE_HIDDEN_KEY, String(next));
+    } catch {
+      return;
+    }
+  };
 
   useEffect(() => {
     if (!role) return;
@@ -92,6 +118,10 @@ export default function AdminDashboard() {
   const total = news.length;
   const published = news.filter(n => n.status === "published").length;
   const latest = news[0];
+  const financeBalance = new Intl.NumberFormat(
+    lang === "pt" ? "pt-BR" : lang === "es" ? "es-ES" : "en-US",
+    { style: "currency", currency: "USD" }
+  ).format(18450);
 
   return (
     <div className="w-full max-w-full overflow-x-hidden">
@@ -268,6 +298,76 @@ export default function AdminDashboard() {
             <div className="px-6 pb-5">
               <Link to="/admin/galeria" className={CARD_CTA_CLASS}>
                 {t.admin.dashboard.viewGallery}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {canViewDocuments && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>
+                  {t.admin.officialDocuments.pageTitle}
+                </span>
+                <Files className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              <p className="text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums">
+                24
+              </p>
+              <p className="text-xs text-gray-400 mt-1.5">
+                24 {t.admin.dashboard.documentsTotal}
+              </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/oficios" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewDocuments}
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {canViewFinance && (
+          <div className={`${CARD_CLASS} xl:col-span-2`}>
+            <div className="p-6 flex-1">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className={CARD_TITLE_CLASS}>{t.admin.nav.finance}</span>
+                <Wallet className={CARD_ICON_CLASS} aria-hidden="true" />
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="min-w-0 flex-1 text-4xl font-bold font-sans text-[#1F2937] leading-none tabular-nums break-words">
+                  {balanceHidden ? "US$ •••••••" : financeBalance}
+                </p>
+                <button
+                  type="button"
+                  onClick={toggleBalance}
+                  aria-label={
+                    balanceHidden
+                      ? t.admin.dashboard.showBalance
+                      : t.admin.dashboard.hideBalance
+                  }
+                  title={
+                    balanceHidden
+                      ? t.admin.dashboard.showBalance
+                      : t.admin.dashboard.hideBalance
+                  }
+                  className="shrink-0 rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#0057A8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0057A8]">
+                  {balanceHidden ? (
+                    <EyeOff className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <Eye className="h-4 w-4" aria-hidden="true" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-1.5">
+                {t.admin.finance.currentBalance}
+              </p>
+            </div>
+            <div className="px-6 pb-5">
+              <Link to="/admin/financeiro" className={CARD_CTA_CLASS}>
+                {t.admin.dashboard.viewFinance}
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </div>
