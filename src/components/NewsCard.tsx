@@ -31,7 +31,7 @@ export default function NewsCard({ news, compact = false }: NewsCardProps) {
         border border-consudes-border dark:border-white/8
         shadow-card hover:shadow-raise hover:-translate-y-1
         transition-all duration-300
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-consudes-blue/50
       `}>
       {/* Capa */}
       <div

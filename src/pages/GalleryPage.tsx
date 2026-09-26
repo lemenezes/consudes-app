@@ -380,7 +380,7 @@ export default function GalleryPage() {
               ref={filtersButtonRef}
               type="button"
               onClick={() => setFiltersOpen(v => !v)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-semibold text-consudes-blue hover:bg-consudes-blue/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold/80 focus-visible:ring-offset-2 transition-all"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 shadow-sm text-sm font-semibold text-consudes-blue hover:bg-consudes-blue/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-blue/50/80 focus-visible:ring-offset-2 transition-all"
               aria-label={t.galleryPage.filters}
               aria-expanded={filtersOpen}
               aria-controls="gallery-mobile-filters">
