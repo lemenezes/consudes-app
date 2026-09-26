@@ -4,6 +4,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import type { Lang } from "../i18n/translations";
+import { Wallet } from "lucide-react";
 
 const LANGS: { code: Lang; label: string }[] = [
   { code: "es", label: "ES" },
@@ -348,6 +349,19 @@ function SidebarContent({ onNav }: { onNav?: () => void }) {
           label: t.admin.nav.federations,
           icon: <IconFederations />,
           module: "federacoes"
+        }
+      ]
+    },
+    {
+      heading: t.admin.groups.finance,
+      items: [
+        {
+          kind: "link",
+          to: "/admin/financeiro",
+          end: true,
+          label: t.admin.nav.finance,
+          icon: <Wallet className="w-4 h-4 shrink-0" />,
+          module: "financeiro"
         }
       ]
     }

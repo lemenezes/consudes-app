@@ -35,6 +35,7 @@ const AdminGalleryListPage = lazy(
 const AdminGalleryFormPage = lazy(
   () => import("./pages/admin/AdminGalleryFormPage")
 );
+const AdminFinancePage = lazy(() => import("./pages/admin/AdminFinancePage"));
 const AdminHelpPage = lazy(() => import("./pages/admin/AdminHelpPage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
 const InstitucionalPage = lazy(() => import("./pages/InstitucionalPage"));
@@ -125,6 +126,7 @@ const router = createBrowserRouter([
       { path: "galeria", element: <AdminGalleryListPage /> },
       { path: "galeria/novo", element: <AdminGalleryFormPage /> },
       { path: "galeria/editar/*", element: <AdminGalleryFormPage /> },
+      { path: "financeiro", element: <AdminFinancePage /> },
       { path: "oficios", element: <AdminOfficialDocumentsPage /> },
       { path: "oficios/novo", element: <AdminOfficialDocumentFormPage /> },
       {

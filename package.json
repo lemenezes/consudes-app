@@ -29,6 +29,7 @@
     "react-dom": "^19.2.5",
     "react-ga4": "^3.0.1",
     "react-router-dom": "^7.15.0",
+    "recharts": "^3.10.1",
     "tailwindcss": "^4.2.4",
     "yet-another-react-lightbox": "^3.32.0"
   },
