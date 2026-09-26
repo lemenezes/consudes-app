@@ -7,42 +7,46 @@
   /* ─── Paleta CONSUDES ─── */
 
   /* Azul principal — topbar, footer, seções escuras */
-  --color-consudes-blue:       #002D5E;
+  --color-consudes-blue: #002d5e;
   /* Azul médio — borders, PageHero bg, fundos internos */
-  --color-consudes-navy:       #003B73;
+  --color-consudes-navy: #003b73;
   /* Azul ativo — links, estados ativos, CTAs secundários */
-  --color-consudes-blue-mid:   #0057A8;
+  --color-consudes-blue-mid: #0057a8;
   /* Azul claro — gradientes decorativos */
-  --color-consudes-blue-light: #0076C8;
+  --color-consudes-blue-light: #0076c8;
   /* Azul texto — nav desktop e dropdown (fundo branco) */
-  --color-consudes-blue-text:  #1a3a5c;
+  --color-consudes-blue-text: #1a3a5c;
 
   /* Dourado — acento principal, hover indicators, CTAs */
-  --color-consudes-gold:       #D9A441;
-  --color-consudes-gold-dark:  #c99030;
+  --color-consudes-gold: #d9a441;
+  --color-consudes-gold-dark: #c99030;
 
   /* Dark mode backgrounds */
-  --color-consudes-dark:       #0a1220;   /* nav bg no dark */
-  --color-consudes-dark-deep:  #001630;   /* topbar bg no dark */
-  --color-consudes-dark-body:  #0d1624;   /* body bg no dark */
+  --color-consudes-dark: #0a1220; /* nav bg no dark */
+  --color-consudes-dark-deep: #001630; /* topbar bg no dark */
+  --color-consudes-dark-body: #0d1624; /* body bg no dark */
 
   /* Neutros — mantidos iguais ao FMDS para consistência entre projetos */
-  --color-consudes-body:       #374151;
-  --color-consudes-muted:      #5E6773;
-  --color-consudes-border:     #E5E7EB;
-  --color-consudes-surface:    #F5F5F5;
-  --color-consudes-white:      #FFFFFF;
+  --color-consudes-body: #374151;
+  --color-consudes-muted: #5e6773;
+  --color-consudes-border: #e5e7eb;
+  --color-consudes-surface: #f5f5f5;
+  --color-consudes-white: #ffffff;
 
   /* ─── Tipografia ─── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
   /* ─── Sombras ─── */
-  --shadow-card:  0 1px 3px 0 rgb(0 0 0 / 0.06), 0 4px 16px 0 rgb(0 0 0 / 0.08);
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 4px 16px 0 rgb(0 0 0 / 0.08);
   --shadow-raise: 0 4px 24px 0 rgb(0 45 94 / 0.18);
 }
 
 /* ─── Reset & Globals ─── */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 html {
   scroll-behavior: smooth;
@@ -56,7 +60,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.65;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .dark body {
@@ -80,19 +86,28 @@ body {
   transition: top 0.2s;
   border: 2px solid white;
 }
-.skip-link:focus { top: 0; }
+.skip-link:focus {
+  top: 0;
+}
 
 /* Foco global */
 :focus-visible {
-  outline: 3px solid var(--color-consudes-gold);
-  outline-offset: 3px;
+  outline: 2px solid rgb(0 87 168 / 0.35);
+  outline-offset: 2px;
   border-radius: 2px;
 }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-consudes-surface); }
-::-webkit-scrollbar-thumb { background: var(--color-consudes-blue-mid); border-radius: 3px; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-consudes-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-consudes-blue-mid);
+  border-radius: 3px;
+}
 
 /* Seção label padrão */
 .section-label {
@@ -109,32 +124,59 @@ body {
 
 /* Modal animations */
 @keyframes slide-up {
-  from { transform: translateY(40px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scale-in {
-  from { transform: scale(0.96); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.animate-slide-up  { animation: slide-up  0.28s cubic-bezier(0.32, 0.72, 0, 1); }
-.animate-fade-in   { animation: fade-in   0.2s ease-out; }
-.animate-scale-in  { animation: scale-in  0.22s cubic-bezier(0.32, 0.72, 0, 1); }
+.animate-slide-up {
+  animation: slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+.animate-scale-in {
+  animation: scale-in 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
 
 /* Shimmer sweep — placeholder enquanto imagens carregam do CDN */
 @keyframes img-shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .img-shimmer {
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     rgb(226 232 240) 25%,
     rgb(248 250 252) 50%,
     rgb(226 232 240) 75%
@@ -144,7 +186,8 @@ body {
 }
 
 .dark .img-shimmer {
-  background: linear-gradient(90deg,
+  background: linear-gradient(
+    90deg,
     rgb(30 41 59) 25%,
     rgb(51 65 85) 50%,
     rgb(30 41 59) 75%
@@ -157,11 +200,15 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
 
 /* Acessibilidade — respeitar preferência de movimento reduzido */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

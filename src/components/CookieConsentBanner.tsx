@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Cookie, X } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useCookieConsent } from "../context/CookieConsentContext";
@@ -28,7 +28,7 @@ function Toggle({
       aria-label={label}
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
-      className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-gold focus-visible:ring-offset-2 focus-visible:ring-offset-blue-50 dark:focus-visible:ring-offset-[#0F2744] ${
+      className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-consudes-blue/50 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-50 dark:focus-visible:ring-offset-[#0F2744] ${
         checked
           ? "bg-consudes-blue dark:bg-consudes-gold"
           : "bg-slate-300 dark:bg-slate-600"
@@ -55,7 +55,6 @@ export default function CookieConsentBanner() {
   } = useCookieConsent();
   const [showSettings, setShowSettings] = useState(false);
   const [analytics, setAnalytics] = useState(consent.analytics);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isBannerOpen) {
@@ -64,23 +63,17 @@ export default function CookieConsentBanner() {
     }
   }, [isBannerOpen, openedInSettings, consent.analytics]);
 
-  useEffect(() => {
-    if (isBannerOpen) containerRef.current?.focus();
-  }, [isBannerOpen]);
-
   if (!isBannerOpen) return null;
 
   const c = t.cookies;
 
   return (
     <div
-      ref={containerRef}
       role="dialog"
       aria-modal="false"
       aria-label={c.title}
-      tabIndex={-1}
-      className="fixed inset-x-0 bottom-0 z-[100] px-3 pb-3 sm:px-6 sm:pb-5 focus:outline-none">
-      <div className="mx-auto max-w-4xl rounded-2xl border border-consudes-blue/15 bg-blue-50 shadow-[0_10px_30px_-10px_rgba(0,45,94,0.30)] dark:border-consudes-gold/20 dark:bg-[#0F2744] dark:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.70)]">
+      className="fixed inset-x-0 bottom-0 z-[100] px-3 pb-3 sm:px-6 sm:pb-5">
+      <div className="mx-auto max-w-4xl rounded-2xl bg-blue-50 shadow-[0_10px_30px_-10px_rgba(0,45,94,0.30)] dark:bg-[#0F2744] dark:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.70)]">
         <div className="p-3">
           <div className="flex items-start gap-3.5">
             <span className="mt-0.5 hidden sm:flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-consudes-blue/10 text-consudes-blue ring-1 ring-consudes-blue/15 dark:bg-consudes-gold/15 dark:text-consudes-gold dark:ring-consudes-gold/25">
